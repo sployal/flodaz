@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f9f9f9;
+    }
+    .navbar {
+      background: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h2 { margin-top: 0; }
+    .info p { margin: 5px 0; }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-top: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn.logout { background: #dc3545; }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>Dashboard</h2>
+    <button class="btn logout" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="container">
+    <h2>Welcome, <span id="fullName"></span> 👋</h2>
+    <div class="info">
+      <p><b>Username:</b> <span id="username"></span></p>
+      <p><b>Email:</b> <span id="email"></span></p>
+      <p><b>Date of Birth:</b> <span id="dob"></span></p>
+      <p><b>Account Type:</b> <span id="accountType"></span></p>
+    </div>
+
+    <div id="premiumSection">
+      <p>You are on a <b>Free Plan</b>. Upgrade to premium for unlimited AI prompts and recipe downloads!</p>
+      <button class="btn" onclick="upgrade()">Upgrade to Premium</button>
+    </div>
+  </div>
+
+  <script>
+    async function loadProfile() {
+      const response = await fetch("http://127.0.0.1:5000/profile", {
+        method: "GET",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+      if (data.error) {
+        window.location.href = "login.html"; // redirect if not logged in
+        return;
+      }
+
+      // fill in profile info
+      document.getElementById("fullName").textContent = data.full_name;
+      document.getElementById("username").textContent = data.username;
+      document.getElementById("email").textContent = data.email;
+      document.getElementById("dob").textContent = data.dob;
+      document.getElementById("accountType").textContent = data.account_type;
+
+      // hide upgrade if already premium
+      if (data.account_type === "premium") {
+        document.getElementById("premiumSection").innerHTML = "<p>🌟 You are a Premium User! Enjoy all features 🎉</p>";
+      }
+    }
+
+    async function logout() {
+      await fetch("http://127.0.0.1:5000/logout", {
+        method: "POST",
+        credentials: "include"
+      });
+      window.location.href = "login.html";
+    }
+
+    function upgrade() {
+      alert("Redirecting to payment (IntaSend integration will go here).");
+    }
+
+    loadProfile();
+  </script>
+
+</body>
+</html>
+

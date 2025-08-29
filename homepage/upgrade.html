@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upgrade to Premium</title>
+</head>
+<body>
+  <h1>Upgrade to Premium 🚀</h1>
+  <p>Enjoy unlimited AI recipe prompts, posting in community, and downloading recipes.</p>
+
+  <!-- IntaSend Payment Button -->
+  <button id="payBtn">Pay with IntaSend</button>
+
+  <script src="https://unpkg.com/intasend-inlinejs-sdk"></script>
+  <script>
+    document.getElementById("payBtn").addEventListener("click", () => {
+      const IS = new window.IntaSend({
+        publicAPIKey: "YOUR_PUBLIC_KEY_HERE", 
+        live: false
+      });
+
+      IS.on("COMPLETE", function(response){
+        console.log("Payment complete", response);
+
+        // Call backend to upgrade user
+        fetch("http://127.0.0.1:5000/upgrade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: localStorage.getItem("user_id") })
+        });
+      });
+
+      IS.on("FAILED", function(response){
+        console.error("Payment failed", response);
+      });
+
+      IS.checkout({
+        amount: 5, // 5 USD or equivalent
+        currency: "USD",
+        phone_number: "254700000000"
+      });
+    });
+  </script>
+</body>
+</html>

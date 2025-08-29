@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flodaz Foods - Community Recipe Collection</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">🍳 Flodaz Foods</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#recipes">Recipes</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Welcome to Flodaz Foods</h1>
+                <p>The ultimate community-driven recipe collection where food lovers, hotels, and catering services come together to share culinary masterpieces</p>
+                <a href="#signup" class="cta-button" onclick="showSignupModal()">Join Our Community</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="about">
+        <div class="container">
+            <h2 class="section-title">Why Choose Flodaz Foods?</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">👨‍🍳</span>
+                    <h3>Community Driven</h3>
+                    <p>Connect with passionate cooks, professional chefs, and food enthusiasts from around the world. Share your culinary creations and discover amazing recipes from our vibrant community.</p>
+                </div>
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">🏨</span>
+                    <h3>Professional Support</h3>
+                    <p>Specialized features for hotels and catering services. Access bulk recipes, cost calculations, and professional-grade cooking instructions tailored for commercial kitchens.</p>
+                </div>
+                <div class="feature-card fade-in-up">
+                    <span class="feature-icon">🔍</span>
+                    <h3>Smart Discovery</h3>
+                    <p>Advanced search and filtering options help you find the perfect recipe based on ingredients, dietary restrictions, cooking time, and skill level. Never run out of meal ideas!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Gallery -->
+    <section class="recipe-gallery" id="recipes">
+        <div class="container">
+            <h2 class="section-title">Featured Community Recipes</h2>
+            <div class="gallery-grid">
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-1">🍝</div>
+                    <div class="recipe-info">
+                        <h3>Mediterranean Pasta</h3>
+                        <p>A delicious blend of fresh herbs, olives, and sun-dried tomatoes. Perfect for family dinners.</p>
+                    </div>
+                </div>
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-2">🥘</div>
+                    <div class="recipe-info">
+                        <h3>Spicy Curry Bowl</h3>
+                        <p>Aromatic spices and tender vegetables create this warming comfort food favorite.</p>
+                    </div>
+                </div>
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-3">🍰</div>
+                    <div class="recipe-info">
+                        <h3>Chocolate Delight Cake</h3>
+                        <p>Rich, moist chocolate cake that's perfect for celebrations and special occasions.</p>
+                    </div>
+                </div>
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-4">🥗</div>
+                    <div class="recipe-info">
+                        <h3>Fresh Garden Salad</h3>
+                        <p>Crisp vegetables and homemade dressing make this a healthy and refreshing choice.</p>
+                    </div>
+                </div>
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-5">🍕</div>
+                    <div class="recipe-info">
+                        <h3>Artisan Pizza</h3>
+                        <p>Handcrafted pizza with premium toppings and perfectly crispy crust.</p>
+                    </div>
+                </div>
+                <div class="recipe-card fade-in-up">
+                    <div class="recipe-image recipe-6">🍲</div>
+                    <div class="recipe-info">
+                        <h3>Hearty Soup</h3>
+                        <p>Comforting and nutritious soup packed with seasonal vegetables and herbs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <h2 class="section-title">Professional Services</h2>
+            <div class="services-grid">
+                <div class="service-card fade-in-up">
+                    <h3>🏨 Hotel Solutions</h3>
+                    <p>Comprehensive recipe management for hotel restaurants. Menu planning, cost optimization, and guest satisfaction tools designed specifically for hospitality professionals.</p>
+                </div>
+                <div class="service-card fade-in-up">
+                    <h3>🎉 Catering Services</h3>
+                    <p>Scale recipes for any event size. Get precise ingredient calculations, timeline planning, and professional presentation guidelines for successful catering operations.</p>
+                </div>
+                <div class="service-card fade-in-up">
+                    <h3>📊 Analytics & Insights</h3>
+                    <p>Track popular recipes, seasonal trends, and customer preferences. Make data-driven decisions for your food service business with our comprehensive analytics dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Culinary Journey?</h2>
+                <p>Join thousands of food lovers, professional chefs, and hospitality businesses who trust Flodaz Foods for their recipe needs.</p>
+                <a href="#signup" class="cta-button" onclick="showSignupModal()">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Flodaz Foods</h3>
+                    <p>Building the world's largest community-driven recipe collection for food enthusiasts and professionals alike.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="#recipes">Browse Recipes</a></p>
+                    <p><a href="#services">Professional Services</a></p>
+                    <p><a href="#about">About Us</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>hello@flodazfoods.com</p>
+                    <p>+1 (555) 123-FOOD</p>
+                    <p>Follow us @FlodazFoods</p>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #555; padding-top: 2rem; margin-top: 2rem;">
+                <p>&copy; 2025 Flodaz Foods. All rights reserved. Made with ❤️ for food lovers everywhere.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 3rem; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; position: relative;">
+            <button onclick="hideSignupModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;">&times;</button>
+            <h2 style="color: #333; margin-bottom: 1rem;">Join Flodaz Foods!</h2>
+            <p style="color: #666; margin-bottom: 2rem;">Start your culinary adventure with our amazing community</p>
+            <form style="text-align: left;">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Full Name</label>
+                    <input type="text" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;" placeholder="Enter your name">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Email</label>
+                    <input type="email" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;" placeholder="your@email.com">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Account Type</label>
+                    <select style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;">
+                        <option>Home Cook</option>
+                        <option>Professional Chef</option>
+                        <option>Hotel/Restaurant</option>
+                        <option>Catering Service</option>
+                    </select>
+                </div>
+                <button type="submit" class="cta-button" style="width: 100%; margin-top: 1rem;" onclick="handleSignup(event)">Create My Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
