@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SmartRecipes — Recipe Recommender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+  
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <a class="brand" href="index.html">SmartRecipes</a>
+      <span class="tag">SDG • Zero Hunger</span>
+    </div>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav-center" id="mainNav">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="ai.html" class="nav-link">AI</a>
+      <a href="recipes.html" class="nav-link">Recipes</a>
+      <a href="community.html" class="nav-link">Community</a>
+      <a href="donations.html" class="nav-link">Donations</a>
+      <a href="about.html" class="nav-link">About</a>
+      <a href="restaurants.html" class="nav-link">Restaurants</a>
+
+    </nav>
+<div class="nav-right">
+  <!-- Profile button -->
+  <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+    <div class="avatar" id="avatarCircle">?</div>
+  </button>
+
+  <!-- Profile dashboard (keep only this one) -->
+  <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+    <div class="profile-header">
+      <div class="avatar sm" id="avatarCircleMenu">?</div>
+      <div>
+        <div class="name" id="pmName">Guest</div>
+        <div class="username" id="pmUsername">@guest</div>
+      </div>
+    </div>
+
+    <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
+    <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
+    <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
+    <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 3</span></div>
+    <div class="profile-row optional"><span>Contact</span><span id="pmContact">—</span></div>
+    <div class="profile-row optional"><span>Address</span><span id="pmAddress">—</span></div>
+    <div class="profile-row optional"><span>Gender</span><span id="pmGender">—</span></div>
+
+    <div class="profile-actions">
+      <button class="btn primary" id="upgradeBtn">Upgrade (IntaSend)</button>
+      <a class="btn ghost" href="restaurants.html">Advertise Restaurant</a>
+      <button class="btn danger" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+</div>
+
+  </header>
+
+  <!-- Auth Modal -->
+  <div class="modal" id="authModal" aria-hidden="true" role="dialog" aria-labelledby="authTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="authTitle">Welcome to SmartRecipes</h2>
+        <button class="icon-btn" id="authCloseBtn" aria-label="Close">✕</button>
+      </div>
+      <p class="muted">Create an account or log in to continue.</p>
+
+      <form id="authForm">
+        <div class="grid-2">
+          <label>Full Name*<input type="text" id="fullName" required placeholder="e.g. Amina Abdalla" /></label>
+          <label>Username* (public)<input type="text" id="username" required placeholder="e.g. amina_cooks" /></label>
+        </div>
+        <div class="grid-2">
+          <label>Email*<input type="email" id="email" required placeholder="you@example.com" /></label>
+          <label>Date of Birth*<input type="date" id="dob" required /></label>
+        </div>
+
+        <details class="optional-fields">
+          <summary>Optional details</summary>
+          <div class="grid-3">
+            <label>Contact<input type="tel" id="contact" placeholder="+249…" /></label>
+            <label>Address<input type="text" id="address" placeholder="City / Area" /></label>
+            <label>Gender
+              <select id="gender">
+                <option value="">Prefer not to say</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary">Create account / Log in</button>
+        </div>
+        <p class="tiny muted">Premium payments in SDG via IntaSend (to be integrated).</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hero: AI "What I have?" -->
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Recipe Recommender</h1>
+      <p>Pick ingredients and get ideas. Free users get <strong>3</strong> AI prompts; Premium = unlimited.</p>
+
+      <div class="ai-box">
+        <input id="aiInput" type="text" placeholder="I have... e.g., chicken, tomatoes" />
+        <button class="btn primary" id="aiBtn">Get Ideas</button>
+      </div>
+      <div id="aiOutput" class="ai-output"></div>
+    </div>
+  </section>
+
+
+<script>
+document.getElementById("generateBtn").addEventListener("click", async () => {
+  const ingredients = document.getElementById("ingredientsInput").value;
+
+  const response = await fetch("http://127.0.0.1:5000/generate_recipe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ ingredients })
+  });
+
+  const data = await response.json();
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  if (data.error) {
+    resultsDiv.innerHTML = `<p style="color:red;">${data.error}</p>`;
+  } else {
+    resultsDiv.innerHTML = `<pre>${data.recipes}</pre>`;
+  }
+});
+
+
+</script>
+
+
+  <!-- Randomized Gallery -->
+  <main class="container">
+    <h2 class="section-title">Today’s Picks</h2>
+    <p class="muted">A fresh mix from Breakfast, Maincourse, Salads, and Snacks — shuffles on each visit.</p>
+
+    <div id="homeGallery" class="gallery"></div>
+
+    <div class="center">
+      <button class="btn" id="loadMoreBtn">Load more</button>
+    </div>
+  </main>
+
+  <div id="overlay"></div>
+
+<script>
+// Toggle profile dashboard
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+
+profileBtn.addEventListener("click", () => {
+  const isOpen = profileMenu.style.display === "block";
+  profileMenu.style.display = isOpen ? "none" : "block";
+});
+
+// Close when clicking outside
+window.addEventListener("click", (e) => {
+  if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+    profileMenu.style.display = "none";
+  }
+});
+
+</script>
+<script defer src="photos.js"></script>
+
+
+
+</body>
+</html>

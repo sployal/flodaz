@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurants & Hotels - Recipe Recommender</title>
+  <link rel="stylesheet" href="hotels.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html">Home</a>
+    <a href="ai.html">AI Recipes</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="community.html">Community</a>
+    <a href="donations.html">Donations</a>
+    <a href="about.html">About Us</a>
+    <a href="restaurants.html" class="active">Restaurants</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Discover Local Restaurants</h1>
+    <p>Explore new places to eat, support local businesses, and enjoy delicious meals.</p>
+    <button onclick="advertise()">Advertise Your Restaurant</button>
+  </section>
+
+  <!-- Restaurants List -->
+  <section class="restaurants">
+    <h2>Featured Restaurants</h2>
+    <div class="restaurant-grid" id="restaurantGrid">
+      <div class="restaurant-card">
+        <img src="images/restaurant1.jpg" alt="Restaurant 1">
+        <h3>Blue Nile Diner</h3>
+        <p><strong>Location:</strong> Khartoum, Sudan</p>
+        <p><strong>Menu Highlights:</strong> Grilled Fish, Ful Medames, Kisra</p>
+        <button class="view-btn" onclick="openMenu('Blue Nile Diner', 'Khartoum, Sudan', ['Grilled Fish','Ful Medames','Kisra','Shai (Tea)','Baklava'], 'images/restaurant1.jpg')">View Menu</button>
+      </div>
+
+      <div class="restaurant-card" id="card-Blue Nile Diner">
+  <img src="images/restaurant1.jpg" alt="Restaurant 1">
+  <h3>Blue Nile Diner</h3>
+  <p><strong>Location:</strong> Khartoum, Sudan</p>
+  <p><strong>Menu Highlights:</strong> Grilled Fish, Ful Medames, Kisra</p>
+  <p class="avg-rating" id="rating-Blue Nile Diner">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Blue Nile Diner', 'Khartoum, Sudan', ['Grilled Fish','Ful Medames','Kisra','Shai (Tea)','Baklava'], 'images/restaurant1.jpg')">View Menu</button>
+</div>
+
+<div class="restaurant-card" id="card-Savannah Bites">
+  <img src="images/restaurant2.jpg" alt="Restaurant 2">
+  <h3>Savannah Bites</h3>
+  <p><strong>Location:</strong> Nairobi, Kenya</p>
+  <p><strong>Menu Highlights:</strong> Nyama Choma, Ugali, Sukuma Wiki</p>
+  <p class="avg-rating" id="rating-Savannah Bites">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Savannah Bites', 'Nairobi, Kenya', ['Nyama Choma','Ugali','Sukuma Wiki','Chapati','Mandazi'], 'images/restaurant2.jpg')">View Menu</button>
+</div>
+
+<div class="restaurant-card" id="card-Spice Route">
+  <img src="images/restaurant3.jpg" alt="Restaurant 3">
+  <h3>Spice Route</h3>
+  <p><strong>Location:</strong> Kampala, Uganda</p>
+  <p><strong>Menu Highlights:</strong> Chapati, Matoke, Groundnut Stew</p>
+  <p class="avg-rating" id="rating-Spice Route">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Spice Route', 'Kampala, Uganda', ['Chapati','Matoke','Groundnut Stew','Rolex','Sweet Bananas'], 'images/restaurant3.jpg')">View Menu</button>
+</div>
+
+  </section>
+
+  <!-- Modal Popup -->
+  <div id="menuModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeMenu()">&times;</span>
+      <h2 id="modalName"></h2>
+      <p id="modalLocation"></p>
+      <img id="modalImage" src="" alt="Restaurant Image">
+      <h3>Menu</h3>
+      <ul id="modalMenu"></ul>
+
+      <!-- Rating + Comment -->
+      <div class="rating-section">
+        <h3>Leave a Review</h3>
+        <div class="stars" id="starRating">
+          ★★★★★
+        </div>
+        <textarea id="commentBox" placeholder="Write your comment..."></textarea>
+        <button onclick="submitReview()">Submit</button>
+      </div>
+
+      <!-- Reviews Display -->
+      <div class="reviews">
+        <h3>Reviews</h3>
+        <ul id="reviewsList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Recipe Recommender. All rights reserved.</p>
+  </footer>
+
+  <script>
+    let currentRestaurant = "";
+    let reviews = {}; // store reviews by restaurant
+
+    function advertise() {
+      alert("Advertising is available for Premium users only. Please upgrade your account to submit your restaurant.");
+    }
+
+    function openMenu(name, location, menuItems, image) {
+      currentRestaurant = name;
+      document.getElementById('modalName').innerText = name;
+      document.getElementById('modalLocation').innerText = "📍 " + location;
+      document.getElementById('modalImage').src = image;
+
+      let menuList = document.getElementById('modalMenu');
+      menuList.innerHTML = '';
+      menuItems.forEach(item => {
+        let li = document.createElement('li');
+        li.innerText = item;
+        menuList.appendChild(li);
+      });
+
+      loadReviews(name);
+
+      document.getElementById('menuModal').style.display = 'block';
+    }
+
+    function closeMenu() {
+      document.getElementById('menuModal').style.display = 'none';
+    }
+
+    // Rating system
+    let selectedStars = 0;
+    document.addEventListener("DOMContentLoaded", () => {
+      const starDiv = document.getElementById("starRating");
+      starDiv.innerHTML = "";
+      for (let i = 1; i <= 5; i++) {
+        let span = document.createElement("span");
+        span.innerText = "★";
+        span.classList.add("star");
+        span.dataset.value = i;
+        span.onclick = () => {
+          selectedStars = i;
+          highlightStars(i);
+        };
+        starDiv.appendChild(span);
+      }
+    });
+
+    function highlightStars(count) {
+      document.querySelectorAll(".star").forEach(star => {
+        star.classList.toggle("active", star.dataset.value <= count);
+      });
+    }
+
+  function submitReview() {
+  let comment = document.getElementById("commentBox").value.trim();
+
+  // Allow rating OR comment OR both
+  if (selectedStars === 0 && comment === "") {
+    alert("You can leave a rating, a comment, or both.");
+    return;
+  }
+
+  if (!reviews[currentRestaurant]) reviews[currentRestaurant] = [];
+  reviews[currentRestaurant].push({ stars: selectedStars, comment });
+
+  document.getElementById("commentBox").value = "";
+  selectedStars = 0;
+  highlightStars(0);
+  loadReviews(currentRestaurant);
+  updateAverageRating(currentRestaurant);
+}
+function updateAverageRating(name) {
+  let avgElement = document.getElementById("rating-" + name);
+  if (!reviews[name] || reviews[name].length === 0) {
+    avgElement.innerText = "No ratings yet";
+    return;
+  }
+  // calculate average ignoring entries with 0 stars
+  let validRatings = reviews[name].filter(r => r.stars > 0);
+  if (validRatings.length === 0) {
+    avgElement.innerText = "No ratings yet";
+    return;
+  }
+  let sum = validRatings.reduce((acc, r) => acc + r.stars, 0);
+  let avg = (sum / validRatings.length).toFixed(1);
+  avgElement.innerText = `${avg} ★ (${validRatings.length} ratings)`;
+}
+
+    function loadReviews(name) {
+      let list = document.getElementById("reviewsList");
+      list.innerHTML = "";
+      if (reviews[name]) {
+        reviews[name].forEach(r => {
+          let li = document.createElement("li");
+          li.innerHTML = `<strong>${"★".repeat(r.stars)}</strong> - ${r.comment}`;
+          list.appendChild(li);
+        });
+      }
+    }
+
+    // Close modal if clicked outside
+    window.onclick = function(event) {
+      let modal = document.getElementById('menuModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
+

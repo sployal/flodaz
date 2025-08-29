@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Recipe Recommender</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <h2>Recipe Recommender</h2>
+    <a href="index.html">Home</a>
+    <a href="ai.html">AI Recipes</a>
+    <a href="recipes.html">Recipes</a>
+  </nav>
+
+  <section class="ai-section">
+    <h1>Find Recipes with AI 🍲</h1>
+    <form id="aiForm">
+      <input type="text" id="ingredients" placeholder="Enter ingredients (e.g. chicken, tomatoes)" required>
+      <button type="submit">Get Recipes</button>
+    </form>
+    <div id="results" class="recipe-grid"></div>
+  </section>
+
+  <script src="ai.js"></script>
+</body>
+</html>

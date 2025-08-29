@@ -1,0 +1,63 @@
+<div class="restaurant-card" id="card-Blue Nile Diner">
+  <img src="images/restaurant1.jpg" alt="Restaurant 1">
+  <h3>Blue Nile Diner</h3>
+  <p><strong>Location:</strong> Khartoum, Sudan</p>
+  <p><strong>Menu Highlights:</strong> Grilled Fish, Ful Medames, Kisra</p>
+  <p class="avg-rating" id="rating-Blue Nile Diner">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Blue Nile Diner', 'Khartoum, Sudan', ['Grilled Fish','Ful Medames','Kisra','Shai (Tea)','Baklava'], 'images/restaurant1.jpg')">View Menu</button>
+</div>
+
+<div class="restaurant-card" id="card-Savannah Bites">
+  <img src="images/restaurant2.jpg" alt="Restaurant 2">
+  <h3>Savannah Bites</h3>
+  <p><strong>Location:</strong> Nairobi, Kenya</p>
+  <p><strong>Menu Highlights:</strong> Nyama Choma, Ugali, Sukuma Wiki</p>
+  <p class="avg-rating" id="rating-Savannah Bites">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Savannah Bites', 'Nairobi, Kenya', ['Nyama Choma','Ugali','Sukuma Wiki','Chapati','Mandazi'], 'images/restaurant2.jpg')">View Menu</button>
+</div>
+
+<div class="restaurant-card" id="card-Spice Route">
+  <img src="images/restaurant3.jpg" alt="Restaurant 3">
+  <h3>Spice Route</h3>
+  <p><strong>Location:</strong> Kampala, Uganda</p>
+  <p><strong>Menu Highlights:</strong> Chapati, Matoke, Groundnut Stew</p>
+  <p class="avg-rating" id="rating-Spice Route">No ratings yet</p>
+  <button class="view-btn" onclick="openMenu('Spice Route', 'Kampala, Uganda', ['Chapati','Matoke','Groundnut Stew','Rolex','Sweet Bananas'], 'images/restaurant3.jpg')">View Menu</button>
+</div>
+
+
+function submitReview() {
+  let comment = document.getElementById("commentBox").value.trim();
+
+  // Allow rating OR comment OR both
+  if (selectedStars === 0 && comment === "") {
+    alert("You can leave a rating, a comment, or both.");
+    return;
+  }
+
+  if (!reviews[currentRestaurant]) reviews[currentRestaurant] = [];
+  reviews[currentRestaurant].push({ stars: selectedStars, comment });
+
+  document.getElementById("commentBox").value = "";
+  selectedStars = 0;
+  highlightStars(0);
+  loadReviews(currentRestaurant);
+  updateAverageRating(currentRestaurant);
+}
+
+function updateAverageRating(name) {
+  let avgElement = document.getElementById("rating-" + name);
+  if (!reviews[name] || reviews[name].length === 0) {
+    avgElement.innerText = "No ratings yet";
+    return;
+  }
+  // calculate average ignoring entries with 0 stars
+  let validRatings = reviews[name].filter(r => r.stars > 0);
+  if (validRatings.length === 0) {
+    avgElement.innerText = "No ratings yet";
+    return;
+  }
+  let sum = validRatings.reduce((acc, r) => acc + r.stars, 0);
+  let avg = (sum / validRatings.length).toFixed(1);
+  avgElement.innerText = `${avg} ★ (${validRatings.length} ratings)`;
+}

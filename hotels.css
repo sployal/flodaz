@@ -1,0 +1,232 @@
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+  background: #333;
+  padding: 10px;
+  text-align: center;
+}
+.navbar a {
+  color: white;
+  margin: 0 15px;
+  text-decoration: none;
+}
+.navbar a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.hero {
+  background: url('images/hotels-bg.jpg') no-repeat center center/cover;
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+}
+.hero h1 {
+  font-size: 3em;
+}
+.hero p {
+  font-size: 1.2em;
+}
+.hero button {
+  background: gold;
+  border: none;
+  padding: 12px 24px;
+  margin-top: 15px;
+  font-size: 1em;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.hero button:hover {
+  background: darkorange;
+  color: white;
+}
+
+/* Restaurants Section */
+.restaurants {
+  padding: 40px 20px;
+  background: #f9f9f9;
+}
+.restaurants h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.restaurant-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 20px;
+  text-align: center;
+}
+.restaurant-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.restaurant-card h3 {
+  margin: 10px 0;
+  color: #333;
+}
+.restaurant-card p {
+  font-size: 0.9em;
+  color: #555;
+}
+.view-btn {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.view-btn:hover {
+  background: green;
+}
+
+/* Footer */
+footer {
+  background: #333;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 20px;
+}
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+  overflow: auto;
+}
+
+.modal-content {
+  background: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+.modal-content img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border-radius: 6px;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+.modal-content ul li {
+  background: #f0f0f0;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: red;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Rating Section */
+.rating-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.stars {
+  font-size: 24px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.star.active {
+  color: gold;
+}
+
+textarea {
+  width: 90%;
+  height: 60px;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  resize: none;
+}
+
+button {
+  background: #28a745;
+  color: #fff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #218838;
+}
+
+/* Reviews List */
+.reviews {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.reviews ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reviews li {
+  background: #f9f9f9;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+}
+.avg-rating {
+  font-weight: bold;
+  color: #ff9800;
+  margin: 5px 0;
+}
