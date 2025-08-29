@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mediterranean Pasta - Fordaz Recipes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .recipe-hero {
+            background: linear-gradient(135deg, rgba(255, 154, 158, 0.9), rgba(254, 207, 239, 0.9)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><circle cx="200" cy="200" r="100" fill="rgba(255,255,255,0.1)"/><circle cx="800" cy="300" r="150" fill="rgba(255,255,255,0.05)"/><circle cx="400" cy="700" r="120" fill="rgba(255,255,255,0.08)"/></svg>');
+            background-size: cover;
+            padding: 80px 0;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1));
+        }
+
+        .recipe-hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .recipe-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+
+        .recipe-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .recipe-meta {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .meta-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .meta-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .recipe-content {
+            padding: 80px 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 4rem;
+            margin-top: 2rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Ingredients Card */
+        .ingredients-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .ingredients-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .serving-adjuster {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .serving-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .serving-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+
+        .serving-count {
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .ingredients-list {
+            list-style: none;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ingredient-item:hover {
+            background: #f8f9fa;
+            padding-left: 1rem;
+            border-radius: 5px;
+        }
+
+        .ingredient-checkbox {
+            margin-right: 1rem;
+            transform: scale(1.2);
+        }
+
+        .ingredient-item.checked {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        /* Instructions */
+        .instructions-section {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .instruction-step {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 15px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .instruction-step:hover {
+            background: #e9ecef;
+            transform: translateX(10px);
+        }
+
+        .step-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .step-content p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .step-timer {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        /* Nutrition Card */
+        .nutrition-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .nutrition-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .nutrition-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nutrition-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nutrition-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease;
+        }
+
+        /* Timer Modal */
+        .timer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-content {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .timer-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn:hover {
+            background: #5a67d8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .recipe-title {
+                font-size: 2.5rem;
+            }
+
+            .recipe-meta {
+                gap: 1rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+
+            .ingredients-card {
+                position: static;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .instruction-step {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="index.html" class="logo">🍳 Fordaz Recipes</a>
+            <a href="index.html" class="back-btn">← Back to Recipes</a>
+        </nav>
+    </header>
+
+    <!-- Recipe Hero Section -->
+    <section class="recipe-hero">
+        <div class="container">
+            <div class="recipe-hero-content">
+                <h1 class="recipe-title">🍝 Mediterranean Pasta</h1>
+                <p class="recipe-subtitle">A delicious blend of fresh herbs, olives, and sun-dried tomatoes. Perfect for family dinners.</p>
+                
+                <div class="recipe-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">⏱️</span>
+                        <div class="meta-label">Prep Time</div>
+                        <div class="meta-value">15 min</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🔥</span>
+                        <div class="meta-label">Cook Time</div>
+                        <div class="meta-value">20 min</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🍽️</span>
+                        <div class="meta-label">Servings</div>
+                        <div class="meta-value">4 people</div>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📊</span>
+                        <div class="meta-label">Difficulty</div>
+                        <div class="meta-value">Easy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="recipe-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Main Instructions -->
+                <div class="main-content fade-in">
+                    <div class="instructions-section">
+                        <h2 class="section-title">👨‍🍳 Cooking Instructions</h2>
+                        
+                        <div class="instruction-step" data-timer="0">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h3>Prepare the Ingredients</h3>
+                                <p>Gather all ingredients and chop the fresh basil, dice the tomatoes, and slice the red onion. Drain and rinse the olives and capers.</p>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step" data-timer="600">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h3>Cook the Pasta</h3>
+                                <p>Bring a large pot of salted water to boil. Add the pasta and cook according to package directions until al dente. Reserve 1 cup of pasta water before draining.</p>
+                                <span class="step-timer">⏰ 10-12 minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step" data-timer="300">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h3>Sauté Aromatics</h3>
+                                <p>While pasta cooks, heat olive oil in a large skillet over medium heat. Add garlic and red onion, sauté until fragrant and softened.</p>
+                                <span class="step-timer">⏰ 5 minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step" data-timer="240">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h3>Add Mediterranean Flavors</h3>
+                                <p>Add sun-dried tomatoes, olives, capers, and cherry tomatoes to the skillet. Season with salt, pepper, and red pepper flakes. Cook until tomatoes start to soften.</p>
+                                <span class="step-timer">⏰ 4 minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step" data-timer="120">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h3>Combine and Finish</h3>
+                                <p>Add the drained pasta to the skillet with a splash of pasta water. Toss everything together, then remove from heat. Add fresh basil and crumbled feta cheese.</p>
+                                <span class="step-timer">⏰ 2 minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="instruction-step" data-timer="0">
+                            <div class="step-number">6</div>
+                            <div class="step-content">
+                                <h3>Serve and Enjoy</h3>
+                                <p>Taste and adjust seasoning. Serve immediately in warmed bowls, garnished with extra feta cheese, fresh basil, and a drizzle of good olive oil.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-btn btn-primary" onclick="saveRecipe()">
+                            💾 Save Recipe
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="shareRecipe()">
+                            📤 Share Recipe
+                        </button>
+                        <button class="action-btn btn-secondary" onclick="printRecipe()">
+                            🖨️ Print Recipe
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Ingredients -->
+                    <div class="ingredients-card fade-in">
+                        <h3 class="ingredients-title">🛒 Ingredients</h3>
+                        
+                        <div class="serving-adjuster">
+                            <button class="serving-btn" onclick="adjustServings(-1)">-</button>
+                            <span class="serving-count">Serves <span id="servings">4</span></span>
+                            <button class="serving-btn" onclick="adjustServings(1)">+</button>
+                        </div>
+
+                        <ul class="ingredients-list">
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>12 oz (340g) pasta (penne or fusilli)</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1/4 cup extra virgin olive oil</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>4 cloves garlic, minced</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1 medium red onion, sliced</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1/2 cup sun-dried tomatoes, chopped</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1/2 cup Kalamata olives, pitted</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>2 tbsp capers, drained</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1 pint cherry tomatoes, halved</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1/2 cup fresh basil, chopped</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>6 oz feta cheese, crumbled</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>Salt and pepper to taste</span>
+                            </li>
+                            <li class="ingredient-item">
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>1/4 tsp red pepper flakes</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Nutrition Info -->
+                    <div class="nutrition-card fade-in">
+                        <h3 class="nutrition-title">📊 Nutrition per Serving</h3>
+                        <div class="nutrition-grid">
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">485</div>
+                                <div class="nutrition-label">Calories</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">18g</div>
+                                <div class="nutrition-label">Protein</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">62g</div>
+                                <div class="nutrition-label">Carbs</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">19g</div>
+                                <div class="nutrition-label">Fat</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">4g</div>
+                                <div class="nutrition-label">Fiber</div>
+                            </div>
+                            <div class="nutrition-item">
+                                <div class="nutrition-value">892mg</div>
+                                <div class="nutrition-label">Sodium</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timer Modal -->
+    <div class="timer-modal" id="timerModal">
+        <div class="timer-content">
+            <h3>Cooking Timer</h3>
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <p id="timerStep"></p>
+            <div class="timer-controls">
+                <button class="timer-btn" onclick="startTimer()">Start</button>
+                <button class="timer-btn" onclick="pauseTimer()">Pause</button>
+                <button class="timer-btn" onclick="closeTimer()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentServings = 4;
+        let timerInterval;
+        let timerSeconds = 0;
+        let timerRunning = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupIngredientCheckboxes();
+            setupTimers();
+            animateElements();
+        });
+
+        // Ingredient checkbox functionality
+        function setupIngredientCheckboxes() {
+            const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const item = this.parentElement;
+                    if (this.checked) {
+                        item.classList.add('checked');
+                    } else {
+                        item.classList.remove('checked');
+                    }
+                });
+            });
+        }
+
+        // Serving size adjustment
+        function adjustServings(change) {
+            const newServings = currentServings + change;
+            if (newServings < 1 || newServings > 12) return;
+            
+            const multiplier = newServings / currentServings;
+            currentServings = newServings;
+            
+            document.getElementById('servings').textContent = currentServings;
+            
+            // Update ingredient quantities (simplified - in real app would parse and recalculate)
+            console.log(`Adjusted servings to ${currentServings}`);
+        }
+
+        // Timer functionality
+        function setupTimers() {
+            const timerSteps = document.querySelectorAll('[data-timer]');
+            timerSteps.forEach(step => {
+                const timerSeconds = parseInt(step.dataset.timer);
+                if (timerSeconds > 0) {
+                    step.addEventListener('click', function() {
+                        showTimer(timerSeconds, this.querySelector('h3').textContent);
+                    });
+                    step.style.cursor = 'pointer';
+                    step.title = 'Click to start timer';
+                }
+            });
+        }
+
+        function showTimer(seconds, stepName) {
+            timerSeconds = seconds;
+            document.getElementById('timerStep').textContent = stepName;
+            document.getElementById('timerModal').style.display = 'flex';
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if (!timerRunning) {
+                timerRunning = true;
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    if (timerSeconds <= 0) {
+                        timerComplete();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            timerRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function closeTimer() {
+            pauseTimer();
+            document.getElementById('timerModal').style.display = 'none';
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function timerComplete() {
+            pauseTimer();
+            document.getElementById('timerDisplay').textContent = '00:00';
+            alert('⏰ Timer finished! Your step is complete.');
+        }
+
+        // Action functions
+        function saveRecipe() {
+            // Simulate saving to user's collection
+            showNotification('Recipe saved to your collection! 💾');
+        }
+
+        function shareRecipe() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mediterranean Pasta - Fordaz Recipes',
+                    text: 'Check out this amazing Mediterranean Pasta recipe!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href);
+                showNotification('Recipe link copied to clipboard! 📤');
+            }
+        }
+
+        function printRecipe() {
+            window.print();
+        }
+
+        function showNotification(message) {
+            // Create notification
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #667eea;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 10px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Animation functions
+        function animateElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'all 0.8s ease';
+                observer.observe(el);
+            });
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('timerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTimer();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeTimer();
+            }
+        });
+
+        // Add CSS for notification animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
