@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <h2>🍲 Recipe Recommender</h2>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="ai.html">AI Recipes</a></li>
+      <li><a href="recipes.html" class="active">Recipes</a></li>
+      <li><a href="community.html">Community</a></li>
+      <li><a href="donations.html">Donations</a></li>
+      <li><a href="about.html">About Us</a></li>
+      <li><a href="restaurants.html">Restaurants</a></li>
+    </ul>
+  </nav>
+
+  <div class="filter-bar">
+    <button onclick="filterRecipes('all')">All</button>
+    <button onclick="filterRecipes('breakfast')">Breakfast</button>
+    <button onclick="filterRecipes('maincourse')">Main Course</button>
+    <button onclick="filterRecipes('salads')">Salads</button>
+    <button onclick="filterRecipes('snacks')">Snacks</button>
+  </div>
+
+  <div class="recipe-grid" id="recipeGrid">
+    <!-- JS will inject 20 random recipe cards -->
+  </div>
+
+  <script src="recipes.js"></script>
+</body>
+</html>

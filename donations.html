@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donations</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f9f9f9;
+    }
+    .navbar {
+      background: #333;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h2 { margin-top: 0; }
+    .event {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 0;
+      background: #fafafa;
+    }
+    .event h3 { margin: 0 0 10px; }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-top: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h2>Donations</h2>
+    <a href="index.html" style="color:white;text-decoration:none;">Home</a>
+  </div>
+
+  <div class="container">
+    <h2>Upcoming Community Events ❤️</h2>
+    <p>Support our mission by contributing to community projects. Every donation counts!</p>
+
+    
+<div id="events"></div>
+
+<hr>
+<h2>Your Donation History</h2>
+<ul id="donationHistory"></ul>
+
+  </div>
+
+  <script src="donations.js"></script>
+</body>
+</html>
