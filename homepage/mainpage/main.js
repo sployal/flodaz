@@ -2,6 +2,21 @@
 const GEMINI_API_KEY = 'AIzaSyCGrZ7zOlM2WVu2CNIIZyy62InCEM_RXHU'; // Replace with your actual API key
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
+// Supabase Client Configuration
+const SUPABASE_URL = 'https://your-project.supabase.co';
+const SUPABASE_ANON_KEY = 'your-anon-key';
+
+// Initialize Supabase client (you'll need to replace with your actual credentials)
+let supabaseClient = null;
+try {
+    // Check if Supabase is available
+    if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+} catch (error) {
+    console.log('Supabase not available, using localStorage fallback');
+}
+
 // Global state
 let currentUser = JSON.parse(localStorage.getItem('smartrecipes_user')) || null;
 let aiPromptCount = parseInt(localStorage.getItem('ai_prompt_count')) || 0;
@@ -107,8 +122,16 @@ const loadMoreBtn = document.getElementById('loadMoreBtn');
 const overlay = document.getElementById('overlay');
 
 // Initialize app
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Initialize user from localStorage first
     initializeUser();
+    
+    // Setup authentication listener
+    setupAuthListener();
+    
+    // Load user profile with enhanced functionality
+    await checkAuthStatus();
+    
     renderRecipeGallery();
     setupEventListeners();
     setupAnimations();
@@ -117,6 +140,200 @@ document.addEventListener('DOMContentLoaded', function() {
 // User management
 function initializeUser() {
     updateProfileDisplay();
+}
+
+// Enhanced user profile loading with Supabase integration
+async function loadUserProfileEnhanced() {
+    try {
+        // First try to get user from Supabase if available
+        if (supabaseClient) {
+            const { data: { user }, error } = await supabaseClient.auth.getUser();
+            
+            if (user && !error) {
+                // Fetch detailed user profile from user_profiles table
+                const { data: profileData, error: profileError } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profileData && !profileError) {
+                    // Create comprehensive user object
+                    const userProfile = {
+                        id: user.id,
+                        email: user.email,
+                        fullName: profileData.full_name || 'User',
+                        username: profileData.username || user.email.split('@')[0],
+                        accountType: profileData.account_type || 'Free',
+                        dob: profileData.dob || null,
+                        createdAt: profileData.created_at,
+                        updatedAt: profileData.updated_at
+                    };
+                    
+                    // Store in localStorage for consistency
+                    localStorage.setItem('smartrecipes_user', JSON.stringify(userProfile));
+                    currentUser = userProfile;
+                    updateProfileDisplay();
+                } else {
+                    // Fallback to basic user data
+                    const basicUser = {
+                        id: user.id,
+                        email: user.email,
+                        fullName: user.user_metadata?.full_name || 'User',
+                        username: user.email.split('@')[0],
+                        accountType: user.user_metadata?.account_type || 'Free',
+                        dob: user.user_metadata?.dob || null,
+                        createdAt: user.created_at
+                    };
+                    
+                    localStorage.setItem('smartrecipes_user', JSON.stringify(basicUser));
+                    currentUser = basicUser;
+                    updateProfileDisplay();
+                }
+            } else {
+                // No authenticated user, check localStorage
+                const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+                if (localUser) {
+                    currentUser = localUser;
+                    updateProfileDisplay();
+                } else {
+                    // Show guest profile
+                    currentUser = null;
+                    updateProfileDisplay();
+                }
+            }
+        } else {
+            // Supabase not available, use localStorage
+            const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+            if (localUser) {
+                currentUser = localUser;
+                updateProfileDisplay();
+            } else {
+                currentUser = null;
+                updateProfileDisplay();
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Fallback to localStorage
+        const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+        if (localUser) {
+            currentUser = localUser;
+            updateProfileDisplay();
+        } else {
+            currentUser = null;
+            updateProfileDisplay();
+        }
+    }
+}
+
+// Check user authentication status
+async function checkAuthStatus() {
+    try {
+        if (supabaseClient) {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
+            if (session && !error) {
+                // User is authenticated, load enhanced profile
+                await loadUserProfileEnhanced();
+                return true;
+            } else {
+                // No active session
+                const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+                if (localUser) {
+                    currentUser = localUser;
+                    updateProfileDisplay();
+                } else {
+                    currentUser = null;
+                    updateProfileDisplay();
+                }
+                return false;
+            }
+        } else {
+            // Supabase not available, check localStorage
+            const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+            if (localUser) {
+                currentUser = localUser;
+                updateProfileDisplay();
+                return true;
+            } else {
+                currentUser = null;
+                updateProfileDisplay();
+                return false;
+            }
+        }
+    } catch (error) {
+        console.error('Error checking auth status:', error);
+        return false;
+    }
+}
+
+// Function to refresh user profile data
+async function refreshUserProfile() {
+    try {
+        await checkAuthStatus();
+        showNotification('Profile refreshed successfully!', 'success');
+    } catch (error) {
+        console.error('Error refreshing profile:', error);
+        showNotification('Failed to refresh profile. Please try again.', 'error');
+    }
+}
+
+// Setup authentication state listener
+function setupAuthListener() {
+    if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state changed:', event, session);
+            
+            if (event === 'SIGNED_IN' && session) {
+                // User signed in, refresh profile
+                await loadUserProfileEnhanced();
+            } else if (event === 'SIGNED_OUT') {
+                // User signed out, show guest profile
+                currentUser = null;
+                updateProfileDisplay();
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+                // Token refreshed, update profile if needed
+                await checkAuthStatus();
+            }
+        });
+    }
+}
+
+// Function to update user profile data
+async function updateUserProfile(updates) {
+    try {
+        if (supabaseClient && currentUser?.id) {
+            // Update profile in Supabase
+            const { data, error } = await supabaseClient
+                .from('user_profiles')
+                .update(updates)
+                .eq('id', currentUser.id);
+            
+            if (error) {
+                console.error('Error updating profile:', error);
+                throw error;
+            }
+            
+            // Update local user data
+            currentUser = { ...currentUser, ...updates };
+            localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+            updateProfileDisplay();
+            
+            return { success: true, data };
+        } else {
+            // Fallback to localStorage only
+            currentUser = { ...currentUser, ...updates };
+            localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+            updateProfileDisplay();
+            
+            return { success: true, data: currentUser };
+        }
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        return { success: false, error };
+    }
 }
 
 function updateProfileDisplay() {
@@ -128,37 +345,28 @@ function updateProfileDisplay() {
     const pmDob = document.getElementById('pmDob');
     const pmAccountType = document.getElementById('pmAccountType');
     const pmPrompts = document.getElementById('pmPrompts');
-    const pmContact = document.getElementById('pmContact');
-    const pmAddress = document.getElementById('pmAddress');
-    const pmGender = document.getElementById('pmGender');
 
     if (currentUser) {
-        const initials = currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+        const initials = currentUser.fullName ? currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
         avatarCircle.textContent = initials;
         avatarCircleMenu.textContent = initials;
-        pmName.textContent = currentUser.fullName;
-        pmUsername.textContent = `@${currentUser.username}`;
-        pmEmail.textContent = currentUser.email;
+        pmName.textContent = currentUser.fullName || 'User';
+        pmUsername.textContent = `@${currentUser.username || 'user'}`;
+        pmEmail.textContent = currentUser.email || 'user@example.com';
         pmDob.textContent = currentUser.dob || '—';
         pmAccountType.textContent = currentUser.accountType || 'Free';
         pmAccountType.className = `badge ${currentUser.accountType === 'Premium' ? 'premium' : 'free'}`;
         pmPrompts.textContent = currentUser.accountType === 'Premium' ? '∞' : `${aiPromptCount} / 20`;
-        pmContact.textContent = currentUser.contact || '—';
-        pmAddress.textContent = currentUser.address || '—';
-        pmGender.textContent = currentUser.gender || '—';
     } else {
-        avatarCircle.textContent = '?';
-        avatarCircleMenu.textContent = '?';
-        pmName.textContent = 'Guest';
+        avatarCircle.textContent = 'G';
+        avatarCircleMenu.textContent = 'G';
+        pmName.textContent = 'Guest User';
         pmUsername.textContent = '@guest';
-        pmEmail.textContent = '—';
+        pmEmail.textContent = 'guest@example.com';
         pmDob.textContent = '—';
-        pmAccountType.textContent = 'Free';
-        pmAccountType.className = 'badge free';
+        pmAccountType.textContent = 'Guest';
+        pmAccountType.className = 'badge guest';
         pmPrompts.textContent = `${aiPromptCount} / 20`;
-        pmContact.textContent = '—';
-        pmAddress.textContent = '—';
-        pmGender.textContent = '—';
     }
 }
 
@@ -208,6 +416,7 @@ function setupEventListeners() {
     // Profile actions
     document.getElementById('upgradeBtn')?.addEventListener('click', handleUpgrade);
     document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
+    document.getElementById('refreshProfileBtn')?.addEventListener('click', refreshUserProfile);
 
     // Close modal on overlay click
     overlay?.addEventListener('click', closeAuthModal);
@@ -269,9 +478,6 @@ function handleAuth(e) {
         username: formData.get('username') || document.getElementById('username').value,
         email: formData.get('email') || document.getElementById('email').value,
         dob: formData.get('dob') || document.getElementById('dob').value,
-        contact: formData.get('contact') || document.getElementById('contact').value,
-        address: formData.get('address') || document.getElementById('address').value,
-        gender: formData.get('gender') || document.getElementById('gender').value,
         accountType: 'Free',
         joinDate: new Date().toISOString()
     };
@@ -663,19 +869,65 @@ function showComingSoon(recipeName) {
 }
 
 // User actions
-function handleUpgrade() {
-    showNotification('Premium upgrade feature coming soon! Integration with IntaSend payment gateway in progress.', 'info');
-    closeProfileMenu();
+async function handleUpgrade() {
+    try {
+        if (!currentUser) {
+            showNotification('Please log in to upgrade your account.', 'error');
+            return;
+        }
+        
+        // Simulate upgrade process
+        showNotification('Processing upgrade request...', 'info');
+        
+        // Update user account type
+        const result = await updateUserProfile({ accountType: 'Premium' });
+        
+        if (result.success) {
+            showNotification('🎉 Congratulations! Your account has been upgraded to Premium!', 'success');
+            closeProfileMenu();
+        } else {
+            showNotification('Upgrade failed. Please try again.', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Upgrade error:', error);
+        showNotification('Premium upgrade feature coming soon! Integration with IntaSend payment gateway in progress.', 'info');
+        closeProfileMenu();
+    }
 }
 
-function handleLogout() {
-    currentUser = null;
-    aiPromptCount = 0;
-    localStorage.removeItem('smartrecipes_user');
-    localStorage.removeItem('ai_prompt_count');
-    updateProfileDisplay();
-    closeProfileMenu();
-    showNotification('You have been logged out successfully.', 'success');
+async function handleLogout() {
+    try {
+        // If Supabase is available, sign out the user
+        if (supabaseClient) {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+        
+        // Clear local storage
+        currentUser = null;
+        aiPromptCount = 0;
+        localStorage.removeItem('smartrecipes_user');
+        localStorage.removeItem('ai_prompt_count');
+        
+        // Update UI
+        updateProfileDisplay();
+        closeProfileMenu();
+        showNotification('You have been logged out successfully.', 'success');
+        
+    } catch (error) {
+        console.error('Logout error:', error);
+        // Fallback logout
+        currentUser = null;
+        aiPromptCount = 0;
+        localStorage.removeItem('smartrecipes_user');
+        localStorage.removeItem('ai_prompt_count');
+        updateProfileDisplay();
+        closeProfileMenu();
+        showNotification('You have been logged out successfully.', 'success');
+    }
 }
 
 // Utility functions

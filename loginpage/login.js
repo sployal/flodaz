@@ -10,6 +10,40 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let isRedirecting = false;
 let authChecked = false;
 
+// Check if user is already logged in
+async function checkExistingAuth() {
+    try {
+        // Check if user is authenticated
+        const userEmail = localStorage.getItem('user_email');
+        const isAuthenticated = localStorage.getItem('user_authenticated');
+        
+        if (userEmail && isAuthenticated === 'true') {
+            // Check if the session is still valid with Supabase
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
+            if (session && !error) {
+                // Session is valid, redirect to main page
+                showMessage('Welcome back! Redirecting...', 'success');
+                setTimeout(() => {
+                    safeRedirect('../homepage/mainpage/main.html');
+                }, 1500);
+                return;
+            } else {
+                // Session expired, clear invalid data
+                localStorage.removeItem('user_email');
+                localStorage.removeItem('user_id');
+                localStorage.removeItem('user_authenticated');
+            }
+        }
+    } catch (error) {
+        console.error('Auth check error:', error);
+        // Clear any invalid data
+        localStorage.removeItem('user_email');
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('user_authenticated');
+    }
+}
+
 // DOM Elements
 const loginForm = document.getElementById('loginForm');
 const signupForm = document.getElementById('signupForm');
@@ -170,6 +204,17 @@ async function handleLogin(event) {
             // Login successful
             showMessage('Login successful! Redirecting...', 'success');
             
+            // Store only essential user info (email and ID)
+            const userInfo = {
+                id: data.user.id,
+                email: data.user.email
+            };
+            
+            // Store in localStorage for other pages to access
+            localStorage.setItem('user_email', userInfo.email);
+            localStorage.setItem('user_id', userInfo.id);
+            localStorage.setItem('user_authenticated', 'true');
+            
             // Store user info if remember me is checked
             const rememberMe = document.getElementById('rememberMe');
             if (rememberMe && rememberMe.checked) {
@@ -269,7 +314,7 @@ async function handleSignup(event) {
             throw error;
         }
         
-        // Create user profile in custom table (optional)
+        // Create user profile in custom table
         if (data.user) {
             try {
                 const { error: profileError } = await supabaseClient
@@ -280,7 +325,9 @@ async function handleSignup(event) {
                             full_name: fullName,
                             email: email,
                             account_type: accountType,
-                            created_at: new Date().toISOString()
+                            username: email.split('@')[0], // Generate username from email
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
                         }
                     ]);
                 
@@ -288,6 +335,12 @@ async function handleSignup(event) {
                     console.error('Profile creation error:', profileError);
                     // Don't fail the signup for profile errors
                 }
+                
+                // Store only essential user info
+                localStorage.setItem('user_email', email);
+                localStorage.setItem('user_id', data.user.id);
+                localStorage.setItem('user_authenticated', 'true');
+                
             } catch (profileError) {
                 console.error('Profile creation failed:', profileError);
             }
@@ -430,6 +483,9 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Login page loaded');
+    
+    // Check if user is already logged in
+    checkExistingAuth();
     
     // Small delay before checking auth to prevent rapid redirects
     setTimeout(() => {

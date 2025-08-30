@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donations - Frodaz Recipes</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="donate.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a class="brand" href="../mainpage/main.html">Frodaz Recipes</a>
+            <span class="tag">Donations</span>
+        </div>
+
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-center" id="mainNav">
+            <a href="#impact" class="nav-link">Our Impact</a>
+            <a href="#events" class="nav-link">Active Campaigns</a>
+            <a href="#stories" class="nav-link">Stories</a>
+            <a href="#transparency" class="nav-link">Transparency</a>
+            <a href="#ways-to-help" class="nav-link">Ways to Help</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+
+        <div class="nav-right">
+            <button class="profile-btn" id="profileBtn">
+                <div class="avatar" id="avatarCircle">U</div>
+            </button>
+            
+            <div class="profile-menu" id="profileMenu">
+                <div class="profile-header">
+                    <div class="avatar sm" id="avatarCircleMenu">U</div>
+                    <div>
+                        <div class="name" id="pmName">Guest User</div>
+                        <div class="username" id="pmUsername">@guest</div>
+                    </div>
+                </div>
+                
+                <div class="profile-row">
+                    <span>Email</span>
+                    <span id="pmEmail">guest@example.com</span>
+                </div>
+                
+                <div class="profile-row">
+                    <span>Account Type</span>
+                    <span id="pmAccountType" class="badge free">Free</span>
+                </div>
+                
+                <div class="profile-row">
+                    <span>Total Donated</span>
+                    <span id="pmTotalDonated">$0</span>
+                </div>
+                
+                <div class="profile-row">
+                    <span>Campaigns Supported</span>
+                    <span id="pmCampaignsSupported">0</span>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn ghost" onclick="window.location.href='../mainpage/main.html'">Back to Home</button>
+                    <button class="btn ghost" onclick="refreshUserProfile()">Refresh Profile</button>
+                    <button class="btn secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="donate-hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-quote">
+                <blockquote>
+                    "No one has ever become poor by giving. The best way to find yourself is to lose yourself in the service of others."
+                </blockquote>
+                <cite>— Mahatma Gandhi</cite>
+            </div>
+            <h1 class="hero-title">Nourishing Communities, One Recipe at a Time</h1>
+            <p class="hero-subtitle">Join us in fighting hunger and food insecurity across Africa. Your contribution helps us bring nutritious meals and cooking education to those who need it most.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number" data-target="125000">0</span>
+                    <span class="stat-label">Meals Provided</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="47">0</span>
+                    <span class="stat-label">Communities Reached</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" data-target="15000">0</span>
+                    <span class="stat-label">Families Helped</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <button class="btn primary large" onclick="scrollToSection('events')">Donate Now</button>
+                <button class="btn ghost large" onclick="scrollToSection('impact')">See Our Impact</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Urgent Need Section -->
+    <section class="urgent-section">
+        <div class="container">
+            <div class="urgent-banner">
+                <div class="urgent-icon">⚠️</div>
+                <div class="urgent-content">
+                    <h3>Crisis Alert: East Africa Food Emergency</h3>
+                    <p>Over 23 million people face acute food insecurity due to prolonged drought. Your donation can provide immediate relief through emergency meal programs and sustainable cooking solutions.</p>
+                    <button class="btn danger" onclick="scrollToSection('events')">Help Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact-section" id="impact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Power of Your Contribution</h2>
+                <p class="section-description">Every dollar donated creates a ripple effect of positive change in communities across Africa</p>
+            </div>
+
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-amount">$5</div>
+                    <div class="impact-icon">🍚</div>
+                    <h3>Feeds a Family</h3>
+                    <p>Provides nutritious ingredients for a complete meal for a family of 4, including rice, vegetables, and protein sources.</p>
+                </div>
+                
+                <div class="impact-card featured">
+                    <div class="impact-amount">$25</div>
+                    <div class="impact-icon">👩‍🍳</div>
+                    <h3>Cooking Workshop</h3>
+                    <p>Sponsors a cooking skills workshop for 10 community members, teaching nutrition and food preparation techniques.</p>
+                    <div class="popular-badge">Most Popular</div>
+                </div>
+                
+                <div class="impact-card">
+                    <div class="impact-amount">$50</div>
+                    <div class="impact-icon">🏫</div>
+                    <h3>School Meal Program</h3>
+                    <p>Funds a week of nutritious meals for an entire classroom of 30 children, supporting their education and health.</p>
+                </div>
+                
+                <div class="impact-card">
+                    <div class="impact-amount">$100</div>
+                    <div class="impact-icon">🌱</div>
+                    <h3>Sustainable Garden Kit</h3>
+                    <p>Provides seeds, tools, and training to establish a community garden that feeds families for months.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Active Campaigns -->
+    <section class="events-section" id="events">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Active Campaigns</h2>
+                <p class="section-description">Choose a cause that resonates with you and make an immediate impact</p>
+            </div>
+
+            <div class="events-grid" id="eventsGrid">
+                <!-- Events will be loaded here by JavaScript -->
+            </div>
+
+            <div class="donation-history-section">
+                <h3>Your Donation History</h3>
+                <ul id="donationHistory" class="donation-list">
+                    <!-- Donation history will be loaded here -->
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="stories-section" id="stories">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Lives Changed Through Food</h2>
+                <p class="section-description">Real stories from the communities we serve together</p>
+            </div>
+
+            <div class="stories-grid">
+                <div class="story-card">
+                    <div class="story-image">👩‍👧‍👦</div>
+                    <div class="story-content">
+                        <h3>Amina's Family Kitchen</h3>
+                        <p class="story-location">Kibera, Nairobi</p>
+                        <blockquote>"The cooking workshops didn't just teach me new recipes—they taught me how to make nutritious meals on a tight budget. Now I can feed my three children properly every day, and I even started a small catering business from home."</blockquote>
+                        <div class="story-impact">Impact: Started micro-business, feeding 3 children daily</div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">🏫</div>
+                    <div class="story-content">
+                        <h3>Makueni Primary School</h3>
+                        <p class="story-location">Makueni County, Kenya</p>
+                        <blockquote>"Since the meal program started, our attendance increased by 40%. Children are more alert in class, and their academic performance has improved dramatically. No child learns well on an empty stomach."</blockquote>
+                        <div class="story-impact">Impact: 200 students receiving daily meals, 40% attendance increase</div>
+                    </div>
+                </div>
+
+                <div class="story-card">
+                    <div class="story-image">🌾</div>
+                    <div class="story-content">
+                        <h3>Turkana Community Garden</h3>
+                        <p class="story-location">Turkana County, Kenya</p>
+                        <blockquote>"The drought took everything from us, but the community garden project gave us hope. We learned drought-resistant farming and now we grow our own vegetables. Our children don't go to bed hungry anymore."</blockquote>
+                        <div class="story-impact">Impact: 50 families now growing their own food</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transparency Section -->
+    <section class="transparency-section" id="transparency">
+        <div class="container">
+            <div class="transparency-content">
+                <div class="transparency-text">
+                    <h2>Complete Transparency</h2>
+                    <p>We believe in full accountability. Every dollar is tracked and every impact is measured.</p>
+                    
+                    <div class="transparency-stats">
+                        <div class="transparency-item">
+                            <div class="transparency-percentage">85%</div>
+                            <p>Directly to programs</p>
+                        </div>
+                        <div class="transparency-item">
+                            <div class="transparency-percentage">10%</div>
+                            <p>Operations & platform</p>
+                        </div>
+                        <div class="transparency-item">
+                            <div class="transparency-percentage">5%</div>
+                            <p>Administration</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="transparency-visual">
+                    <div class="transparency-chart">
+                        <div class="chart-segment programs" style="--percentage: 85%"></div>
+                        <div class="chart-segment operations" style="--percentage: 10%"></div>
+                        <div class="chart-segment admin" style="--percentage: 5%"></div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color programs"></span>
+                            <span>Direct Program Funding</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color operations"></span>
+                            <span>Platform Operations</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color admin"></span>
+                            <span>Administrative Costs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ways to Help -->
+    <section class="ways-section" id="ways-to-help">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Multiple Ways to Make a Difference</h2>
+                <p class="section-description">Choose how you'd like to contribute to our mission</p>
+            </div>
+
+            <div class="ways-grid">
+                <div class="way-card">
+                    <div class="way-icon">💰</div>
+                    <h3>One-Time Donation</h3>
+                    <p>Make an immediate impact with a single contribution to any of our active campaigns.</p>
+                    <button class="btn primary" onclick="scrollToSection('events')">Donate Now</button>
+                </div>
+
+                <div class="way-card featured">
+                    <div class="way-icon">🔄</div>
+                    <h3>Monthly Partnership</h3>
+                    <p>Join our sustaining donors and provide consistent support that helps us plan long-term programs.</p>
+                    <button class="btn primary" onclick="setupMonthlyDonation()">Become a Partner</button>
+                    <div class="featured-badge">Biggest Impact</div>
+                </div>
+
+                <div class="way-card">
+                    <div class="way-icon">🍳</div>
+                    <h3>Recipe Contributions</h3>
+                    <p>Share your family recipes and we'll donate $2 to our meal programs for each approved recipe.</p>
+                    <button class="btn secondary" onclick="contributeRecipe()">Share Recipes</button>
+                </div>
+
+                <div class="way-card">
+                    <div class="way-icon">🤝</div>
+                    <h3>Volunteer Program</h3>
+                    <p>Join our community volunteers for local events, cooking workshops, and food distribution.</p>
+                    <button class="btn secondary" onclick="volunteerSignup()">Get Involved</button>
+                </div>
+
+                <div class="way-card">
+                    <div class="way-icon">🏢</div>
+                    <h3>Corporate Sponsorship</h3>
+                    <p>Partner with us as a business to sponsor large-scale programs and employee volunteer opportunities.</p>
+                    <button class="btn secondary" onclick="corporatePartnership()">Learn More</button>
+                </div>
+
+                <div class="way-card">
+                    <div class="way-icon">📢</div>
+                    <h3>Spread Awareness</h3>
+                    <p>Share our mission on social media and help us reach more people who want to make a difference.</p>
+                    <button class="btn ghost" onclick="shareAwareness()">Share Our Mission</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Questions About Donations?</h2>
+                <p class="section-description">We're here to help and answer any questions about our programs</p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>General Inquiries</h3>
+                    <p>Questions about our programs, impact, or how to get involved</p>
+                    <a href="mailto:donations@smartrecipes.com" class="contact-link">donations@smartrecipes.com</a>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">🏢</div>
+                    <h3>Corporate Partnerships</h3>
+                    <p>Large-scale sponsorships and employee engagement programs</p>
+                    <a href="mailto:corporate@smartrecipes.com" class="contact-link">corporate@smartrecipes.com</a>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">🤝</div>
+                    <h3>Volunteer Coordination</h3>
+                    <p>Local volunteer opportunities and community event organization</p>
+                    <a href="mailto:volunteers@smartrecipes.com" class="contact-link">volunteers@smartrecipes.com</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Donation Modal -->
+    <div id="donationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Make a Donation</h3>
+                <button class="modal-close" onclick="closeDonationModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-amounts">
+                    <button class="amount-btn" data-amount="10">$10</button>
+                    <button class="amount-btn" data-amount="25">$25</button>
+                    <button class="amount-btn" data-amount="50">$50</button>
+                    <button class="amount-btn" data-amount="100">$100</button>
+                </div>
+                <div class="custom-amount">
+                    <label for="customAmount">Custom Amount (USD)</label>
+                    <input type="number" id="customAmount" placeholder="Enter amount" min="1">
+                </div>
+                <div class="donor-info">
+                    <div class="form-row">
+                        <input type="text" id="donorName" placeholder="Full Name" required>
+                        <input type="email" id="donorEmail" placeholder="Email Address" required>
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="anonymous">
+                        <span class="checkmark"></span>
+                        Make this donation anonymous
+                    </label>
+                </div>
+                <button class="btn primary large" id="processDonation">Complete Donation</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay"></div>
+    <script src="main.js"></script>
+    <script src="donate.js"></script>
+</body>
+</html>

@@ -19,13 +19,12 @@
         </button>
 
         <nav class="nav-center" id="mainNav">
-            <a href="index.html" class="nav-link active">Home</a>
-            <a href="ai.html" class="nav-link">AI</a>
-            <a href="recipes.html" class="nav-link">Recipes</a>
+            <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
             <a href="community.html" class="nav-link">Community</a>
-            <a href="donations.html" class="nav-link">Donations</a>
+            <a href="../donations/donate.html" class="nav-link">Donations</a>
             <a href="../aboutpage/about.html" class="nav-link">About</a>
             <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
+            <a href="../premium/upgrade.html" class="nav-link">Premium</a>
         </nav>
 
         <div class="nav-right">
@@ -46,14 +45,12 @@
                 <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
                 <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
                 <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
-                <div class="profile-row optional"><span>Contact</span><span id="pmContact">—</span></div>
-                <div class="profile-row optional"><span>Address</span><span id="pmAddress">—</span></div>
-                <div class="profile-row optional"><span>Gender</span><span id="pmGender">—</span></div>
+
 
                 <div class="profile-actions">
-                    <button class="btn primary" id="upgradeBtn">Upgrade (IntaSend)</button>
-                    <a class="btn ghost" href="restaurants.html">Advertise Restaurant</a>
-                    <button class="btn danger" id="logoutBtn">Logout</button>
+                    <button class="btn primary" id="upgradeBtn">Upgrade (Premium)</button>
+                    <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
+                    <a class="btn danger" id="loginBtn" href="../../loginpage/login.html">Logout</a>
                 </div>
             </div>
         </div>
