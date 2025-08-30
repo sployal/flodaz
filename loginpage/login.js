@@ -135,7 +135,7 @@ async function handleLogin(event) {
         if (session && session.user) {
             // User is already logged in, just redirect
             showMessage('Already authenticated! Redirecting...', 'success');
-            safeRedirect('../index.html');
+            safeRedirect('../homepage/mainpage/main.html');
             return;
         }
     } catch (error) {
@@ -181,7 +181,7 @@ async function handleLogin(event) {
             }
             
             // Redirect to main page after short delay
-            safeRedirect('../index.html');
+            safeRedirect('../homepage/mainpage/main.html');
         }
         
     } catch (error) {
@@ -364,7 +364,7 @@ async function handleGoogleLogin() {
         const { error } = await supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/index.html`
+                redirectTo: `${window.location.origin}/homepage/mainpage/main.html`
             }
         });
         

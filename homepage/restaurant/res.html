@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Partners - SmartRecipes</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="res.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a class="brand" href="../mainpage/main.html">Frodaz Recipes</a>
+            <span class="tag">Partners</span>
+        </div>
+
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-center" id="mainNav">
+            <a href="#featured" class="nav-link">Our Partners</a>
+            <a href="#origins" class="nav-link">Recipe Origins</a>
+            <a href="#success" class="nav-link">Success Stories</a>
+            <a href="#benefits" class="nav-link">Benefits</a>
+            <a href="#advertise" class="nav-link">Join Us</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="restaurant-hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Culinary Excellence Through Partnership</h1>
+            <p class="hero-subtitle">Discover authentic flavors from our trusted restaurant partners across Africa and beyond. Where traditional recipes meet modern innovation.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">47+</span>
+                    <span class="stat-label">Partner Restaurants</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">12</span>
+                    <span class="stat-label">Countries</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Signature Recipes</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Restaurants -->
+    <section class="featured-section" id="featured">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Culinary Partners</h2>
+                <p class="section-description">Each restaurant brings unique flavors and time-honored recipes that have been perfected over generations</p>
+            </div>
+
+            <div class="restaurants-grid" id="restaurantsGrid">
+                <!-- Restaurants will be loaded here by JavaScript -->
+            </div>
+
+            <div class="center">
+                <button class="btn secondary" id="loadMoreRestaurants">Discover More Partners</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recipe Origins -->
+    <section class="origins-section" id="origins">
+        <div class="container">
+            <h2 class="section-title">Recipe Heritage</h2>
+            <p class="section-description">Trace the authentic origins of our most beloved recipes</p>
+            
+            <div class="origins-grid">
+                <div class="origin-card" data-region="east-africa">
+                    <div class="origin-image">🌍</div>
+                    <h3>East African Delights</h3>
+                    <p>Ugali, Nyama Choma, and aromatic stews from Kenya, Uganda, and Tanzania</p>
+                    <div class="restaurant-count">12 Partner Restaurants</div>
+                </div>
+                
+                <div class="origin-card" data-region="west-africa">
+                    <div class="origin-image">🛕</div>
+                    <h3>West African Flavors</h3>
+                    <p>Jollof rice, Fufu, and spicy pepper soups from Nigeria, Ghana, and Senegal</p>
+                    <div class="restaurant-count">8 Partner Restaurants</div>
+                </div>
+                
+                <div class="origin-card" data-region="north-africa">
+                    <div class="origin-image">🥘</div>
+                    <h3>North African Cuisine</h3>
+                    <p>Tagines, Couscous, and Mediterranean influences from Morocco, Egypt, and Tunisia</p>
+                    <div class="restaurant-count">15 Partner Restaurants</div>
+                </div>
+                
+                <div class="origin-card" data-region="mediterranean">
+                    <div class="origin-image">🫒</div>
+                    <h3>Mediterranean Fusion</h3>
+                    <p>Fresh herbs, olive oils, and coastal specialties with African twists</p>
+                    <div class="restaurant-count">7 Partner Restaurants</div>
+                </div>
+                
+                <div class="origin-card" data-region="modern-african">
+                    <div class="origin-image">✨</div>
+                    <h3>Modern African</h3>
+                    <p>Contemporary interpretations of traditional dishes by innovative chefs</p>
+                    <div class="restaurant-count">5 Partner Restaurants</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="success-section" id="success">
+        <div class="container">
+            <h2 class="section-title">Partnership Success Stories</h2>
+            
+            <div class="success-grid">
+                <div class="success-card">
+                    <div class="success-image">📈</div>
+                    <h3>Mama Fatima's Kitchen</h3>
+                    <p class="location">Nairobi, Kenya</p>
+                    <p class="story">"Since joining SmartRecipes, our traditional Somali dishes have reached homes across 15 countries. The platform helped preserve our family recipes while growing our business by 240%."</p>
+                    <div class="impact">
+                        <span>Impact: 15K+ recipe downloads</span>
+                    </div>
+                </div>
+                
+                <div class="success-card">
+                    <div class="success-image">🌟</div>
+                    <h3>Ubuntu Bistro</h3>
+                    <p class="location">Cape Town, South Africa</p>
+                    <p class="story">"Our fusion approach to South African cuisine found its perfect audience through SmartRecipes. We've expanded from one location to five, all while staying true to our roots."</p>
+                    <div class="impact">
+                        <span>Impact: 8K+ recipe shares</span>
+                    </div>
+                </div>
+                
+                <div class="success-card">
+                    <div class="success-image">🎯</div>
+                    <h3>Nile Valley Delights</h3>
+                    <p class="location">Cairo, Egypt</p>
+                    <p class="story">"The AI-powered recipe suggestions helped us adapt our traditional Egyptian dishes for international palates while maintaining authentic flavors."</p>
+                    <div class="impact">
+                        <span>Impact: 12K+ global reach</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partnership Benefits -->
+    <section class="benefits-section" id="benefits">
+        <div class="container">
+            <div class="benefits-content">
+                <div class="benefits-text">
+                    <h2>Why Partner With SmartRecipes?</h2>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🌍</div>
+                            <div class="benefit-content">
+                                <h3>Global Reach</h3>
+                                <p>Connect with food enthusiasts across 25+ countries and expand your culinary influence beyond geographical boundaries.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🤖</div>
+                            <div class="benefit-content">
+                                <h3>AI-Powered Discovery</h3>
+                                <p>Our intelligent recommendation system ensures your recipes reach the right audience at the perfect moment.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">📊</div>
+                            <div class="benefit-content">
+                                <h3>Performance Analytics</h3>
+                                <p>Track recipe performance, understand your audience, and optimize your content with detailed insights.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🤝</div>
+                            <div class="benefit-content">
+                                <h3>Community Building</h3>
+                                <p>Foster connections with home cooks, food bloggers, and fellow restaurateurs in our vibrant community.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">🎨</div>
+                            <div class="benefit-content">
+                                <h3>Brand Storytelling</h3>
+                                <p>Share your culinary journey, restaurant heritage, and the stories behind your signature dishes.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefit-item">
+                            <div class="benefit-icon">💡</div>
+                            <div class="benefit-content">
+                                <h3>Innovation Support</h3>
+                                <p>Access trend insights and collaborate on recipe development to stay ahead of culinary movements.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="benefits-visual">
+                    <div class="floating-card card-1">
+                        <h4>Recipe Views</h4>
+                        <div class="metric">+340%</div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <h4>Global Reach</h4>
+                        <div class="metric">25 Countries</div>
+                    </div>
+                    <div class="floating-card card-3">
+                        <h4>Engagement</h4>
+                        <div class="metric">89% Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advertise Section -->
+    <section class="advertise-section" id="advertise">
+        <div class="container">
+            <div class="advertise-content">
+                <div class="advertise-text">
+                    <h2>Ready to Share Your Culinary Legacy?</h2>
+                    <p>Join our growing family of restaurant partners and bring your authentic flavors to kitchens worldwide. Whether you're a family-run establishment with generations of recipes or an innovative chef pushing culinary boundaries, we have the platform to amplify your voice.</p>
+                    
+                    <div class="partnership-tiers">
+                        <div class="tier-card basic">
+                            <h3>Basic Partnership</h3>
+                            <div class="tier-price">Free</div>
+                            <ul>
+                                <li>Up to 5 recipe listings</li>
+                                <li>Basic analytics</li>
+                                <li>Community access</li>
+                                <li>Standard support</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tier-card premium">
+                            <h3>Premium Partnership</h3>
+                            <div class="tier-price">$49/month</div>
+                            <ul>
+                                <li>Unlimited recipe listings</li>
+                                <li>Advanced analytics</li>
+                                <li>Priority placement</li>
+                                <li>Featured restaurant profile</li>
+                                <li>Direct customer messaging</li>
+                                <li>Video recipe support</li>
+                            </ul>
+                            <div class="tier-badge">Most Popular</div>
+                        </div>
+                        
+                        <div class="tier-card enterprise">
+                            <h3>Enterprise Partnership</h3>
+                            <div class="tier-price">Custom</div>
+                            <ul>
+                                <li>Multi-location support</li>
+                                <li>White-label solutions</li>
+                                <li>API integration</li>
+                                <li>Dedicated account manager</li>
+                                <li>Custom branding</li>
+                                <li>Marketing campaigns</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="advertise-form">
+                    <form id="partnershipForm" class="partnership-form">
+                        <h3>Start Your Partnership Journey</h3>
+                        
+                        <div class="form-group">
+                            <label for="restaurantName">Restaurant Name *</label>
+                            <input type="text" id="restaurantName" name="restaurantName" required placeholder="Your restaurant's name">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contactName">Contact Person *</label>
+                                <input type="text" id="contactName" name="contactName" required placeholder="Your name">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email Address *</label>
+                                <input type="email" id="contactEmail" name="contactEmail" required placeholder="your@email.com">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="+254 700 000 000">
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location *</label>
+                                <input type="text" id="location" name="location" required placeholder="City, Country">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cuisine">Cuisine Type *</label>
+                            <select id="cuisine" name="cuisine" required>
+                                <option value="">Select your cuisine type</option>
+                                <option value="east-african">East African</option>
+                                <option value="west-african">West African</option>
+                                <option value="north-african">North African</option>
+                                <option value="mediterranean">Mediterranean</option>
+                                <option value="modern-african">Modern African</option>
+                                <option value="fusion">Fusion</option>
+                                <option value="international">International</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="partnership">Partnership Level *</label>
+                            <select id="partnership" name="partnership" required>
+                                <option value="">Choose partnership level</option>
+                                <option value="basic">Basic Partnership (Free)</option>
+                                <option value="premium">Premium Partnership ($49/month)</option>
+                                <option value="enterprise">Enterprise Partnership (Custom)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Tell us about your restaurant *</label>
+                            <textarea id="description" name="description" required placeholder="Share your story, signature dishes, and what makes your restaurant special..." rows="4"></textarea>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="terms" name="terms" required>
+                                <span class="checkmark"></span>
+                                I agree to the Terms of Service and Partnership Agreement
+                            </label>
+                        </div>
+                        
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="newsletter" name="newsletter">
+                                <span class="checkmark"></span>
+                                Subscribe to partnership updates and culinary insights
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn primary large">Submit Partnership Application</button>
+                        
+                        <p class="form-note">We'll review your application within 2-3 business days and get back to you with next steps.</p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Support -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3>Partnership Support</h3>
+                    <p>Get help with your application or existing partnership</p>
+                    <a href="mailto:partners@smartrecipes.com" class="contact-link">partners@smartrecipes.com</a>
+                </div>
+                
+                <div class="contact-card">
+                    <h3>Technical Support</h3>
+                    <p>Need help with recipe uploads or platform features?</p>
+                    <a href="mailto:support@smartrecipes.com" class="contact-link">support@smartrecipes.com</a>
+                </div>
+                
+                <div class="contact-card">
+                    <h3>Media Inquiries</h3>
+                    <p>Press, interviews, and collaboration opportunities</p>
+                    <a href="mailto:media@smartrecipes.com" class="contact-link">media@smartrecipes.com</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="overlay"></div>
+    <script src="main.js"></script>
+    <script src="res.js"></script>
+</body>
+</html>
