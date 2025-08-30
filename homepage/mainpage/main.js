@@ -32,7 +32,9 @@ const featuredRecipes = [
         emoji: "🍝",
         time: "35 min",
         difficulty: "Easy",
-        link: "recipies/patsa.html"
+        link: "../../recipies/patsa.html"
+
+
     },
     {
         id: 2,
@@ -120,6 +122,8 @@ const aiOutput = document.getElementById('aiOutput');
 const homeGallery = document.getElementById('homeGallery');
 const loadMoreBtn = document.getElementById('loadMoreBtn');
 const overlay = document.getElementById('overlay');
+const recipeSearchInput = document.getElementById('recipeSearchInput');
+const recipeSearchBtn = document.getElementById('recipeSearchBtn');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', async function() {
@@ -135,6 +139,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     renderRecipeGallery();
     setupEventListeners();
     setupAnimations();
+
+    // Search bar event listeners
+    if (recipeSearchBtn && recipeSearchInput) {
+        recipeSearchBtn.addEventListener('click', handleRecipeSearch);
+        recipeSearchInput.addEventListener('input', handleRecipeSearch);
+        recipeSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleRecipeSearch();
+        });
+    }
 });
 
 // User management
@@ -372,6 +385,14 @@ function updateProfileDisplay() {
 
 // Event listeners
 function setupEventListeners() {
+    // ...existing code...
+    // Search bar event listeners
+    if (recipeSearchBtn && recipeSearchInput) {
+        recipeSearchBtn.addEventListener('click', handleRecipeSearch);
+        recipeSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleRecipeSearch();
+        });
+    }
     // Mobile navigation
     hamburgerBtn?.addEventListener('click', toggleMobileNav);
 
@@ -385,6 +406,11 @@ function setupEventListeners() {
     document.addEventListener('click', (e) => {
         if (!profileMenu?.contains(e.target) && !profileBtn?.contains(e.target)) {
             closeProfileMenu();
+        }
+        
+        // Close mobile navigation when clicking outside
+        if (!mainNav?.contains(e.target) && !hamburgerBtn?.contains(e.target)) {
+            closeMobileNav();
         }
     });
 
@@ -410,6 +436,14 @@ function setupEventListeners() {
         });
     });
 
+    // Close mobile navigation when clicking on nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileNav();
+        });
+    });
+
     // Load more recipes
     loadMoreBtn?.addEventListener('click', loadMoreRecipes);
 
@@ -431,6 +465,7 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             closeAuthModal();
             closeProfileMenu();
+            closeMobileNav();
         }
     });
 }
@@ -439,6 +474,11 @@ function setupEventListeners() {
 function toggleMobileNav() {
     mainNav?.classList.toggle('active');
     hamburgerBtn?.classList.toggle('active');
+}
+
+function closeMobileNav() {
+    mainNav?.classList.remove('active');
+    hamburgerBtn?.classList.remove('active');
 }
 
 function toggleProfileMenu() {
@@ -754,17 +794,29 @@ function generateMockAIResponse(ingredients) {
 }
 
 // Recipe gallery functions
-function renderRecipeGallery() {
+function renderRecipeGallery(recipes) {
     if (!homeGallery) return;
-
-    const recipesToShow = getFilteredRecipes();
+    const recipesToShow = recipes || getFilteredRecipes();
     homeGallery.innerHTML = recipesToShow.map(recipe => createRecipeCard(recipe)).join('');
-    
     // Show/hide load more button
     const hasMoreRecipes = featuredRecipes.length > recipesToShow.length;
     if (loadMoreBtn) {
         loadMoreBtn.style.display = hasMoreRecipes ? 'block' : 'none';
     }
+}
+
+function handleRecipeSearch() {
+    const query = recipeSearchInput.value.trim().toLowerCase();
+    if (!query) {
+        renderRecipeGallery();
+        return;
+    }
+    // Filter recipes by name
+    let filtered = currentFilter === 'all'
+        ? [...featuredRecipes]
+        : featuredRecipes.filter(recipe => recipe.category === currentFilter);
+    filtered = filtered.filter(recipe => recipe.title.toLowerCase().includes(query));
+    renderRecipeGallery(filtered);
 }
 
 function getFilteredRecipes() {

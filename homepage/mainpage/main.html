@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frodaz Recipes - Recipe Recommender</title>
+    <title>Flodaz Recipes - Recipe Recommender</title>
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
     <!-- Navbar -->
     <header class="navbar">
         <div class="nav-left">
-            <a class="brand" >Frodaz Recipes</a>
+            <a  href="../../index.html" class="brand" >Flodaz Recipes</a>
             <span class="tag">SDG • Zero Hunger</span>
         </div>
 
-        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
-            <span></span><span></span><span></span>
-        </button>
-
         <nav class="nav-center" id="mainNav">
             <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
-            <a href="community.html" class="nav-link">Community</a>
+            <a href="../community/community.html" class="nav-link">Community</a>
             <a href="../donations/donate.html" class="nav-link">Donations</a>
             <a href="../aboutpage/about.html" class="nav-link">About</a>
             <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
@@ -28,9 +24,15 @@
         </nav>
 
         <div class="nav-right">
-            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
-                <div class="avatar" id="avatarCircle">?</div>
-            </button>
+            <div class="nav-controls">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                    <div class="avatar" id="avatarCircle">?</div>
+                </button>
+
+                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
 
             <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
                 <div class="profile-header">
@@ -117,6 +119,11 @@
     <main class="container">
         <h2 class="section-title">Featured Recipes</h2>
         <p class="section-subtitle">Discover delicious recipes from our community - fresh picks updated daily</p>
+
+        <div class="recipe-search-bar" style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+            <input type="text" id="recipeSearchInput" placeholder="Search recipes by name..." style="flex:1; padding: 0.7rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem;" />
+            <button class="btn" id="recipeSearchBtn" style="padding: 0.7rem 1.5rem;">Search</button>
+        </div>
 
         <div class="recipe-filters">
             <button class="filter-btn active" data-category="all">All</button>

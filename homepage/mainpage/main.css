@@ -104,6 +104,12 @@ body {
     position: relative;
 }
 
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .profile-btn {
     background: none;
     border: none;

@@ -227,6 +227,7 @@
     cursor: pointer;
     padding: 0.5rem;
     gap: 4px;
+    margin-left: auto;
 }
 
 .hamburger span {
@@ -1459,10 +1460,17 @@ body {
     
     .hamburger {
         display: flex;
+        order: 1;
+        margin-right: 0.5rem;
     }
     
+    /* Keep navbar fixed and visible on all screen sizes */
     .navbar {
-        position: relative;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
     }
 }
 
@@ -1473,10 +1481,64 @@ body {
     
     .navbar {
         padding: 0.8rem 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        /* Keep navbar fixed and visible on all screen sizes */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+    }
+    
+    .nav-left {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .nav-center {
+        order: 3;
+        width: 100%;
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        gap: 0;
+    }
+    
+    .nav-center.active {
+        display: flex;
+    }
+    
+    .nav-link {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
     }
     
     .nav-left .tag {
         display: none;
+    }
+    
+    .profile-menu {
+        right: -50px;
+        min-width: 250px;
     }
     
     .hero-title {
@@ -1542,6 +1604,15 @@ body {
 @media (max-width: 480px) {
     .container {
         padding: 0 0.8rem;
+    }
+    
+    .navbar {
+        /* Keep navbar fixed and visible on all screen sizes */
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
     }
     
     .hero-title {
