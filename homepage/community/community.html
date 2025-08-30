@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - Frodaz Recipes</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="community.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <a class="brand" href="../mainpage/main.html">Frodaz Recipes</a>
+                <span class="tag">Community</span>
+            </div>
+
+            <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="nav-center" id="mainNav">
+                <a href="#feed" class="nav-link active">Feed</a>
+                <a href="#trending" class="nav-link">Trending</a>
+                <a href="#questions" class="nav-link">Q&A</a>
+                <a href="#challenges" class="nav-link">Challenges</a>
+                <a href="#groups" class="nav-link">Groups</a>
+            </nav>
+
+            <div class="nav-right">
+                <button class="btn ghost" id="createPostBtn">
+                    <span>📝</span> Create Post
+                </button>
+                <button class="profile-btn" id="profileBtn">
+                    <div class="avatar" id="avatarCircle">JD</div>
+                </button>
+                
+                <div class="profile-menu" id="profileMenu">
+                    <div class="profile-header">
+                        <div class="avatar sm" id="avatarCircleMenu">JD</div>
+                        <div>
+                            <div class="name" id="pmName">John Doe</div>
+                            <div class="username" id="pmUsername">@johndoe</div>
+                        </div>
+                    </div>
+                    <div class="profile-row">
+                        <span>Email</span>
+                        <span id="pmEmail">john@example.com</span>
+                    </div>
+                    <div class="profile-row">
+                        <span>Birth Date</span>
+                        <span id="pmDob">—</span>
+                    </div>
+                    <div class="profile-row">
+                        <span>Account Type</span>
+                        <span class="badge free" id="pmAccountType">Free</span>
+                    </div>
+                    <div class="profile-row">
+                        <span>AI Prompts</span>
+                        <span id="pmPrompts">0 / 3</span>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn secondary">Edit Profile</button>
+                        <button class="btn danger">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="community-main">
+        <div class="container">
+            <div class="community-layout">
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button class="action-btn recipe-btn" onclick="showCreatePost('recipe')">
+                                <span>🍳</span> Share Recipe
+                            </button>
+                            <button class="action-btn question-btn" onclick="showCreatePost('question')">
+                                <span>❓</span> Ask Question
+                            </button>
+                            <button class="action-btn photo-btn" onclick="showCreatePost('photo')">
+                                <span>📸</span> Share Photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Trending Topics</h3>
+                        <div class="trending-topics">
+                            <div class="topic-tag">#AfricanCuisine</div>
+                            <div class="topic-tag">#VeganRecipes</div>
+                            <div class="topic-tag">#SpiceBlends</div>
+                            <div class="topic-tag">#StreetFood</div>
+                            <div class="topic-tag">#FoodPhotography</div>
+                            <div class="topic-tag">#CookingTips</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Active Groups</h3>
+                        <div class="groups-list">
+                            <div class="group-item">
+                                <div class="group-avatar">🌶️</div>
+                                <div class="group-info">
+                                    <div class="group-name">Spice Masters</div>
+                                    <div class="group-members">1.2k members</div>
+                                </div>
+                            </div>
+                            <div class="group-item">
+                                <div class="group-avatar">🥗</div>
+                                <div class="group-info">
+                                    <div class="group-name">Healthy Eating</div>
+                                    <div class="group-members">890 members</div>
+                                </div>
+                            </div>
+                            <div class="group-item">
+                                <div class="group-avatar">🍖</div>
+                                <div class="group-info">
+                                    <div class="group-name">Grill Masters</div>
+                                    <div class="group-members">756 members</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Feed -->
+                <div class="main-feed">
+                    <!-- Create Post Modal Trigger -->
+                    <div class="create-post-prompt" id="createPostPrompt">
+                        <div class="avatar">JD</div>
+                        <input type="text" placeholder="Share a recipe, ask a question, or start a discussion..." readonly onclick="showCreateModal()">
+                        <button class="media-btn" onclick="showCreateModal()">📸</button>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="feed-filters">
+                        <button class="filter-btn active" data-filter="all">All Posts</button>
+                        <button class="filter-btn" data-filter="recipes">Recipes</button>
+                        <button class="filter-btn" data-filter="questions">Questions</button>
+                        <button class="filter-btn" data-filter="photos">Photos</button>
+                        <button class="filter-btn" data-filter="discussions">Discussions</button>
+                    </div>
+
+                    <!-- Posts Feed -->
+                    <div class="posts-feed" id="postsFeed">
+                        <!-- Posts will be loaded here by JavaScript -->
+                    </div>
+
+                    <div class="load-more-container">
+                        <button class="btn secondary" id="loadMorePosts">Load More Posts</button>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <aside class="right-sidebar">
+                    <div class="sidebar-section">
+                        <h3>Recipe of the Day</h3>
+                        <div class="featured-recipe">
+                            <div class="recipe-image">🍛</div>
+                            <h4>Jollof Rice Supreme</h4>
+                            <p>The perfect balance of spices and rice from Chef Amina</p>
+                            <button class="btn ghost small">View Recipe</button>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Top Contributors</h3>
+                        <div class="contributors-list">
+                            <div class="contributor-item">
+                                <div class="contributor-avatar">👨‍🍳</div>
+                                <div class="contributor-info">
+                                    <div class="contributor-name">Chef Marcus</div>
+                                    <div class="contributor-stats">127 recipes</div>
+                                </div>
+                                <button class="follow-btn">Follow</button>
+                            </div>
+                            <div class="contributor-item">
+                                <div class="contributor-avatar">👩‍🍳</div>
+                                <div class="contributor-info">
+                                    <div class="contributor-name">Amina K.</div>
+                                    <div class="contributor-stats">89 recipes</div>
+                                </div>
+                                <button class="follow-btn">Follow</button>
+                            </div>
+                            <div class="contributor-item">
+                                <div class="contributor-avatar">🧑‍🍳</div>
+                                <div class="contributor-info">
+                                    <div class="contributor-name">Food Explorer</div>
+                                    <div class="contributor-stats">156 posts</div>
+                                </div>
+                                <button class="follow-btn following">Following</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>Weekly Challenge</h3>
+                        <div class="challenge-card">
+                            <div class="challenge-badge">🏆 This Week</div>
+                            <h4>One-Pot Wonders</h4>
+                            <p>Create amazing meals using just one pot or pan!</p>
+                            <div class="challenge-stats">
+                                <span>47 participants</span>
+                                <span>3 days left</span>
+                            </div>
+                            <button class="btn primary small">Join Challenge</button>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Post Modal -->
+    <div class="modal-overlay" id="createPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Post</h3>
+                <button class="close-btn" onclick="hideCreateModal()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="createPostForm">
+                    <div class="post-type-selector">
+                        <button type="button" class="post-type-btn active" data-type="discussion">
+                            <span>💬</span> Discussion
+                        </button>
+                        <button type="button" class="post-type-btn" data-type="recipe">
+                            <span>🍳</span> Recipe
+                        </button>
+                        <button type="button" class="post-type-btn" data-type="question">
+                            <span>❓</span> Question
+                        </button>
+                        <button type="button" class="post-type-btn" data-type="photo">
+                            <span>📸</span> Photo
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" id="postTitle" name="title" placeholder="What's on your mind?" required>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea id="postContent" name="content" placeholder="Share your thoughts, recipe, or question..." rows="4"></textarea>
+                    </div>
+
+                    <!-- Recipe-specific fields -->
+                    <div class="recipe-fields" id="recipeFields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prepTime">Prep Time</label>
+                                <input type="text" id="prepTime" name="prepTime" placeholder="e.g. 30 minutes">
+                            </div>
+                            <div class="form-group">
+                                <label for="cookTime">Cook Time</label>
+                                <input type="text" id="cookTime" name="cookTime" placeholder="e.g. 45 minutes">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="servings">Servings</label>
+                                <input type="number" id="servings" name="servings" placeholder="4">
+                            </div>
+                            <div class="form-group">
+                                <label for="difficulty">Difficulty</label>
+                                <select id="difficulty" name="difficulty">
+                                    <option value="">Select...</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ingredients">Ingredients (one per line)</label>
+                            <textarea id="ingredients" name="ingredients" placeholder="2 cups rice&#10;1 kg chicken&#10;2 onions, diced" rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="instructions">Instructions</label>
+                            <textarea id="instructions" name="instructions" placeholder="Step-by-step cooking instructions..." rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Photo upload -->
+                    <div class="media-upload" id="mediaUpload">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-content">
+                                <span class="upload-icon">📷</span>
+                                <p>Click to upload photos or drag and drop</p>
+                                <input type="file" id="photoInput" accept="image/*" multiple>
+                            </div>
+                        </div>
+                        <div class="uploaded-images" id="uploadedImages"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Tags (comma separated)</label>
+                        <input type="text" id="tags" name="tags" placeholder="african cuisine, spicy, vegetarian">
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn secondary" onclick="hideCreateModal()">Cancel</button>
+                        <button type="submit" class="btn primary">Publish Post</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script src="community.js"></script>
+</body>
+</html>
