@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flodaz Foods - Community Recipe Collection</title>
+    <title>Fordaz Recipes - Community Recipe Collection</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <nav class="nav container">
-            <div class="logo">🍳 Flodaz Foods</div>
+            <div class="logo">🍳 Fordaz Recipes</div>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#recipes">Recipes</a></li>
@@ -25,9 +25,9 @@
     <section class="hero" id="home">
         <div class="container">
             <div class="hero-content">
-                <h1>Welcome to Flodaz Foods</h1>
+                <h1>Welcome to Fordaz Recipes</h1>
                 <p>The ultimate community-driven recipe collection where food lovers, hotels, and catering services come together to share culinary masterpieces</p>
-                <a href="#signup" class="cta-button" onclick="showSignupModal()">Join Our Community</a>
+                <a href="loginpage/login.html" class="cta-button">Join Our Community</a>
             </div>
         </div>
     </section>
@@ -61,46 +61,86 @@
         <div class="container">
             <h2 class="section-title">Featured Community Recipes</h2>
             <div class="gallery-grid">
-                <div class="recipe-card fade-in-up">
+                <!-- Mediterranean Pasta - Link to actual recipe page -->
+                <a href="recipies/patsa.html" class="recipe-card fade-in-up recipe-link">
                     <div class="recipe-image recipe-1">🍝</div>
                     <div class="recipe-info">
                         <h3>Mediterranean Pasta</h3>
                         <p>A delicious blend of fresh herbs, olives, and sun-dried tomatoes. Perfect for family dinners.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 35 min</span>
+                            <span class="quick-difficulty">📊 Easy</span>
+                        </div>
                     </div>
-                </div>
-                <div class="recipe-card fade-in-up">
+                </a>
+
+                <!-- Spicy Curry Bowl - Coming Soon -->
+                <div class="recipe-card fade-in-up recipe-link coming-soon" onclick="showComingSoon('Spicy Curry Bowl')">
                     <div class="recipe-image recipe-2">🥘</div>
                     <div class="recipe-info">
                         <h3>Spicy Curry Bowl</h3>
                         <p>Aromatic spices and tender vegetables create this warming comfort food favorite.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 45 min</span>
+                            <span class="quick-difficulty">📊 Medium</span>
+                        </div>
+                        <div class="coming-soon-badge">Coming Soon</div>
                     </div>
                 </div>
-                <div class="recipe-card fade-in-up">
+
+                <!-- Chocolate Delight Cake - Coming Soon -->
+                <div class="recipe-card fade-in-up recipe-link coming-soon" onclick="showComingSoon('Chocolate Delight Cake')">
                     <div class="recipe-image recipe-3">🍰</div>
                     <div class="recipe-info">
                         <h3>Chocolate Delight Cake</h3>
                         <p>Rich, moist chocolate cake that's perfect for celebrations and special occasions.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 90 min</span>
+                            <span class="quick-difficulty">📊 Hard</span>
+                        </div>
+                        <div class="coming-soon-badge">Coming Soon</div>
                     </div>
                 </div>
-                <div class="recipe-card fade-in-up">
+
+                <!-- Fresh Garden Salad - Coming Soon -->
+                <div class="recipe-card fade-in-up recipe-link coming-soon" onclick="showComingSoon('Fresh Garden Salad')">
                     <div class="recipe-image recipe-4">🥗</div>
                     <div class="recipe-info">
                         <h3>Fresh Garden Salad</h3>
                         <p>Crisp vegetables and homemade dressing make this a healthy and refreshing choice.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 15 min</span>
+                            <span class="quick-difficulty">📊 Easy</span>
+                        </div>
+                        <div class="coming-soon-badge">Coming Soon</div>
                     </div>
                 </div>
-                <div class="recipe-card fade-in-up">
+
+                <!-- Artisan Pizza - Coming Soon -->
+                <div class="recipe-card fade-in-up recipe-link coming-soon" onclick="showComingSoon('Artisan Pizza')">
                     <div class="recipe-image recipe-5">🍕</div>
                     <div class="recipe-info">
                         <h3>Artisan Pizza</h3>
                         <p>Handcrafted pizza with premium toppings and perfectly crispy crust.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 120 min</span>
+                            <span class="quick-difficulty">📊 Medium</span>
+                        </div>
+                        <div class="coming-soon-badge">Coming Soon</div>
                     </div>
                 </div>
-                <div class="recipe-card fade-in-up">
+
+                <!-- Hearty Soup - Coming Soon -->
+                <div class="recipe-card fade-in-up recipe-link coming-soon" onclick="showComingSoon('Hearty Soup')">
                     <div class="recipe-image recipe-6">🍲</div>
                     <div class="recipe-info">
                         <h3>Hearty Soup</h3>
                         <p>Comforting and nutritious soup packed with seasonal vegetables and herbs.</p>
+                        <div class="recipe-meta-quick">
+                            <span class="quick-time">⏱️ 60 min</span>
+                            <span class="quick-difficulty">📊 Easy</span>
+                        </div>
+                        <div class="coming-soon-badge">Coming Soon</div>
                     </div>
                 </div>
             </div>
@@ -133,8 +173,8 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to Transform Your Culinary Journey?</h2>
-                <p>Join thousands of food lovers, professional chefs, and hospitality businesses who trust Flodaz Foods for their recipe needs.</p>
-                <a href="#signup" class="cta-button" onclick="showSignupModal()">Get Started Today</a>
+                <p>Join thousands of food lovers, professional chefs, and hospitality businesses who trust Fordaz Recipes for their recipe needs.</p>
+                <a href="loginpage/login.html" class="cta-button">Get Started Today</a>
             </div>
         </div>
     </section>
@@ -144,7 +184,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Flodaz Foods</h3>
+                    <h3>Fordaz Recipes</h3>
                     <p>Building the world's largest community-driven recipe collection for food enthusiasts and professionals alike.</p>
                 </div>
                 <div class="footer-section">
@@ -155,46 +195,121 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>hello@flodazfoods.com</p>
-                    <p>+1 (555) 123-FOOD</p>
-                    <p>Follow us @FlodazFoods</p>
+                    <p>hello@fordazrecipes.com</p>
+                    <p>+254 727566920</p>
+                    <p>+254 727589920</p>
+                    <p>Follow us @FordazRecipes</p>
                 </div>
             </div>
             <div style="border-top: 1px solid #555; padding-top: 2rem; margin-top: 2rem;">
-                <p>&copy; 2025 Flodaz Foods. All rights reserved. Made with ❤️ for food lovers everywhere.</p>
+                <p>&copy; 2025 Fordaz Recipes. All rights reserved. Made with ❤️ for food lovers everywhere.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Signup Modal -->
-    <div id="signupModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center;">
-        <div style="background: white; padding: 3rem; border-radius: 20px; max-width: 500px; width: 90%; text-align: center; position: relative;">
-            <button onclick="hideSignupModal()" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999;">&times;</button>
-            <h2 style="color: #333; margin-bottom: 1rem;">Join Flodaz Foods!</h2>
-            <p style="color: #666; margin-bottom: 2rem;">Start your culinary adventure with our amazing community</p>
-            <form style="text-align: left;">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Full Name</label>
-                    <input type="text" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;" placeholder="Enter your name">
+    <!-- Coming Soon Modal -->
+    <div id="comingSoonModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🚀 Coming Soon!</h2>
+                <span class="close-modal" onclick="closeComingSoonModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>We're working hard to bring you the <strong id="recipeName"></strong> recipe page.</p>
+                <p>In the meantime, check out our Mediterranean Pasta recipe or join our community to get notified when new recipes are added!</p>
+                <div class="modal-actions">
+                    <a href="mediterranean-pasta.html" class="cta-button" style="margin-right: 1rem;">Try Mediterranean Pasta</a>
+                    <a href="loginpage/login.html" class="cta-button secondary">Join Community</a>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Email</label>
-                    <input type="email" style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;" placeholder="your@email.com">
-                </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; color: #333; font-weight: bold;">Account Type</label>
-                    <select style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; font-size: 1rem;">
-                        <option>Home Cook</option>
-                        <option>Professional Chef</option>
-                        <option>Hotel/Restaurant</option>
-                        <option>Catering Service</option>
-                    </select>
-                </div>
-                <button type="submit" class="cta-button" style="width: 100%; margin-top: 1rem;" onclick="handleSignup(event)">Create My Account</button>
-            </form>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Function to show coming soon modal
+        function showComingSoon(recipeName) {
+            document.getElementById('recipeName').textContent = recipeName;
+            document.getElementById('comingSoonModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Function to close coming soon modal
+        function closeComingSoonModal() {
+            document.getElementById('comingSoonModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('comingSoonModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeComingSoonModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeComingSoonModal();
+            }
+        });
+
+        // Enhanced recipe card interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to recipe cards
+            const recipeCards = document.querySelectorAll('.recipe-card');
+            
+            recipeCards.forEach(card => {
+                // Add loading animation on click for linked recipes
+                if (card.classList.contains('recipe-link') && !card.classList.contains('coming-soon')) {
+                    card.addEventListener('click', function(e) {
+                        // Add click animation
+                        this.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            this.style.transform = 'translateY(-10px)';
+                        }, 150);
+                        
+                        // Show loading indicator
+                        const loadingIndicator = document.createElement('div');
+                        loadingIndicator.innerHTML = '🔄 Loading recipe...';
+                        loadingIndicator.style.cssText = `
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            background: rgba(102, 126, 234, 0.95);
+                            color: white;
+                            padding: 2rem 3rem;
+                            border-radius: 15px;
+                            z-index: 10000;
+                            font-size: 1.2rem;
+                            backdrop-filter: blur(10px);
+                        `;
+                        document.body.appendChild(loadingIndicator);
+                        
+                        // Remove loading after short delay (navigation will handle the rest)
+                        setTimeout(() => {
+                            if (document.body.contains(loadingIndicator)) {
+                                loadingIndicator.remove();
+                            }
+                        }, 1000);
+                    });
+                }
+                
+                // Enhanced hover effects
+                card.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('coming-soon')) {
+                        this.style.transform = 'translateY(-15px) scale(1.02)';
+                        this.style.boxShadow = '0 25px 60px rgba(0,0,0,0.2)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(-10px) scale(1)';
+                    this.style.boxShadow = '0 15px 35px rgba(0,0,0,0.1)';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

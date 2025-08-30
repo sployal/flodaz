@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frodaz Recipes - Recipe Recommender</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a class="brand" >Frodaz Recipes</a>
+            <span class="tag">SDG • Zero Hunger</span>
+        </div>
+
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-center" id="mainNav">
+            <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
+            <a href="community.html" class="nav-link">Community</a>
+            <a href="../donations/donate.html" class="nav-link">Donations</a>
+            <a href="../aboutpage/about.html" class="nav-link">About</a>
+            <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
+            <a href="../premium/upgrade.html" class="nav-link">Premium</a>
+        </nav>
+
+        <div class="nav-right">
+            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar" id="avatarCircle">?</div>
+            </button>
+
+            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                <div class="profile-header">
+                    <div class="avatar sm" id="avatarCircleMenu">?</div>
+                    <div>
+                        <div class="name" id="pmName">Guest</div>
+                        <div class="username" id="pmUsername">@guest</div>
+                    </div>
+                </div>
+
+                <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
+                <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
+                <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
+                <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
+
+
+                <div class="profile-actions">
+                    <button class="btn primary" id="upgradeBtn">Upgrade (Premium)</button>
+                    <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
+                    <a class="btn danger" id="loginBtn" href="../../loginpage/login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal" aria-hidden="true" role="dialog" aria-labelledby="authTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="authTitle">Welcome to SmartRecipes</h2>
+                <button class="icon-btn" id="authCloseBtn" aria-label="Close">✕</button>
+            </div>
+            <p class="muted">Create an account or log in to continue.</p>
+
+            <form id="authForm">
+                <div class="grid-2">
+                    <label>Full Name*<input type="text" id="fullName" required placeholder="e.g. Amina Abdalla" /></label>
+                    <label>Username* (public)<input type="text" id="username" required placeholder="e.g. amina_cooks" /></label>
+                </div>
+                <div class="grid-2">
+                    <label>Email*<input type="email" id="email" required placeholder="you@example.com" /></label>
+                    <label>Date of Birth*<input type="date" id="dob" required /></label>
+                </div>
+
+                <details class="optional-fields">
+                    <summary>Optional details</summary>
+                    <div class="grid-3">
+                        <label>Contact<input type="tel" id="contact" placeholder="+249…" /></label>
+                        <label>Address<input type="text" id="address" placeholder="City / Area" /></label>
+                        <label>Gender
+                            <select id="gender">
+                                <option value="">Prefer not to say</option>
+                                <option>Female</option>
+                                <option>Male</option>
+                                <option>Other</option>
+                            </select>
+                        </label>
+                    </div>
+                </details>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn primary">Create account / Log in</button>
+                </div>
+                <p class="tiny muted">Premium payments in SDG via IntaSend (to be integrated).</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hero: AI Recipe Recommender -->
+    <section class="hero">
+        <div class="hero-inner">
+            <h1>Recipe Recommender</h1>
+            <p>Tell us what ingredients you have and get personalized recipe suggestions powered by AI. Free users get <strong>20</strong> AI prompts; Premium = unlimited.</p>
+
+            <div class="ai-box">
+                <input id="aiInput" type="text" placeholder="I have... e.g., chicken, tomatoes, onions" />
+                <button class="btn primary" id="aiBtn">Get Recipe Ideas</button>
+            </div>
+            <div id="aiOutput" class="ai-output"></div>
+        </div>
+    </section>
+
+    <!-- Recipe Gallery -->
+    <main class="container">
+        <h2 class="section-title">Featured Recipes</h2>
+        <p class="section-subtitle">Discover delicious recipes from our community - fresh picks updated daily</p>
+
+        <div class="recipe-filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="Breakfast">Breakfast</button>
+            <button class="filter-btn" data-category="Maincourse">Main Course</button>
+            <button class="filter-btn" data-category="Salads">Salads</button>
+            <button class="filter-btn" data-category="Snacks">Snacks</button>
+            <button class="filter-btn" data-category="Desserts">Desserts</button>
+        </div>
+
+        <div id="homeGallery" class="gallery"></div>
+
+        <div class="center">
+            <button class="btn" id="loadMoreBtn">Load More Recipes</button>
+        </div>
+    </main>
+
+    <!-- Quick Stats -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">1,200+</div>
+                    <div class="stat-label">Recipes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">850+</div>
+                    <div class="stat-label">Community Members</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">AI Powered</div>
+                    <div class="stat-label">Recipe Suggestions</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="overlay"></div>
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to Premium - Frodaz Recipes</title>
+    <link rel="stylesheet" href="upgrade.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="nav-left">
+            <a class="brand" href="../mainpage/main.html">Frodaz Recipes</a>
+            <span class="tag">SDG • Zero Hunger</span>
+        </div>
+
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="nav-center" id="mainNav">
+            <a href="#pricing-section" class="nav-link">Pricing Plans</a>
+            <a href="#comparison-section" class="nav-link">Features</a>
+            <a href="#faq-section" class="nav-link">FAQ</a>
+        </nav>
+
+        <div class="nav-right">
+            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                <div class="avatar" id="avatarCircle">?</div>
+            </button>
+
+            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                <div class="profile-header">
+                    <div class="avatar sm" id="avatarCircleMenu">?</div>
+                    <div>
+                        <div class="name" id="pmName">Guest</div>
+                        <div class="username" id="pmUsername">@guest</div>
+                    </div>
+                </div>
+
+                <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
+                <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
+                <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
+                <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
+
+                <div class="profile-actions">
+                    <a class="btn primary" href="upgrade.html">Upgrade (Premium)</a>
+                    <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
+                    <a class="btn danger" id="logoutBtn" href="../../loginpage/login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="upgrade-hero">
+        <div class="hero-content">
+            <div class="hero-badge">PREMIUM</div>
+            <h1>Unlock Your Culinary Potential</h1>
+            <p>Get unlimited AI recipe suggestions, exclusive content, and premium features to transform your cooking experience.</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">AI Prompts</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Premium Recipes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section class="pricing-section" id="pricing-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Choose Your Plan</h2>
+                <p>Select the perfect plan to enhance your cooking journey</p>
+                
+                <div class="billing-toggle">
+                    <span class="toggle-label">Monthly</span>
+                    <button class="toggle-switch" id="billingToggle">
+                        <div class="toggle-slider"></div>
+                    </button>
+                    <span class="toggle-label">Annual <span class="save-badge">Save 20%</span></span>
+                </div>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card free-plan">
+                    <div class="plan-header">
+                        <h3>Free</h3>
+                        <div class="price">
+                            <span class="currency">SDG</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p>Perfect for getting started</p>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>20 AI recipe suggestions</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Basic recipe collection</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Community access</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Recipe sharing</span>
+                        </div>
+                        <div class="feature disabled">
+                            <span class="feature-icon">✗</span>
+                            <span>Premium recipes</span>
+                        </div>
+                        <div class="feature disabled">
+                            <span class="feature-icon">✗</span>
+                            <span>Priority support</span>
+                        </div>
+                    </div>
+                    
+                    <button class="plan-btn current" disabled>Current Plan</button>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="pricing-card premium-plan popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="plan-header">
+                        <h3>Premium</h3>
+                        <div class="price">
+                            <span class="currency">SDG</span>
+                            <span class="amount monthly-price">49</span>
+                            <span class="amount annual-price" style="display: none;">39</span>
+                            <span class="period monthly-period">/month</span>
+                            <span class="period annual-period" style="display: none;">/month</span>
+                        </div>
+                        <div class="price-note">
+                            <span class="monthly-note">Billed monthly</span>
+                            <span class="annual-note" style="display: none;">Billed annually (SDG 468/year)</span>
+                        </div>
+                        <p>For serious home cooks</p>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Unlimited AI suggestions</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>500+ premium recipes</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Advanced meal planning</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Nutritional analysis</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Priority customer support</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Export recipes to PDF</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Ad-free experience</span>
+                        </div>
+                    </div>
+                    
+                    <button class="plan-btn premium" id="premiumBtn">Upgrade to Premium</button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="pricing-card pro-plan">
+                    <div class="plan-header">
+                        <h3>Pro</h3>
+                        <div class="price">
+                            <span class="currency">SDG</span>
+                            <span class="amount monthly-price">99</span>
+                            <span class="amount annual-price" style="display: none;">79</span>
+                            <span class="period monthly-period">/month</span>
+                            <span class="period annual-period" style="display: none;">/month</span>
+                        </div>
+                        <div class="price-note">
+                            <span class="monthly-note">Billed monthly</span>
+                            <span class="annual-note" style="display: none;">Billed annually (SDG 948/year)</span>
+                        </div>
+                        <p>For culinary professionals</p>
+                    </div>
+                    
+                    <div class="features-list">
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Everything in Premium</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Restaurant-grade recipes</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Cost calculation tools</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>Inventory management</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>White-label solutions</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">✓</span>
+                            <span>API access</span>
+                        </div>
+                    </div>
+                    
+                    <button class="plan-btn pro" id="proBtn">Upgrade to Pro</button>
+                </div>
+            </div>
+
+            <div class="guarantee">
+                <div class="guarantee-content">
+                    <div class="guarantee-icon">🛡️</div>
+                    <div>
+                        <h4>30-Day Money Back Guarantee</h4>
+                        <p>Not satisfied? Get a full refund within 30 days, no questions asked.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Comparison -->
+    <section class="comparison-section" id="comparison-section">
+        <div class="container">
+            <h2>Feature Comparison</h2>
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div class="feature-col">Features</div>
+                    <div class="plan-col">Free</div>
+                    <div class="plan-col premium">Premium</div>
+                    <div class="plan-col pro">Pro</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">AI Recipe Suggestions</div>
+                    <div class="plan-col">20 per month</div>
+                    <div class="plan-col premium">Unlimited</div>
+                    <div class="plan-col pro">Unlimited</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">Recipe Collection</div>
+                    <div class="plan-col">Basic recipes</div>
+                    <div class="plan-col premium">500+ premium recipes</div>
+                    <div class="plan-col pro">1000+ professional recipes</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">Meal Planning</div>
+                    <div class="plan-col">❌</div>
+                    <div class="plan-col premium">✅ Advanced</div>
+                    <div class="plan-col pro">✅ Professional</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">Nutritional Analysis</div>
+                    <div class="plan-col">❌</div>
+                    <div class="plan-col premium">✅</div>
+                    <div class="plan-col pro">✅ Detailed</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">Customer Support</div>
+                    <div class="plan-col">Community</div>
+                    <div class="plan-col premium">Priority</div>
+                    <div class="plan-col pro">24/7 Dedicated</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">Cost Calculator</div>
+                    <div class="plan-col">❌</div>
+                    <div class="plan-col premium">❌</div>
+                    <div class="plan-col pro">✅</div>
+                </div>
+                
+                <div class="table-row">
+                    <div class="feature-col">API Access</div>
+                    <div class="plan-col">❌</div>
+                    <div class="plan-col premium">❌</div>
+                    <div class="plan-col pro">✅</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq-section">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>How does the payment work?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We use IntaSend for secure payment processing in Sudanese Pounds (SDG). You can pay with mobile money, bank transfer, or card. Your subscription auto-renews unless cancelled.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Can I cancel anytime?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! You can cancel your subscription at any time from your profile settings. You'll continue to have access until the end of your billing period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>What's included in unlimited AI suggestions?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Premium users get unlimited access to our AI recipe recommender. Ask as many questions as you want about ingredients, cooking techniques, meal planning, and recipe modifications.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Is there a family plan available?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Family plans are coming soon! Currently, each subscription covers one user account. Contact support if you need multiple accounts for your family.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal" aria-hidden="true" role="dialog">
+        <div class="modal-card payment-modal">
+            <div class="modal-header">
+                <h2 id="paymentTitle">Complete Your Upgrade</h2>
+                <button class="icon-btn" id="paymentCloseBtn" aria-label="Close">✕</button>
+            </div>
+            
+            <div class="payment-summary">
+                <div class="selected-plan">
+                    <div class="plan-info">
+                        <h3 id="selectedPlanName">Premium Plan</h3>
+                        <p id="selectedPlanDesc">Monthly billing</p>
+                    </div>
+                    <div class="plan-price">
+                        <span class="price-amount" id="selectedPlanPrice">SDG 49/month</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="paymentForm">
+                <div class="payment-methods">
+                    <h4>Payment Method</h4>
+                    <div class="method-grid">
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="mobile" checked>
+                            <div class="method-card">
+                                <div class="method-icon">📱</div>
+                                <div class="method-info">
+                                    <span class="method-name">Mobile Money</span>
+                                    <span class="method-desc">Zain Cash, MTN, etc.</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="bank">
+                            <div class="method-card">
+                                <div class="method-icon">🏦</div>
+                                <div class="method-info">
+                                    <span class="method-name">Bank Transfer</span>
+                                    <span class="method-desc">Direct bank payment</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="card">
+                            <div class="method-card">
+                                <div class="method-icon">💳</div>
+                                <div class="method-info">
+                                    <span class="method-name">Credit/Debit Card</span>
+                                    <span class="method-desc">Visa, Mastercard</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="payment-details" id="paymentDetails">
+                    <!-- Payment details will be populated based on selected method -->
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn ghost" id="cancelPayment">Cancel</button>
+                    <button type="submit" class="btn premium" id="completePayment">
+                        <span id="paymentBtnText">Complete Payment</span>
+                        <div class="payment-spinner" style="display: none;">⏳</div>
+                    </button>
+                </div>
+                
+                <div class="payment-security">
+                    <div class="security-badge">🔒 Secured by IntaSend</div>
+                    <p>Your payment information is encrypted and secure</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal" aria-hidden="true" role="dialog">
+        <div class="modal-card success-modal">
+            <div class="success-icon">🎉</div>
+            <h2>Welcome to Premium!</h2>
+            <p>Your upgrade was successful. You now have access to all premium features.</p>
+            <div class="success-features">
+                <div class="success-feature">✅ Unlimited AI suggestions</div>
+                <div class="success-feature">✅ 500+ premium recipes</div>
+                <div class="success-feature">✅ Priority support</div>
+            </div>
+            <button class="btn premium" id="continueBtn">Continue to Dashboard</button>
+        </div>
+    </div>
+
+    <div id="overlay"></div>
+    <script src="upgrade.js"></script>
+</body>
+</html>
