@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile</title>
+  <link rel="stylesheet" href="profile.css" />
+</head>
+<body>
+  <div class="profile-container">
+    <h1>👤 Your Profile</h1>
+    <div id="profileCard" class="profile-card">
+      <p><strong>Name:</strong> <span id="fullName">Loading...</span></p>
+      <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+      <p><strong>Account Type:</strong> <span id="accountType">Loading...</span></p>
+      <p><strong>Username:</strong> <span id="username">Loading...</span></p>
+      <p><strong>Joined:</strong> <span id="createdAt">Loading...</span></p>
+    </div>
+    <div id="message" class="message"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

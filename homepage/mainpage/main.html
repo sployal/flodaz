@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frodaz Recipes - Recipe Recommender</title>
+    <title>Flodaz Recipes - Recipe Recommender</title>
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
@@ -13,10 +13,6 @@
             <a  href="../../index.html" class="brand" >Flodaz Recipes</a>
             <span class="tag">SDG • Zero Hunger</span>
         </div>
-
-        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
-            <span></span><span></span><span></span>
-        </button>
 
         <nav class="nav-center" id="mainNav">
             <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
@@ -28,9 +24,15 @@
         </nav>
 
         <div class="nav-right">
-            <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
-                <div class="avatar" id="avatarCircle">?</div>
-            </button>
+            <div class="nav-controls">
+                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                    <div class="avatar" id="avatarCircle">?</div>
+                </button>
+
+                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
 
             <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
                 <div class="profile-header">

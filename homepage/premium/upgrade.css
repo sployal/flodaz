@@ -102,6 +102,9 @@ body {
 
 .nav-right {
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .profile-btn {
@@ -1141,7 +1144,7 @@ body {
     }
     
     .pricing-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
     

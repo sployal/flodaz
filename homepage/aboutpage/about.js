@@ -137,8 +137,6 @@ function initMobileMenu() {
     if (mobileBtn) {
         mobileBtn.addEventListener('click', () => {
             isMenuOpen = !isMenuOpen;
-            
-            // Toggle menu visibility
             if (isMenuOpen) {
                 navLinks.style.display = 'flex';
                 navLinks.style.flexDirection = 'column';
@@ -151,10 +149,10 @@ function initMobileMenu() {
                 navLinks.style.backdropFilter = 'blur(20px)';
                 navLinks.style.borderRadius = '0 0 20px 20px';
                 navLinks.style.animation = 'slideDown 0.3s ease';
+                navLinks.style.zIndex = '1000';
             } else {
                 navLinks.style.display = 'none';
             }
-            
             // Animate hamburger menu
             const spans = mobileBtn.querySelectorAll('span');
             if (isMenuOpen) {
@@ -168,7 +166,7 @@ function initMobileMenu() {
             }
         });
     }
-    
+
     // Close menu when clicking on a link
     const navLinkItems = document.querySelectorAll('.nav-links a');
     navLinkItems.forEach(link => {

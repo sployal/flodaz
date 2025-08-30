@@ -386,6 +386,11 @@ function setupEventListeners() {
         if (!profileMenu?.contains(e.target) && !profileBtn?.contains(e.target)) {
             closeProfileMenu();
         }
+        
+        // Close mobile navigation when clicking outside
+        if (!mainNav?.contains(e.target) && !hamburgerBtn?.contains(e.target)) {
+            closeMobileNav();
+        }
     });
 
     // Auth modal
@@ -410,6 +415,14 @@ function setupEventListeners() {
         });
     });
 
+    // Close mobile navigation when clicking on nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileNav();
+        });
+    });
+
     // Load more recipes
     loadMoreBtn?.addEventListener('click', loadMoreRecipes);
 
@@ -431,6 +444,7 @@ function setupEventListeners() {
         if (e.key === 'Escape') {
             closeAuthModal();
             closeProfileMenu();
+            closeMobileNav();
         }
     });
 }
@@ -439,6 +453,11 @@ function setupEventListeners() {
 function toggleMobileNav() {
     mainNav?.classList.toggle('active');
     hamburgerBtn?.classList.toggle('active');
+}
+
+function closeMobileNav() {
+    mainNav?.classList.remove('active');
+    hamburgerBtn?.classList.remove('active');
 }
 
 function toggleProfileMenu() {

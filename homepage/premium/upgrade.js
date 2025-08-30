@@ -166,14 +166,36 @@ function setupEventListeners() {
     // Logout functionality
     document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
     
+
     // Mobile navigation
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const mainNav = document.getElementById('mainNav');
-    
-    hamburgerBtn?.addEventListener('click', () => {
+
+    hamburgerBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
         mainNav?.classList.toggle('active');
         hamburgerBtn?.classList.toggle('active');
     });
+
+    // Close hamburger menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (mainNav?.classList.contains('active')) {
+            if (!mainNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                mainNav.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            }
+        }
+    });
+
+    // Close hamburger menu when clicking a nav link
+    if (mainNav) {
+        mainNav.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            });
+        });
+    }
     
     // Close modals on overlay click
     overlay?.addEventListener('click', () => {

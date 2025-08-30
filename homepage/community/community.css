@@ -73,6 +73,7 @@ body {
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+    margin-left: auto;
 }
 
 .hamburger span {
@@ -286,6 +287,8 @@ body {
 @media (max-width: 768px) {
     .hamburger {
         display: flex;
+        order: 3;
+        margin-left: auto;
     }
     
     .nav-center {
@@ -318,6 +321,16 @@ body {
     .profile-menu {
         right: -50px;
         min-width: 250px;
+    }
+    
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    #createPostBtn {
+        display: none;
     }
 }
 
@@ -1619,6 +1632,28 @@ body {
 }
 
 @media (max-width: 768px) {
+    .navbar .container {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .nav-left {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .nav-center {
+        order: 3;
+        width: 100%;
+    }
+    
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    
     .community-main {
         margin-top: 70px;
         padding: 1rem 0;
@@ -1710,6 +1745,8 @@ body {
         cursor: pointer;
         padding: 0.5rem;
         gap: 4px;
+        order: 3;
+        margin-left: auto;
     }
 
     .hamburger span {

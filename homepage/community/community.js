@@ -487,6 +487,28 @@ function setupEventListeners() {
             mainNav.classList.toggle('active');
             hamburgerBtn.classList.toggle('active');
         });
+        
+        // Close mobile navigation when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mainNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                closeMobileNav();
+            }
+        });
+        
+        // Close mobile navigation when clicking on nav links
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                closeMobileNav();
+            });
+        });
+        
+        // Close mobile navigation with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeMobileNav();
+            }
+        });
     }
 
     // Topic tags interaction
@@ -1422,4 +1444,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // Re-add interactions after new posts are loaded
 function reInitializeInteractions() {
     addPostInteractions();
+}
+
+// Close mobile navigation function
+function closeMobileNav() {
+    const mainNav = document.getElementById('mainNav');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    
+    if (mainNav) {
+        mainNav.classList.remove('active');
+    }
+    
+    if (hamburgerBtn) {
+        hamburgerBtn.classList.remove('active');
+    }
 }
