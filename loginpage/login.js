@@ -9,33 +9,176 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // Global state to prevent infinite redirects
 let isRedirecting = false;
 let authChecked = false;
+let savedUserData = null; // Store user data for auto-loading
 
-// Check if user is already logged in
-async function checkExistingAuth() {
+// Check if user data exists and auto-load it (NO AUTO REDIRECT)
+async function checkAndLoadUserData() {
     try {
         const userEmail = localStorage.getItem('user_email');
         const isAuthenticated = localStorage.getItem('user_authenticated');
+        
         if (userEmail && isAuthenticated === 'true') {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
             if (session && !error) {
-                // Session is valid, redirect to main page
-                showMessage('Welcome back! Redirecting...', 'success');
-                setTimeout(() => {
-                    safeRedirect('../homepage/mainpage/main.html');
-                }, 1500);
-                return;
+                // Session is valid - auto-load user data but DON'T redirect
+                savedUserData = {
+                    email: session.user.email,
+                    id: session.user.id
+                };
+                
+                // Auto-fill the login form
+                autoFillLoginForm(session.user.email);
+                
+                // Show welcome message with option to continue
+                showWelcomeMessage(session.user.email);
+                
+                return true; // User data loaded
             } else {
                 // Session expired, clear invalid data
-                localStorage.removeItem('user_email');
-                localStorage.removeItem('user_id');
-                localStorage.removeItem('user_authenticated');
+                clearStoredUserData();
             }
         }
     } catch (error) {
-        localStorage.removeItem('user_email');
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('user_authenticated');
+        console.error('Auth check error:', error);
+        clearStoredUserData();
     }
+    
+    return false; // No valid user data
+}
+
+// Auto-fill login form with user email
+function autoFillLoginForm(email) {
+    const loginEmail = document.getElementById('loginEmail');
+    if (loginEmail) {
+        loginEmail.value = email;
+        // Focus on password field since email is already filled
+        const passwordField = document.getElementById('loginPassword');
+        if (passwordField) {
+            passwordField.focus();
+        }
+    }
+}
+
+// Show welcome message for returning users
+function showWelcomeMessage(email) {
+    const welcomeMsg = `Welcome back, ${email}! Your email has been auto-filled. Enter your password and click "Sign In" to continue.`;
+    showMessage(welcomeMsg, 'info', true, 3000); // Auto-hide after 3 seconds
+    
+    // Add a "Continue as [email]" button option
+    addQuickLoginButton(email);
+}
+
+// Add a quick login button for convenience
+function addQuickLoginButton(email) {
+    // Check if button already exists
+    if (document.getElementById('quickLoginButton')) return;
+    
+    const loginForm = document.getElementById('loginForm');
+    if (!loginForm) return;
+    
+    // Create quick login container
+    const quickLoginDiv = document.createElement('div');
+    quickLoginDiv.id = 'quickLoginContainer';
+    quickLoginDiv.style.cssText = `
+        margin-top: 10px;
+        padding: 10px;
+        background: #f0f9ff;
+        border: 1px solid #0ea5e9;
+        border-radius: 8px;
+        text-align: center;
+    `;
+    
+    quickLoginDiv.innerHTML = `
+        <p style="margin: 0 0 10px 0; color: #0369a1; font-size: 14px;">
+            Continue as <strong>${email}</strong>
+        </p>
+        <button type="button" id="quickLoginButton" style="
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        ">
+            Quick Sign In
+        </button>
+        <button type="button" id="useNewAccountButton" style="
+            background: transparent;
+            color: #0369a1;
+            border: 1px solid #0369a1;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        ">
+            Use Different Account
+        </button>
+    `;
+    
+    // Insert after the login form
+    loginForm.parentNode.insertBefore(quickLoginDiv, loginForm.nextSibling);
+    
+    // Add event listeners
+    document.getElementById('quickLoginButton').addEventListener('click', handleQuickLogin);
+    document.getElementById('useNewAccountButton').addEventListener('click', handleUseNewAccount);
+}
+
+// Handle quick login (just redirect since user is already authenticated)
+async function handleQuickLogin() {
+    if (isRedirecting || !savedUserData) return;
+    
+    try {
+        // Verify session is still valid
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (session && !error) {
+            showMessage('Redirecting...', 'success');
+            safeRedirect('../homepage/mainpage/main.html');
+        } else {
+            showMessage('Session expired. Please enter your password.', 'error');
+            removeQuickLoginButton();
+        }
+    } catch (error) {
+        console.error('Quick login error:', error);
+        showMessage('Please enter your password to continue.', 'error');
+        removeQuickLoginButton();
+    }
+}
+
+// Handle using a new account
+function handleUseNewAccount() {
+    // Clear stored data and reload page
+    clearStoredUserData();
+    removeQuickLoginButton();
+    
+    // Clear form fields
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    
+    if (loginEmail) loginEmail.value = '';
+    if (loginPassword) loginPassword.value = '';
+    
+    showMessage('Please enter your credentials to sign in with a different account.', 'info');
+}
+
+// Remove quick login button
+function removeQuickLoginButton() {
+    const quickLoginContainer = document.getElementById('quickLoginContainer');
+    if (quickLoginContainer) {
+        quickLoginContainer.remove();
+    }
+    savedUserData = null;
+}
+
+// Clear stored user data
+function clearStoredUserData() {
+    localStorage.removeItem('user_email');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_authenticated');
+    sessionStorage.removeItem('rememberUser');
 }
 
 // DOM Elements
@@ -56,12 +199,14 @@ function showSignupForm() {
     hideAllForms();
     if (signupForm) signupForm.style.display = 'block';
     clearMessages();
+    removeQuickLoginButton(); // Remove quick login when switching forms
 }
 
 function showForgotPassword() {
     hideAllForms();
     if (forgotPasswordForm) forgotPasswordForm.style.display = 'block';
     clearMessages();
+    removeQuickLoginButton(); // Remove quick login when switching forms
 }
 
 function hideAllForms() {
@@ -71,17 +216,19 @@ function hideAllForms() {
 }
 
 // Message display functions
-function showMessage(message, type = 'info') {
+function showMessage(message, type = 'info', autoHide = true, duration = 5000) {
     if (!messageContent || !messageContainer) return;
     
     messageContent.textContent = message;
     messageContent.className = `message ${type}`;
     messageContainer.style.display = 'block';
     
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        hideMessage();
-    }, 5000);
+    // Auto-hide based on autoHide parameter
+    if (autoHide) {
+        setTimeout(() => {
+            hideMessage();
+        }, duration);
+    }
 }
 
 function hideMessage() {
@@ -156,19 +303,19 @@ async function handleLogin(event) {
     const email = formData.get('email')?.trim();
     const password = formData.get('password');
     
-    // Check if user is already authenticated
-    try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if (session && session.user) {
-            // User is already logged in, just redirect
-            showMessage('Already authenticated! Redirecting...', 'success');
-            safeRedirect('../homepage/mainpage/main.html');
-            return;
+    // If we have saved user data and password is empty, just redirect
+    if (savedUserData && savedUserData.email === email && !password) {
+        // Check if session is still valid
+        try {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (session && !error) {
+                showMessage('Redirecting...', 'success');
+                safeRedirect('../homepage/mainpage/main.html');
+                return;
+            }
+        } catch (error) {
+            console.log('Session check failed, require password');
         }
-    } catch (error) {
-        console.log('Session check error:', error);
-        // Continue with normal login if session check fails
     }
     
     // Basic validation
@@ -427,7 +574,7 @@ async function handleGoogleLogin() {
     }
 }
 
-// Improved authentication check - NO AUTO REDIRECT
+// Modified authentication check - NO AUTO REDIRECT
 async function checkAuthState() {
     if (authChecked || isRedirecting) return;
     
@@ -442,14 +589,17 @@ async function checkAuthState() {
         
         if (session && session.user) {
             console.log('User already authenticated:', session.user.email);
-            // Show a message but DON'T auto-redirect - let user choose
-            showMessage(`Welcome back, ${session.user.email}! Click "Sign In" to continue or sign out to use a different account.`, 'info');
+            // Store user data but DON'T redirect
+            savedUserData = {
+                email: session.user.email,
+                id: session.user.id
+            };
             
-            // Pre-fill the email field if it exists
-            const loginEmail = document.getElementById('loginEmail');
-            if (loginEmail && !loginEmail.value) {
-                loginEmail.value = session.user.email;
-            }
+            // Auto-fill login form
+            autoFillLoginForm(session.user.email);
+            
+            // Show welcome message with quick login option
+            showWelcomeMessage(session.user.email);
         }
         
         authChecked = true;
@@ -471,6 +621,8 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
         console.log('User signed out');
         isRedirecting = false;
         authChecked = false;
+        savedUserData = null;
+        removeQuickLoginButton();
     }
 });
 
@@ -478,8 +630,8 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Login page loaded');
     
-    // Check if user is already logged in
-    checkExistingAuth();
+    // Check and load user data WITHOUT auto-redirecting
+    checkAndLoadUserData();
     
     // Small delay before checking auth to prevent rapid redirects
     setTimeout(() => {
