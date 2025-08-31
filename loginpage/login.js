@@ -12,13 +12,20 @@ let authChecked = false;
 
 // Check if user is already logged in
 async function checkExistingAuth() {
-    // No auto-login or redirect. Only clear invalid data if session expired.
     try {
         const userEmail = localStorage.getItem('user_email');
         const isAuthenticated = localStorage.getItem('user_authenticated');
         if (userEmail && isAuthenticated === 'true') {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
-            if (!session || error) {
+            if (session && !error) {
+                // Session is valid, redirect to main page
+                showMessage('Welcome back! Redirecting...', 'success');
+                setTimeout(() => {
+                    safeRedirect('../homepage/mainpage/main.html');
+                }, 1500);
+                return;
+            } else {
+                // Session expired, clear invalid data
                 localStorage.removeItem('user_email');
                 localStorage.removeItem('user_id');
                 localStorage.removeItem('user_authenticated');
