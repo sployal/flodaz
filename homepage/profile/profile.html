@@ -1,25 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>User Profile</title>
-  <link rel="stylesheet" href="profile.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Flodaz Recipes</title>
+    <link rel="stylesheet" href="profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="profile-container">
-    <h1>👤 Your Profile</h1>
-    <div id="profileCard" class="profile-card">
-      <p><strong>Name:</strong> <span id="fullName">Loading...</span></p>
-      <p><strong>Email:</strong> <span id="email">Loading...</span></p>
-      <p><strong>Account Type:</strong> <span id="accountType">Loading...</span></p>
-      <p><strong>Username:</strong> <span id="username">Loading...</span></p>
-      <p><strong>Joined:</strong> <span id="createdAt">Loading...</span></p>
-    </div>
-    <div id="message" class="message"></div>
-  </div>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container">
+            <div class="nav-left">
+                <a href="../../index.html" class="brand">Flodaz Recipes</a>
+                <span class="tag">SDG • Zero Hunger</span>
+            </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="profile.js"></script>
+            <nav class="nav-center" id="mainNav">
+                <a href="../main/main.html" class="nav-link">Home</a>
+                <a href="../community/community.html" class="nav-link">Community</a>
+                <a href="../donations/donate.html" class="nav-link">Donations</a>
+                <a href="../aboutpage/about.html" class="nav-link">About</a>
+                <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
+                <a href="../premium/upgrade.html" class="nav-link">Premium</a>
+            </nav>
+
+            <div class="nav-right">
+                <div class="nav-controls">
+                    <button class="profile-btn" id="profileBtn">
+                        <div class="avatar" id="avatarCircle">?</div>
+                    </button>
+
+                    <button class="hamburger" id="hamburgerBtn">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+
+                <div class="profile-menu" id="profileMenu">
+                    <div class="profile-header">
+                        <div class="avatar sm" id="avatarCircleMenu">?</div>
+                        <div>
+                            <div class="name" id="pmName">Guest</div>
+                            <div class="username" id="pmUsername">@guest</div>
+                        </div>
+                    </div>
+                    <div class="profile-actions">
+                        <button class="btn primary" id="upgradeBtn">Upgrade (Premium)</button>
+                        <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
+                        <a class="btn danger" id="logoutBtn" href="../../loginpage/login.html">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="profile-avatar-large" id="profileAvatarLarge">
+                <div class="avatar-circle" id="largeAvatarCircle">?</div>
+                <button class="avatar-edit-btn" id="avatarEditBtn">📷</button>
+            </div>
+            <h1 id="profileTitle">Your Profile</h1>
+            <p id="profileSubtitle">Manage your account settings and preferences</p>
+        </div>
+    </section>
+
+    <!-- Profile Content -->
+    <main class="container">
+        <!-- Profile Stats -->
+        <section class="profile-stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="aiPromptsUsed">0</div>
+                    <div class="stat-label">AI Prompts Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="recipesViewed">--</div>
+                    <div class="stat-label">Recipes Viewed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="memberSince">--</div>
+                    <div class="stat-label">Member Since</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Information -->
+        <section class="profile-info-section">
+            <div class="profile-cards-grid">
+                <!-- Personal Information Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h3>Personal Information</h3>
+                        <button class="btn ghost sm" id="editPersonalBtn">Edit</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-group">
+                            <label>Full Name</label>
+                            <span id="displayFullName">Loading...</span>
+                            <input type="text" id="editFullName" style="display: none;">
+                        </div>
+                        <div class="info-group">
+                            <label>Username</label>
+                            <span id="displayUsername">Loading...</span>
+                            <input type="text" id="editUsername" style="display: none;">
+                        </div>
+                        <div class="info-group">
+                            <label>Email</label>
+                            <span id="displayEmail">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Date of Birth</label>
+                            <span id="displayDob">Loading...</span>
+                            <input type="date" id="editDob" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="card-actions" id="personalActions" style="display: none;">
+                        <button class="btn primary sm" id="savePersonalBtn">Save Changes</button>
+                        <button class="btn ghost sm" id="cancelPersonalBtn">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Account Settings Card -->
+                <div class="profile-card account-settings-card">
+                    <div class="card-header">
+                        <h3>Account Settings</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-group">
+                            <label>Account Type</label>
+                            <span id="displayAccountType" class="badge">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Join Date</label>
+                            <span id="displayJoinDate">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>AI Prompts Remaining</label>
+                            <span id="displayPromptsRemaining">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn primary" id="upgradeAccountBtn">Upgrade to Premium</button>
+                    </div>
+                </div>
+
+                <!-- Preferences Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h3>Preferences</h3>
+                        <button class="btn ghost sm" id="editPreferencesBtn">Edit</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-group">
+                            <label>Dietary Restrictions</label>
+                            <span id="displayDietary">None specified</span>
+                            <select id="editDietary" style="display: none;" multiple>
+                                <option value="vegetarian">Vegetarian</option>
+                                <option value="vegan">Vegan</option>
+                                <option value="gluten-free">Gluten Free</option>
+                                <option value="dairy-free">Dairy Free</option>
+                                <option value="keto">Keto</option>
+                                <option value="paleo">Paleo</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Favorite Cuisine</label>
+                            <span id="displayCuisine">Not specified</span>
+                            <select id="editCuisine" style="display: none;">
+                                <option value="">Select cuisine</option>
+                                <option value="italian">Italian</option>
+                                <option value="chinese">Chinese</option>
+                                <option value="indian">Indian</option>
+                                <option value="mexican">Mexican</option>
+                                <option value="mediterranean">Mediterranean</option>
+                                <option value="american">American</option>
+                                <option value="japanese">Japanese</option>
+                                <option value="thai">Thai</option>
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Cooking Experience</label>
+                            <span id="displayExperience">Beginner</span>
+                            <select id="editExperience" style="display: none;">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-actions" id="preferencesActions" style="display: none;">
+                        <button class="btn primary sm" id="savePreferencesBtn">Save Changes</button>
+                        <button class="btn ghost sm" id="cancelPreferencesBtn">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Activity Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h3>Recent Activity</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-item">
+                                <div class="activity-icon">🍴</div>
+                                <div class="activity-text">
+                                    <p>Used AI recipe suggestion</p>
+                                    <small>2 hours ago</small>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">👁️</div>
+                                <div class="activity-text">
+                                    <p>Viewed Mediterranean Pasta recipe</p>
+                                    <small>1 day ago</small>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-icon">👤</div>
+                                <div class="activity-text">
+                                    <p>Profile created</p>
+                                    <small id="profileCreatedTime">Loading...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Message Display -->
+    <div id="messageDisplay" class="message" style="display: none;">
+        <span id="messageText"></span>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading your profile...</p>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
 </body>
 </html>

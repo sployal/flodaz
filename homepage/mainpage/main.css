@@ -18,10 +18,23 @@ body {
     padding: 0 1rem;
 }
 
+/* Full-width container for sections that should extend to screen edges */
+.full-width {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.full-width .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
 /* Navigation */
 .navbar {
     background: white;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -29,6 +42,17 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    width: 100%;
+}
+
+.navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .nav-left {
@@ -353,14 +377,15 @@ input:focus, select:focus {
     margin-top: 1.5rem;
 }
 
-/* Hero Section */
+/* Hero Section - Full width */
 .hero {
     background: linear-gradient(135deg, #4285f4 0%, #ea4335 100%);
     color: white;
-    padding: 4rem 1rem;
+    padding: 4rem 0;
     text-align: center;
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
 
 .hero::before {
@@ -376,8 +401,9 @@ input:focus, select:focus {
 .hero-inner {
     position: relative;
     z-index: 2;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .hero h1 {
@@ -492,6 +518,18 @@ input:focus, select:focus {
     color: white;
     font-size: 1.1rem;
     animation: pulse 1.5s infinite;
+}
+
+/* Main content sections */
+.main-content {
+    width: 100%;
+    padding: 0;
+}
+
+.main-content .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
 /* Recipe Gallery Section */
@@ -644,11 +682,18 @@ input:focus, select:focus {
     margin: 3rem 0;
 }
 
-/* Stats Section */
+/* Stats Section - Full width */
 .stats-section {
     padding: 3rem 0;
     background: white;
     border-top: 1px solid #e2e8f0;
+    width: 100%;
+}
+
+.stats-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .stats-grid {
@@ -743,6 +788,10 @@ input:focus, select:focus {
         border-bottom: none;
     }
     
+    .hero {
+        padding: 3rem 0;
+    }
+    
     .hero h1 {
         font-size: 2.5rem;
     }
@@ -794,6 +843,19 @@ input:focus, select:focus {
     .stat-number {
         font-size: 2rem;
     }
+    
+    /* Ensure full width on mobile */
+    .container {
+        padding: 0 0.75rem;
+    }
+    
+    .navbar-inner {
+        padding: 0 0.75rem;
+    }
+    
+    .hero-inner {
+        padding: 0 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -809,6 +871,14 @@ input:focus, select:focus {
         padding: 0 0.5rem;
     }
     
+    .navbar-inner {
+        padding: 0 0.5rem;
+    }
+    
+    .hero-inner {
+        padding: 0 0.5rem;
+    }
+    
     .gallery {
         grid-template-columns: 1fr;
     }
@@ -817,4 +887,3 @@ input:focus, select:focus {
         grid-template-columns: 1fr;
     }
 }
-

@@ -9,50 +9,51 @@
 <body>
     <!-- Navbar -->
     <header class="navbar">
-        <div class="nav-left">
-            <a  href="../../index.html" class="brand" >Flodaz Recipes</a>
-            <span class="tag">SDG • Zero Hunger</span>
-        </div>
-
-        <nav class="nav-center" id="mainNav">
-            <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
-            <a href="../community/community.html" class="nav-link">Community</a>
-            <a href="../donations/donate.html" class="nav-link">Donations</a>
-            <a href="../aboutpage/about.html" class="nav-link">About</a>
-            <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
-            <a href="../premium/upgrade.html" class="nav-link">Premium</a>
-        </nav>
-
-        <div class="nav-right">
-            <div class="nav-controls">
-                <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
-                    <div class="avatar" id="avatarCircle">?</div>
-                </button>
-
-                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
-                    <span></span><span></span><span></span>
-                </button>
+        <div class="navbar-inner">
+            <div class="nav-left">
+                <a href="../../index.html" class="brand">Flodaz Recipes</a>
+                <span class="tag">SDG • Zero Hunger</span>
             </div>
 
-            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
-                <div class="profile-header">
-                    <div class="avatar sm" id="avatarCircleMenu">?</div>
-                    <div>
-                        <div class="name" id="pmName">Guest</div>
-                        <div class="username" id="pmUsername">@guest</div>
-                    </div>
+            <nav class="nav-center" id="mainNav">
+                <a href="#" class="nav-link active" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
+                <a href="../community/community.html" class="nav-link">Community</a>
+                <a href="../donations/donate.html" class="nav-link">Donations</a>
+                <a href="../aboutpage/about.html" class="nav-link">About</a>
+                <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
+                <a href="../premium/upgrade.html" class="nav-link">Premium</a>
+            </nav>
+
+            <div class="nav-right">
+                <div class="nav-controls">
+                    <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar" id="avatarCircle">?</div>
+                    </button>
+
+                    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                        <span></span><span></span><span></span>
+                    </button>
                 </div>
 
-                <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
-                <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
-                <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
-                <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
+                <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
+                    <div class="profile-header">
+                        <div class="avatar sm" id="avatarCircleMenu">?</div>
+                        <div>
+                            <div class="name" id="pmName">Guest</div>
+                            <div class="username" id="pmUsername">@guest</div>
+                        </div>
+                    </div>
 
+                    <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
+                    <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
+                    <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
+                    <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
 
-                <div class="profile-actions">
-                    <button class="btn primary" id="upgradeBtn">Upgrade (Premium)</button>
-                    <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
-                    <a class="btn danger" id="loginBtn" href="../../loginpage/login.html">Logout</a>
+                    <div class="profile-actions">
+                        <a class="btn primary" id="upgradeBtn" href="../profile/profile.html">profile</a>
+                        <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
+                        <a class="btn danger" id="loginBtn" href="../../loginpage/login.html">Logout</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,7 +103,7 @@
     </div>
 
     <!-- Hero: AI Recipe Recommender -->
-    <section class="hero">
+    <section class="hero full-width">
         <div class="hero-inner">
             <h1>Recipe Recommender</h1>
             <p>Tell us what ingredients you have and get personalized recipe suggestions powered by AI. Free users get <strong>20</strong> AI prompts; Premium = unlimited.</p>
@@ -116,33 +117,35 @@
     </section>
 
     <!-- Recipe Gallery -->
-    <main class="container">
-        <h2 class="section-title">Featured Recipes</h2>
-        <p class="section-subtitle">Discover delicious recipes from our community - fresh picks updated daily</p>
+    <main class="main-content">
+        <div class="container">
+            <h2 class="section-title">Featured Recipes</h2>
+            <p class="section-subtitle">Discover delicious recipes from our community - fresh picks updated daily</p>
 
-        <div class="recipe-search-bar" style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
-            <input type="text" id="recipeSearchInput" placeholder="Search recipes by name..." style="flex:1; padding: 0.7rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem;" />
-            <button class="btn" id="recipeSearchBtn" style="padding: 0.7rem 1.5rem;">Search</button>
-        </div>
+            <div class="recipe-search-bar" style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+                <input type="text" id="recipeSearchInput" placeholder="Search recipes by name..." style="flex:1; padding: 0.7rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 1rem;" />
+                <button class="btn" id="recipeSearchBtn" style="padding: 0.7rem 1.5rem;">Search</button>
+            </div>
 
-        <div class="recipe-filters">
-            <button class="filter-btn active" data-category="all">All</button>
-            <button class="filter-btn" data-category="Breakfast">Breakfast</button>
-            <button class="filter-btn" data-category="Maincourse">Main Course</button>
-            <button class="filter-btn" data-category="Salads">Salads</button>
-            <button class="filter-btn" data-category="Snacks">Snacks</button>
-            <button class="filter-btn" data-category="Desserts">Desserts</button>
-        </div>
+            <div class="recipe-filters">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="Breakfast">Breakfast</button>
+                <button class="filter-btn" data-category="Maincourse">Main Course</button>
+                <button class="filter-btn" data-category="Salads">Salads</button>
+                <button class="filter-btn" data-category="Snacks">Snacks</button>
+                <button class="filter-btn" data-category="Desserts">Desserts</button>
+            </div>
 
-        <div id="homeGallery" class="gallery"></div>
+            <div id="homeGallery" class="gallery"></div>
 
-        <div class="center">
-            <button class="btn" id="loadMoreBtn">Load More Recipes</button>
+            <div class="center">
+                <button class="btn" id="loadMoreBtn">Load More Recipes</button>
+            </div>
         </div>
     </main>
 
     <!-- Quick Stats -->
-    <section class="stats-section">
+    <section class="stats-section full-width">
         <div class="container">
             <div class="stats-grid">
                 <div class="stat-card">
