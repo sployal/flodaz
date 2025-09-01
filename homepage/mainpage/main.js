@@ -43,7 +43,7 @@ const featuredRecipes = [
         emoji: "🥘",
         time: "45 min",
         difficulty: "Medium",
-        comingSoon: true
+        link: "../../recipies/spicy_curry.html"
     },
     {
         id: 3,
