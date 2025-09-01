@@ -1,3 +1,138 @@
+/* Modern Responsive Navbar Styles */
+.modern-navbar {
+    background: linear-gradient(90deg, #4285f4 0%, #ea4335 100%);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+}
+.navbar-brand {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    text-decoration: none;
+    background: none;
+}
+.navbar-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.navbar-links li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+}
+.navbar-links li a:hover,
+.navbar-links li a.active {
+    background: rgba(255,255,255,0.15);
+    color: #ffd700;
+}
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.navbar-btn {
+    background: #fff;
+    color: #4285f4;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar-btn:hover {
+    background: #ffd700;
+    color: #ea4335;
+}
+.navbar-avatar {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background: #fff;
+    color: #4285f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+.navbar-avatar:hover {
+    background: #ffd700;
+    color: #ea4335;
+}
+.navbar-hamburger {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    gap: 4px;
+}
+.navbar-hamburger span {
+    width: 24px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+@media (max-width: 900px) {
+    .navbar-links {
+        gap: 1rem;
+    }
+}
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+    }
+    .navbar-links {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(90deg, #4285f4 0%, #ea4335 100%);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding: 1rem 2rem;
+        display: none;
+        z-index: 1001;
+    }
+    .navbar-links.active {
+        display: flex;
+    }
+    .navbar-hamburger {
+        display: flex;
+    }
+}
 /* Community Page Styles */
 
 /* Reset and Base Styles */
@@ -1632,6 +1767,46 @@ body {
     }
 }
 
+/* Extra Responsive for Small Screens */
+@media (max-width: 600px) {
+    .community-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        overflow-x: auto;
+    }
+    .sidebar,
+    .main-feed,
+    .right-sidebar {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding: 1rem 0.5rem;
+        border-radius: 10px;
+    }
+    .container {
+        padding: 0 0.5rem;
+    }
+    .feed-filters {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        padding: 0.5rem;
+    }
+    .posts-feed {
+        gap: 1rem;
+    }
+    .post-card {
+        border-radius: 8px;
+    }
+    .create-post-prompt {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: stretch;
+        padding: 0.7rem;
+    }
+}
+
 @media (max-width: 768px) {
     .navbar .container {
         flex-wrap: wrap;
@@ -1770,6 +1945,7 @@ body {
         transform: rotate(-45deg) translate(7px, -6px);
     }
 }
+
 
 @media (max-width: 480px) {
     .post-actions-left {

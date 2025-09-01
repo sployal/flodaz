@@ -1,3 +1,108 @@
+// Hamburger menu logic for index.html
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburgerBtn && navLinks) {
+        hamburgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
+            hamburgerBtn.classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            if (navLinks.classList.contains('active')) {
+                if (!navLinks.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                    navLinks.classList.remove('active');
+                    hamburgerBtn.classList.remove('active');
+                }
+            }
+        });
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            });
+        });
+    }
+});
+
+// Function to show coming soon modal
+function showComingSoon(recipeName) {
+    document.getElementById('recipeName').textContent = recipeName;
+    document.getElementById('comingSoonModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Function to close coming soon modal
+function closeComingSoonModal() {
+    document.getElementById('comingSoonModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('comingSoonModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeComingSoonModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeComingSoonModal();
+    }
+});
+
+// Enhanced recipe card interactions for index.html
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to recipe cards
+    const recipeCards = document.querySelectorAll('.recipe-card');
+    recipeCards.forEach(card => {
+        // Add loading animation on click for linked recipes
+        if (card.classList.contains('recipe-link') && !card.classList.contains('coming-soon')) {
+            card.addEventListener('click', function(e) {
+                // Add click animation
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-10px)';
+                }, 150);
+                // Show loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.innerHTML = '🔄 Loading recipe...';
+                loadingIndicator.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(102, 126, 234, 0.95);
+                    color: white;
+                    padding: 2rem 3rem;
+                    border-radius: 15px;
+                    z-index: 10000;
+                    font-size: 1.2rem;
+                    backdrop-filter: blur(10px);
+                `;
+                document.body.appendChild(loadingIndicator);
+                // Remove loading after short delay (navigation will handle the rest)
+                setTimeout(() => {
+                    if (document.body.contains(loadingIndicator)) {
+                        loadingIndicator.remove();
+                    }
+                }, 1000);
+            });
+        }
+        // Enhanced hover effects
+        card.addEventListener('mouseenter', function() {
+            if (!this.classList.contains('coming-soon')) {
+                this.style.transform = 'translateY(-15px) scale(1.02)';
+                this.style.boxShadow = '0 25px 60px rgba(0,0,0,0.2)';
+            }
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-10px) scale(1)';
+            this.style.boxShadow = '0 15px 35px rgba(0,0,0,0.1)';
+        });
+    });
+});
 // Smooth scroll animation observer
 const observerOptions = {
     threshold: 0.1,
