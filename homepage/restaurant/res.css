@@ -8,6 +8,16 @@
 }
 
 /* Navbar Styles */
+/* Navbar Inner Flex Layout Fix */
+.navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
 .navbar {
     position: fixed;
     top: 0;
@@ -93,6 +103,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    padding-right: 1rem;
 }
 
 .profile-btn {
@@ -1093,6 +1104,9 @@ body {
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+    .navbar-inner {
+        padding: 0 1.5rem;
+    }
     .container {
         padding: 0 1.5rem;
     }
@@ -1141,6 +1155,12 @@ body {
 }
 
 @media (max-width: 768px) {
+    .nav-right {
+        padding-right: 1.2rem;
+    }
+    .navbar-inner {
+        padding: 0 1rem;
+    }
     .container {
         padding: 0 1rem;
     }
@@ -1206,6 +1226,12 @@ body {
 }
 
 @media (max-width: 480px) {
+    .nav-right {
+        padding-right: 1.5rem;
+    }
+    .navbar-inner {
+        padding: 0 0.8rem;
+    }
     .container {
         padding: 0 0.8rem;
     }

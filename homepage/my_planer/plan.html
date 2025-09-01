@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meal Planner - Flodaz Recipes</title>
+    <link rel="stylesheet" href="plan.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="navbar-inner">
+            <div class="nav-left">
+                <a href="../mainpage/main.html" class="brand">Meal planner</a>
+            </div>
+
+            <nav class="nav-center" id="mainNav">
+                
+                <a href="../community/community.html" class="nav-link">Community</a>
+                <a href="../donations/donate.html" class="nav-link">Donations</a>
+                <a href="../aboutpage/about.html" class="nav-link">About</a>
+                <a href="../restaurant/res.html" class="nav-link">Restaurants</a>
+                <a href="../premium/upgrade.html" class="nav-link">Premium</a>
+            </nav>
+
+            <div class="nav-right">
+                <div class="nav-controls">
+                    <button class="profile-btn" id="profileBtn" aria-label="Open profile">
+                        <div class="avatar" id="avatarCircle">?</div>
+                    </button>
+
+                    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Hero Section -->
+    <section class="hero full-width">
+        <div class="hero-inner">
+            <h1>Personalized Meal Plans</h1>
+            <p>AI-powered weekly meal plans designed for your unique health goals, dietary needs, and lifestyle. From children to seniors, weight management to specialized conditions.</p>
+
+            <div class="planner-box">
+                <div class="planner-form">
+                    <div class="form-section">
+                        <label for="healthGoal">Primary Health Goal</label>
+                        <select id="healthGoal">
+                            <option value="">Select your goal...</option>
+                            <option value="weight-loss">Weight Loss</option>
+                            <option value="weight-gain">Healthy Weight Gain</option>
+                            <option value="muscle-building">Muscle Building</option>
+                            <option value="heart-health">Heart Health</option>
+                            <option value="diabetes-management">Diabetes Management</option>
+                            <option value="general-wellness">General Wellness</option>
+                            <option value="pregnancy-nutrition">Pregnancy Nutrition</option>
+                            <option value="child-nutrition">Child Nutrition</option>
+                            <option value="senior-nutrition">Senior Nutrition</option>
+                            <option value="eating-disorder-recovery">Eating Disorder Recovery</option>
+                        </select>
+                    </div>
+                    <div class="form-section">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" name="country" placeholder="Enter your country for local foods..." autocomplete="country" />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-section">
+                            <label for="ageGroup">Age Group</label>
+                            <select id="ageGroup">
+                                <option value="">Select age...</option>
+                                <option value="infant">Infant (6-12 months)</option>
+                                <option value="toddler">Toddler (1-3 years)</option>
+                                <option value="child">Child (4-12 years)</option>
+                                <option value="teen">Teen (13-18 years)</option>
+                                <option value="adult">Adult (19-64 years)</option>
+                                <option value="senior">Senior (65+ years)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="activityLevel">Activity Level</label>
+                            <select id="activityLevel">
+                                <option value="">Select activity...</option>
+                                <option value="sedentary">Sedentary (desk job)</option>
+                                <option value="light">Light (1-3 days/week exercise)</option>
+                                <option value="moderate">Moderate (3-5 days/week exercise)</option>
+                                <option value="active">Active (6-7 days/week exercise)</option>
+                                <option value="very-active">Very Active (2x/day or intense training)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label>Dietary Preferences & Restrictions</label>
+                        <div class="dietary-checkboxes" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 4px;">
+                            <label><input type="checkbox" name="dietaryRestrictions" value="none"> No restrictions</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="vegetarian"> Vegetarian</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="vegan"> Vegan</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="gluten-free"> Gluten-Free</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="dairy-free"> Dairy-Free</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="keto"> Ketogenic</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="paleo"> Paleo</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="low-sodium"> Low Sodium</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="low-sugar"> Low Sugar</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="halal"> Halal</label>
+                            <label><input type="checkbox" name="dietaryRestrictions" value="kosher"> Kosher</label>
+                        </div>
+                        <p class="form-hint">Select all that apply</p>
+                    </div>
+
+                    <div class="form-section">
+                        <label for="healthConditions">Health Considerations (Optional)</label>
+                        <textarea id="healthConditions" placeholder="e.g., High blood pressure, food allergies, specific medications that affect diet..." rows="3"></textarea>
+                        <p class="form-hint">This information helps create safer, more appropriate meal plans</p>
+                    </div>
+
+                    <button class="btn primary" id="generatePlanBtn">Generate My Meal Plan</button>
+                </div>
+            </div>
+
+            <div id="mealPlanOutput" class="meal-plan-output"></div>
+        </div>
+    </section>
+
+    <!-- Sample Plans Section -->
+    <main class="main-content">
+        <div class="container">
+            <h2 class="section-title">Sample Meal Plans</h2>
+            <p class="section-subtitle">Explore our expertly crafted meal plans for different health goals and life stages</p>
+
+            <div class="plan-filters">
+                <button class="filter-btn active" data-category="all">All Plans</button>
+                <button class="filter-btn" data-category="weight-management">Weight Management</button>
+                <button class="filter-btn" data-category="family">Family Nutrition</button>
+                <button class="filter-btn" data-category="specialized">Specialized Diets</button>
+                <button class="filter-btn" data-category="health-conditions">Health Conditions</button>
+            </div>
+
+            <div id="plansGallery" class="plans-gallery"></div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="features-section full-width">
+        <div class="container">
+            <h2 class="section-title">Why Our Meal Plans Work</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>AI-Powered Personalization</h3>
+                    <p>Advanced algorithms consider your unique needs, preferences, and health goals to create truly personalized meal plans.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏥</div>
+                    <h3>Health-Focused</h3>
+                    <p>All plans are designed with nutritional science in mind, supporting various health conditions and life stages safely.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Balanced Approach</h3>
+                    <p>We promote sustainable, balanced eating habits that support long-term health rather than quick fixes.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                    <h3>Family-Friendly</h3>
+                    <p>Plans can be adapted for families, with options suitable for different ages and developmental needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section full-width">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Custom Meal Plans</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">User Satisfaction</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Health Conditions Supported</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AI Availability</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="overlay"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
+    <script src="plan.js"></script>
+</body>
+</html>
