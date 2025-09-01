@@ -1,3 +1,29 @@
+// Hamburger menu logic for about.html
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const navLinks = document.getElementById('navLinks');
+    if (hamburgerBtn && navLinks) {
+        hamburgerBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
+            hamburgerBtn.classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            if (navLinks.classList.contains('active')) {
+                if (!navLinks.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                    navLinks.classList.remove('active');
+                    hamburgerBtn.classList.remove('active');
+                }
+            }
+        });
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            });
+        });
+    }
+});
 // About Us JavaScript - Enhanced interactions and animations
 
 // Initialize when DOM is loaded

@@ -3,7 +3,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -59,6 +58,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0;
 }
 
 .brand {
@@ -88,20 +88,35 @@ body {
     border: none;
     cursor: pointer;
     padding: 0.5rem;
+    gap: 4px;
 }
 
 .hamburger span {
-    width: 20px;
-    height: 2px;
+    width: 25px;
+    height: 3px;
     background: #4a5568;
-    margin: 2px 0;
-    transition: 0.3s;
     border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .nav-center {
     display: flex;
     gap: 2rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 .nav-link {
@@ -112,6 +127,8 @@ body {
     border-radius: 8px;
     transition: all 0.2s;
     position: relative;
+    white-space: nowrap;
+    font-size: 0.9rem;
 }
 
 .nav-link:hover {
@@ -126,6 +143,7 @@ body {
 
 .nav-right {
     position: relative;
+    flex-shrink: 0;
 }
 
 .nav-controls {
@@ -139,6 +157,11 @@ body {
     border: none;
     cursor: pointer;
     padding: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.profile-btn:hover {
+    transform: scale(1.1);
 }
 
 .avatar {
@@ -152,71 +175,18 @@ body {
     justify-content: center;
     font-weight: 600;
     font-size: 0.9rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.avatar:hover {
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
 }
 
 .avatar.sm {
     width: 28px;
     height: 28px;
     font-size: 0.8rem;
-}
-
-.profile-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    padding: 1rem;
-    min-width: 280px;
-    border: 1px solid #e2e8f0;
-    display: none;
-    z-index: 1001;
-}
-
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 1rem;
-}
-
-.name {
-    font-weight: 600;
-    color: #2d3748;
-}
-
-.username {
-    font-size: 0.85rem;
-    color: #718096;
-}
-
-.profile-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5rem 0;
-    font-size: 0.9rem;
-}
-
-.badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.badge.free {
-    background: #fed7d7;
-    color: #c53030;
-}
-
-.profile-actions {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
 }
 
 /* Buttons */
@@ -756,6 +726,54 @@ input:focus, select:focus {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav-center {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        gap: 0;
+        z-index: 999;
+        border-top: 1px solid #e2e8f0;
+    }
+    
+    .nav-center.active {
+        display: flex;
+    }
+    
+    .nav-link {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        width: 100%;
+    }
+    
+    .nav-link:last-child {
+        border-bottom: none;
+    }
+    
+    .container {
+        padding: 0 1.5rem;
+    }
+    
+    .navbar-inner {
+        padding: 0 1.5rem;
+    }
+    
+    .hero-inner {
+        padding: 0 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .hamburger {
         display: flex;
@@ -772,6 +790,8 @@ input:focus, select:focus {
         padding: 1rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         gap: 0;
+        z-index: 999;
+        border-top: 1px solid #e2e8f0;
     }
     
     .nav-center.active {
@@ -830,12 +850,10 @@ input:focus, select:focus {
         margin: 1rem;
     }
     
-    .profile-menu {
-        right: -50px;
-        min-width: 250px;
-    }
-    
     .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}d {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
@@ -884,6 +902,7 @@ input:focus, select:focus {
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 }

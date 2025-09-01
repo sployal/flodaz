@@ -460,53 +460,47 @@ function setupEventListeners() {
         loadMoreBtn.addEventListener('click', loadMorePosts);
     }
 
-    // Profile menu
-    const profileBtn = document.getElementById('profileBtn');
-    const profileMenu = document.getElementById('profileMenu');
-    
-    if (profileBtn && profileMenu) {
-        profileBtn.addEventListener('click', function(e) {
+    // Modern Navbar: Hamburger and Links
+    const navbarHamburger = document.getElementById('navbarHamburger');
+    const navbarLinks = document.getElementById('navbarLinks');
+    const navbarLinkEls = navbarLinks ? navbarLinks.querySelectorAll('a') : [];
+
+    if (navbarHamburger && navbarLinks) {
+        navbarHamburger.addEventListener('click', function(e) {
             e.stopPropagation();
-            const isVisible = profileMenu.style.display === 'block';
-            profileMenu.style.display = isVisible ? 'none' : 'block';
+            navbarLinks.classList.toggle('active');
+            navbarHamburger.classList.toggle('active');
         });
 
+        // Close mobile nav when clicking outside
         document.addEventListener('click', function(e) {
-            if (!profileMenu.contains(e.target) && !profileBtn.contains(e.target)) {
-                profileMenu.style.display = 'none';
+            if (!navbarLinks.contains(e.target) && !navbarHamburger.contains(e.target)) {
+                navbarLinks.classList.remove('active');
+                navbarHamburger.classList.remove('active');
             }
         });
-    }
 
-    // Mobile navigation
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const mainNav = document.getElementById('mainNav');
-    
-    if (hamburgerBtn && mainNav) {
-        hamburgerBtn.addEventListener('click', function() {
-            mainNav.classList.toggle('active');
-            hamburgerBtn.classList.toggle('active');
-        });
-        
-        // Close mobile navigation when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!mainNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-                closeMobileNav();
-            }
-        });
-        
-        // Close mobile navigation when clicking on nav links
-        const navLinks = document.querySelectorAll('.nav-link');
-        navLinks.forEach(link => {
+        // Close mobile nav when clicking a nav link
+        navbarLinkEls.forEach(link => {
             link.addEventListener('click', function() {
-                closeMobileNav();
+                navbarLinks.classList.remove('active');
+                navbarHamburger.classList.remove('active');
+                // Set active class
+                navbarLinkEls.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                // Handle navigation
+                if (this.getAttribute('href').startsWith('#')) {
+                    const section = this.getAttribute('href').substring(1);
+                    handleNavigation(section);
+                }
             });
         });
-        
-        // Close mobile navigation with Escape key
+
+        // Close mobile nav with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                closeMobileNav();
+                navbarLinks.classList.remove('active');
+                navbarHamburger.classList.remove('active');
             }
         });
     }
@@ -977,84 +971,7 @@ function resetForm() {
 
 // Notification system
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(n => n.remove());
-    
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()">×</button>
-        </div>
-    `;
-    
-    // Add notification styles if they don't exist
-    if (!document.querySelector('.notification-styles')) {
-        const style = document.createElement('style');
-        style.className = 'notification-styles';
-        style.textContent = `
-            .notification {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 9999;
-                min-width: 300px;
-                max-width: 500px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-                border-left: 4px solid #4285f4;
-                animation: slideInRight 0.4s ease;
-                overflow: hidden;
-            }
-            .notification.error { border-left-color: #e53e3e; }
-            .notification.warning { border-left-color: #ed8936; }
-            .notification.success { border-left-color: #38a169; }
-            .notification-content {
-                padding: 1rem 1.5rem;
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .notification button {
-                background: none;
-                border: none;
-                font-size: 1.2rem;
-                cursor: pointer;
-                color: #666;
-                padding: 0;
-                line-height: 1;
-                border-radius: 50%;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: background 0.3s ease;
-            }
-            .notification button:hover {
-                background: #f0f0f0;
-            }
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (document.body.contains(notification)) {
-            notification.style.animation = 'slideInRight 0.4s ease reverse';
-            setTimeout(() => notification.remove(), 400);
-        }
-    }, 5000);
+    // Notification popup removed as requested. No operation.
 }
 
 // Search functionality

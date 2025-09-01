@@ -12,7 +12,6 @@
         <div class="navbar-inner">
             <div class="nav-left">
                 <a href="../../index.html" class="brand">Flodaz Recipes</a>
-                <span class="tag">SDG • Zero Hunger</span>
             </div>
 
             <nav class="nav-center" id="mainNav">
@@ -26,34 +25,13 @@
 
             <div class="nav-right">
                 <div class="nav-controls">
-                    <button class="profile-btn" id="profileBtn" aria-haspopup="true" aria-expanded="false">
+                    <button class="profile-btn" id="profileBtn" aria-label="Open profile">
                         <div class="avatar" id="avatarCircle">?</div>
                     </button>
 
                     <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
                         <span></span><span></span><span></span>
                     </button>
-                </div>
-
-                <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
-                    <div class="profile-header">
-                        <div class="avatar sm" id="avatarCircleMenu">?</div>
-                        <div>
-                            <div class="name" id="pmName">Guest</div>
-                            <div class="username" id="pmUsername">@guest</div>
-                        </div>
-                    </div>
-
-                    <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
-                    <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
-                    <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
-                    <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
-
-                    <div class="profile-actions">
-                        <a class="btn primary" id="upgradeBtn" href="../profile/profile.html">profile</a>
-                        <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
-                        <a class="btn danger" id="loginBtn" href="../../loginpage/login.html">Logout</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -169,6 +147,7 @@
     </section>
 
     <div id="overlay"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upgrade to Premium - Flodaz Recipes</title>
     <link rel="stylesheet" href="upgrade.css">
+    <!-- Intasend JavaScript SDK -->
+    <script src="https://unpkg.com/intasend-inlinejs-sdk@3.0.4/build/intasend-inline.js"></script>
 </head>
 <body>
     <!-- Navbar -->
     <header class="navbar">
         <div class="nav-left">
-            <a class="brand" href="../mainpage/main.html">Flodaz Recipes</a>
-            <span class="tag">SDG • Zero Hunger</span>
+            <a class="brand" href="../mainpage/main.html">Pro Plans</a>
         </div>
-
         <nav class="nav-center" id="mainNav">
             <a href="#pricing-section" class="nav-link">Pricing Plans</a>
             <a href="#comparison-section" class="nav-link">Features</a>
@@ -29,26 +29,6 @@
                 <span></span><span></span><span></span>
             </button>
 
-            <div class="profile-menu" id="profileMenu" role="menu" aria-hidden="true">
-                <div class="profile-header">
-                    <div class="avatar sm" id="avatarCircleMenu">?</div>
-                    <div>
-                        <div class="name" id="pmName">Guest</div>
-                        <div class="username" id="pmUsername">@guest</div>
-                    </div>
-                </div>
-
-                <div class="profile-row"><span>Email</span><span id="pmEmail">—</span></div>
-                <div class="profile-row"><span>DOB</span><span id="pmDob">—</span></div>
-                <div class="profile-row"><span>Account</span><span id="pmAccountType" class="badge free">Free</span></div>
-                <div class="profile-row"><span>AI Prompts</span><span id="pmPrompts">0 / 20</span></div>
-
-                <div class="profile-actions">
-                    <a class="btn primary" href="upgrade.html">Upgrade (Premium)</a>
-                    <a class="btn ghost" href="../restaurant/res.html">Advertise Restaurant</a>
-                    <a class="btn danger" id="logoutBtn" href="../../loginpage/login.html">Logout</a>
-                </div>
-            </div>
         </div>
     </header>
 
@@ -98,7 +78,7 @@
                     <div class="plan-header">
                         <h3>Free</h3>
                         <div class="price">
-                            <span class="currency">SDG</span>
+                            <span class="currency">KSh</span>
                             <span class="amount">0</span>
                             <span class="period">/month</span>
                         </div>
@@ -141,15 +121,15 @@
                     <div class="plan-header">
                         <h3>Premium</h3>
                         <div class="price">
-                            <span class="currency">SDG</span>
-                            <span class="amount monthly-price">49</span>
-                            <span class="amount annual-price" style="display: none;">39</span>
+                            <span class="currency">KSh</span>
+                            <span class="amount monthly-price">300</span>
+                            <span class="amount annual-price" style="display: none;">240</span>
                             <span class="period monthly-period">/month</span>
                             <span class="period annual-period" style="display: none;">/month</span>
                         </div>
                         <div class="price-note">
                             <span class="monthly-note">Billed monthly</span>
-                            <span class="annual-note" style="display: none;">Billed annually (SDG 468/year)</span>
+                            <span class="annual-note" style="display: none;">Billed annually (KSh 2,880/year)</span>
                         </div>
                         <p>For serious home cooks</p>
                     </div>
@@ -193,15 +173,15 @@
                     <div class="plan-header">
                         <h3>Pro</h3>
                         <div class="price">
-                            <span class="currency">SDG</span>
-                            <span class="amount monthly-price">99</span>
-                            <span class="amount annual-price" style="display: none;">79</span>
+                            <span class="currency">KSh</span>
+                            <span class="amount monthly-price">1000</span>
+                            <span class="amount annual-price" style="display: none;">800</span>
                             <span class="period monthly-period">/month</span>
                             <span class="period annual-period" style="display: none;">/month</span>
                         </div>
                         <div class="price-note">
                             <span class="monthly-note">Billed monthly</span>
-                            <span class="annual-note" style="display: none;">Billed annually (SDG 948/year)</span>
+                            <span class="annual-note" style="display: none;">Billed annually (KSh 9,600/year)</span>
                         </div>
                         <p>For culinary professionals</p>
                     </div>
@@ -324,7 +304,7 @@
                         <span class="faq-toggle">+</span>
                     </div>
                     <div class="faq-answer">
-                        <p>We use IntaSend for secure payment processing in Sudanese Pounds (SDG). You can pay with mobile money, bank transfer, or card. Your subscription auto-renews unless cancelled.</p>
+                        <p>We accept payments in Kenyan Shillings via M-Pesa, Airtel Money, card payments, and bank transfers through Intasend. Your subscription auto-renews unless cancelled.</p>
                     </div>
                 </div>
                 
@@ -335,6 +315,16 @@
                     </div>
                     <div class="faq-answer">
                         <p>Yes! You can cancel your subscription at any time from your profile settings. You'll continue to have access until the end of your billing period.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>What payment methods do you accept?</h4>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We accept M-Pesa, Airtel Money, Visa, Mastercard, and bank transfers. All payments are processed securely through Intasend.</p>
                     </div>
                 </div>
                 
@@ -376,7 +366,7 @@
                         <p id="selectedPlanDesc">Monthly billing</p>
                     </div>
                     <div class="plan-price">
-                        <span class="price-amount" id="selectedPlanPrice">SDG 49/month</span>
+                        <span class="price-amount" id="selectedPlanPrice">KSh 300/month</span>
                     </div>
                 </div>
             </div>
@@ -386,12 +376,34 @@
                     <h4>Payment Method</h4>
                     <div class="method-grid">
                         <label class="payment-method">
-                            <input type="radio" name="paymentMethod" value="mobile" checked>
+                            <input type="radio" name="paymentMethod" value="mpesa" checked>
                             <div class="method-card">
                                 <div class="method-icon">📱</div>
                                 <div class="method-info">
-                                    <span class="method-name">Mobile Money</span>
-                                    <span class="method-desc">Zain Cash, MTN, etc.</span>
+                                    <span class="method-name">M-Pesa</span>
+                                    <span class="method-desc">Pay with M-Pesa mobile money</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="airtel">
+                            <div class="method-card">
+                                <div class="method-icon">📲</div>
+                                <div class="method-info">
+                                    <span class="method-name">Airtel Money</span>
+                                    <span class="method-desc">Pay with Airtel Money</span>
+                                </div>
+                            </div>
+                        </label>
+                        
+                        <label class="payment-method">
+                            <input type="radio" name="paymentMethod" value="card">
+                            <div class="method-card">
+                                <div class="method-icon">💳</div>
+                                <div class="method-info">
+                                    <span class="method-name">Card Payment</span>
+                                    <span class="method-desc">Visa, Mastercard</span>
                                 </div>
                             </div>
                         </label>
@@ -402,18 +414,7 @@
                                 <div class="method-icon">🏦</div>
                                 <div class="method-info">
                                     <span class="method-name">Bank Transfer</span>
-                                    <span class="method-desc">Direct bank payment</span>
-                                </div>
-                            </div>
-                        </label>
-                        
-                        <label class="payment-method">
-                            <input type="radio" name="paymentMethod" value="card">
-                            <div class="method-card">
-                                <div class="method-icon">💳</div>
-                                <div class="method-info">
-                                    <span class="method-name">Credit/Debit Card</span>
-                                    <span class="method-desc">Visa, Mastercard</span>
+                                    <span class="method-desc">Direct bank transfer</span>
                                 </div>
                             </div>
                         </label>
@@ -427,14 +428,14 @@
                 <div class="form-actions">
                     <button type="button" class="btn ghost" id="cancelPayment">Cancel</button>
                     <button type="submit" class="btn premium" id="completePayment">
-                        <span id="paymentBtnText">Complete Payment</span>
+                        <span id="paymentBtnText">Pay with Intasend</span>
                         <div class="payment-spinner" style="display: none;">⏳</div>
                     </button>
                 </div>
                 
                 <div class="payment-security">
-                    <div class="security-badge">🔒 Secured by IntaSend</div>
-                    <p>Your payment information is encrypted and secure</p>
+                    <div class="security-badge">🔒 Secured by Intasend</div>
+                    <p>Your payment information is encrypted and secure. PCI DSS compliant.</p>
                 </div>
             </form>
         </div>
@@ -452,6 +453,18 @@
                 <div class="success-feature">✅ Priority support</div>
             </div>
             <button class="btn premium" id="continueBtn">Continue to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Loading Modal for Intasend -->
+    <div class="modal" id="loadingModal" aria-hidden="true" role="dialog">
+        <div class="modal-card" style="text-align: center; max-width: 400px;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+            <h3>Processing Payment</h3>
+            <p>Please complete the payment on your device...</p>
+            <div style="margin-top: 2rem;">
+                <div class="payment-spinner">🔄</div>
+            </div>
         </div>
     </div>
 

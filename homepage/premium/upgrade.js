@@ -1,26 +1,46 @@
-// Configuration - IntaSend API configuration
+// Intasend Configuration
 const INTASEND_CONFIG = {
-    publicKey: 'YOUR_INTASEND_PUBLIC_KEY', // Replace with your IntaSend public key
-    testMode: true, // Set to false for production
-    currency: 'SDG'
+    publicKey: 'ISPubKey_test_0c2a0c0d-b406-43e6-9a53-50967c70d608',
+    currency: 'KES',
+    testMode: true,
+    baseUrl: 'https://sandbox.intasend.com',
 };
 
 // Global state
-let currentUser = JSON.parse(localStorage.getItem('smartrecipes_user')) || null;
+let currentUser = null;
 let isAnnualBilling = false;
 let selectedPlan = null;
+let currentPlanPrice = 0;
+let currentPlanName = '';
 
-// Pricing data
-const pricingPlans = {
-    premium: {
-        monthly: { amount: 49, period: 'month' },
-        annual: { amount: 39, period: 'month', yearlyTotal: 468 }
-    },
-    pro: {
-        monthly: { amount: 99, period: 'month' },
-        annual: { amount: 79, period: 'month', yearlyTotal: 948 }
+// Simple pricing lookup function
+function getPlanPrice(planType, isAnnual) {
+    const prices = {
+        premium: {
+            monthly: 300,
+            annual: 2880
+        },
+        pro: {
+            monthly: 1000,
+            annual: 9600
+        }
+    };
+    
+    if (!prices[planType]) {
+        console.error('Invalid plan type:', planType);
+        return 0;
     }
-};
+    
+    return isAnnual ? prices[planType].annual : prices[planType].monthly;
+}
+
+function getPlanDisplayText(planType, isAnnual) {
+    const price = getPlanPrice(planType, isAnnual);
+    const period = isAnnual ? 'year' : 'month';
+    const savings = isAnnual ? ' (Save 20%)' : '';
+    
+    return `KSh ${price}/${period}${savings}`;
+}
 
 // DOM Elements
 const billingToggle = document.getElementById('billingToggle');
@@ -32,29 +52,34 @@ const paymentForm = document.getElementById('paymentForm');
 const successModal = document.getElementById('successModal');
 const continueBtn = document.getElementById('continueBtn');
 const overlay = document.getElementById('overlay');
+const loadingModal = document.getElementById('loadingModal');
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
-    initializeUser();
+    console.log('Page loaded, initializing...');
+    loadUserData();
     setupEventListeners();
     setupFAQs();
     updatePricingDisplay();
     setupAnimations();
+    checkForPaymentReturn();
 });
 
-// User management
-function initializeUser() {
-    // Load user from localStorage
-    const user = JSON.parse(localStorage.getItem('smartrecipes_user'));
-    if (user) {
-        currentUser = user;
-        updateProfileDisplay();
-        
-        // If user is already premium, show different messaging
-        if (user.accountType === 'Premium' || user.accountType === 'Pro') {
-            showCurrentPremiumStatus();
+// Load user data
+function loadUserData() {
+    try {
+        const userData = localStorage.getItem('smartrecipes_user');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            console.log('User loaded:', currentUser);
+        } else {
+            console.log('No user found, using guest mode');
         }
-    } else {
+        updateProfileDisplay();
+        showCurrentPremiumStatus();
+    } catch (error) {
+        console.error('Error loading user data:', error);
+        currentUser = null;
         updateProfileDisplay();
     }
 }
@@ -101,15 +126,12 @@ function updateProfileDisplay() {
 }
 
 function showCurrentPremiumStatus() {
-    const currentPlanBtn = document.querySelector('.plan-btn.current');
-    if (currentPlanBtn && currentUser) {
+    if (currentUser && premiumBtn && proBtn) {
         if (currentUser.accountType === 'Premium') {
-            // Update premium button to show current status
             premiumBtn.textContent = 'Current Plan';
             premiumBtn.classList.add('current');
             premiumBtn.disabled = true;
         } else if (currentUser.accountType === 'Pro') {
-            // Update both buttons
             premiumBtn.textContent = 'Downgrade to Premium';
             premiumBtn.classList.remove('premium');
             premiumBtn.classList.add('ghost');
@@ -123,94 +145,127 @@ function showCurrentPremiumStatus() {
 
 // Event listeners setup
 function setupEventListeners() {
-    // Billing toggle
     billingToggle?.addEventListener('click', toggleBilling);
     
-    // Plan selection buttons
-    premiumBtn?.addEventListener('click', () => selectPlan('premium'));
-    proBtn?.addEventListener('click', () => selectPlan('pro'));
+    premiumBtn?.addEventListener('click', () => handlePlanSelection('premium'));
+    proBtn?.addEventListener('click', () => handlePlanSelection('pro'));
     
-    // Modal controls
     paymentCloseBtn?.addEventListener('click', closePaymentModal);
     document.getElementById('cancelPayment')?.addEventListener('click', closePaymentModal);
     continueBtn?.addEventListener('click', () => {
         closeSuccessModal();
-        window.location.href = 'main.html';
+        window.location.href = '../mainpage/main.html';
     });
     
-    // Payment form
-    paymentForm?.addEventListener('submit', handlePayment);
+    paymentForm?.addEventListener('submit', processPayment);
     
-    // Payment method selection
     const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
     paymentMethods.forEach(method => {
-        method.addEventListener('change', updatePaymentDetails);
+        method.addEventListener('change', updatePaymentMethodDisplay);
     });
     
-    // Profile menu functionality
-    const profileBtn = document.getElementById('profileBtn');
-    const profileMenu = document.getElementById('profileMenu');
-    
-    profileBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleProfileMenu();
-    });
-    
-    // Close profile menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (profileMenu && !profileMenu.contains(e.target) && !profileBtn?.contains(e.target)) {
-            closeProfileMenu();
-        }
-    });
-    
-    // Logout functionality
-    document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-    
+    setupProfileMenu();
+    setupMobileMenu();
+    setupModalControls();
+}
 
-    // Mobile navigation
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const mainNav = document.getElementById('mainNav');
-
-    hamburgerBtn?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        mainNav?.classList.toggle('active');
-        hamburgerBtn?.classList.toggle('active');
-    });
-
-    // Close hamburger menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (mainNav?.classList.contains('active')) {
-            if (!mainNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
-                mainNav.classList.remove('active');
-                hamburgerBtn.classList.remove('active');
-            }
-        }
-    });
-
-    // Close hamburger menu when clicking a nav link
-    if (mainNav) {
-        mainNav.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                mainNav.classList.remove('active');
-                hamburgerBtn.classList.remove('active');
-            });
-        });
+// Simplified plan selection
+function handlePlanSelection(planType) {
+    console.log('Plan selection started:', planType);
+    
+    if (!currentUser) {
+        showNotification('Please create an account first to upgrade to premium.', 'warning');
+        return;
     }
     
-    // Close modals on overlay click
-    overlay?.addEventListener('click', () => {
-        closePaymentModal();
-        closeSuccessModal();
+    if (!planType || (planType !== 'premium' && planType !== 'pro')) {
+        console.error('Invalid plan type:', planType);
+        showNotification('Invalid plan selected. Please try again.', 'error');
+        return;
+    }
+    
+    const currentAccountType = currentUser.accountType;
+    const targetAccountType = planType.charAt(0).toUpperCase() + planType.slice(1);
+    
+    if (currentAccountType === targetAccountType) {
+        showNotification('You already have this plan!', 'info');
+        return;
+    }
+    
+    // Set global variables
+    selectedPlan = planType;
+    currentPlanPrice = getPlanPrice(planType, isAnnualBilling);
+    currentPlanName = targetAccountType;
+    
+    console.log('Plan selected:', {
+        plan: selectedPlan,
+        price: currentPlanPrice,
+        name: currentPlanName,
+        annual: isAnnualBilling
     });
     
-    // Escape key to close modals
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closePaymentModal();
-            closeSuccessModal();
-            closeProfileMenu();
+    if (currentPlanPrice <= 0) {
+        showNotification('Error calculating plan price. Please try again.', 'error');
+        return;
+    }
+    
+    openPaymentModal();
+}
+
+function openPaymentModal() {
+    try {
+        const planName = document.getElementById('selectedPlanName');
+        const planDesc = document.getElementById('selectedPlanDesc');
+        const planPrice = document.getElementById('selectedPlanPrice');
+        
+        if (planName) planName.textContent = currentPlanName + ' Plan';
+        if (planDesc) {
+            planDesc.textContent = isAnnualBilling 
+                ? 'Annual billing (Save 20%)' 
+                : 'Monthly billing';
         }
-    });
+        if (planPrice) {
+            const period = isAnnualBilling ? 'year' : 'month';
+            planPrice.textContent = `KSh ${currentPlanPrice}/${period}`;
+        }
+        
+        paymentModal.style.display = 'flex';
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        updatePaymentMethodDisplay();
+        
+    } catch (error) {
+        console.error('Error opening payment modal:', error);
+        showNotification('Error loading payment form. Please try again.', 'error');
+    }
+}
+
+function closePaymentModal() {
+    paymentModal.style.display = 'none';
+    overlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    selectedPlan = null;
+    currentPlanPrice = 0;
+    currentPlanName = '';
+}
+
+function closeSuccessModal() {
+    successModal.style.display = 'none';
+    overlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function closeLoadingModal() {
+    loadingModal.style.display = 'none';
+    overlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function showSuccessModal() {
+    successModal.style.display = 'flex';
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
 // Billing toggle functionality
@@ -218,10 +273,21 @@ function toggleBilling() {
     isAnnualBilling = !isAnnualBilling;
     billingToggle.classList.toggle('annual', isAnnualBilling);
     updatePricingDisplay();
+    
+    // Update current plan price if a plan is selected
+    if (selectedPlan) {
+        currentPlanPrice = getPlanPrice(selectedPlan, isAnnualBilling);
+        
+        // Update modal if it's open
+        const planPrice = document.getElementById('selectedPlanPrice');
+        if (planPrice && paymentModal.style.display === 'flex') {
+            const period = isAnnualBilling ? 'year' : 'month';
+            planPrice.textContent = `KSh ${currentPlanPrice}/${period}`;
+        }
+    }
 }
 
 function updatePricingDisplay() {
-    // Update Premium plan pricing
     const premiumMonthlyPrice = document.querySelector('.premium-plan .monthly-price');
     const premiumAnnualPrice = document.querySelector('.premium-plan .annual-price');
     const premiumMonthlyPeriod = document.querySelector('.premium-plan .monthly-period');
@@ -229,7 +295,6 @@ function updatePricingDisplay() {
     const premiumMonthlyNote = document.querySelector('.premium-plan .monthly-note');
     const premiumAnnualNote = document.querySelector('.premium-plan .annual-note');
     
-    // Update Pro plan pricing
     const proMonthlyPrice = document.querySelector('.pro-plan .monthly-price');
     const proAnnualPrice = document.querySelector('.pro-plan .annual-price');
     const proMonthlyPeriod = document.querySelector('.pro-plan .monthly-period');
@@ -238,7 +303,6 @@ function updatePricingDisplay() {
     const proAnnualNote = document.querySelector('.pro-plan .annual-note');
     
     if (isAnnualBilling) {
-        // Show annual pricing
         if (premiumMonthlyPrice) premiumMonthlyPrice.style.display = 'none';
         if (premiumAnnualPrice) premiumAnnualPrice.style.display = 'inline';
         if (premiumMonthlyPeriod) premiumMonthlyPeriod.style.display = 'none';
@@ -253,7 +317,6 @@ function updatePricingDisplay() {
         if (proMonthlyNote) proMonthlyNote.style.display = 'none';
         if (proAnnualNote) proAnnualNote.style.display = 'inline';
     } else {
-        // Show monthly pricing
         if (premiumMonthlyPrice) premiumMonthlyPrice.style.display = 'inline';
         if (premiumAnnualPrice) premiumAnnualPrice.style.display = 'none';
         if (premiumMonthlyPeriod) premiumMonthlyPeriod.style.display = 'inline';
@@ -270,67 +333,8 @@ function updatePricingDisplay() {
     }
 }
 
-// Plan selection
-function selectPlan(planType) {
-    if (!currentUser) {
-        showNotification('Please create an account first to upgrade to premium.', 'warning');
-        return;
-    }
-    
-    if (currentUser.accountType === planType.charAt(0).toUpperCase() + planType.slice(1)) {
-        showNotification('You already have this plan!', 'info');
-        return;
-    }
-    
-    selectedPlan = planType;
-    showPaymentModal(planType);
-}
-
-function showPaymentModal(planType) {
-    const plan = pricingPlans[planType];
-    const pricing = isAnnualBilling ? plan.annual : plan.monthly;
-    
-    // Update modal content
-    const planName = document.getElementById('selectedPlanName');
-    const planDesc = document.getElementById('selectedPlanDesc');
-    const planPrice = document.getElementById('selectedPlanPrice');
-    
-    if (planName) planName.textContent = planType.charAt(0).toUpperCase() + planType.slice(1) + ' Plan';
-    if (planDesc) {
-        planDesc.textContent = isAnnualBilling 
-            ? `Annual billing (Save 20%)` 
-            : 'Monthly billing';
-    }
-    if (planPrice) {
-        planPrice.textContent = isAnnualBilling 
-            ? `SDG ${pricing.yearlyTotal}/year` 
-            : `SDG ${pricing.amount}/${pricing.period}`;
-    }
-    
-    // Show modal
-    paymentModal.style.display = 'flex';
-    overlay.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    
-    // Initialize payment details
-    updatePaymentDetails();
-}
-
-function closePaymentModal() {
-    paymentModal.style.display = 'none';
-    overlay.style.display = 'none';
-    document.body.style.overflow = 'auto';
-    selectedPlan = null;
-}
-
-function closeSuccessModal() {
-    successModal.style.display = 'none';
-    overlay.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Payment method details
-function updatePaymentDetails() {
+// Payment method display
+function updatePaymentMethodDisplay() {
     const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value;
     const paymentDetails = document.getElementById('paymentDetails');
     
@@ -339,43 +343,28 @@ function updatePaymentDetails() {
     let detailsHTML = '';
     
     switch (selectedMethod) {
-        case 'mobile':
+        case 'mpesa':
             detailsHTML = `
                 <div class="payment-field">
-                    <label>Mobile Number</label>
-                    <input type="tel" id="mobileNumber" required placeholder="+249 XX XXX XXXX" />
+                    <label>M-Pesa Phone Number</label>
+                    <input type="tel" id="mpesaPhone" required placeholder="254712345678" maxlength="12" />
+                    <small style="color: #718096; font-size: 0.8rem;">Format: 254XXXXXXXXX</small>
                 </div>
-                <div class="payment-field">
-                    <label>Mobile Money Provider</label>
-                    <select id="provider" required>
-                        <option value="">Select provider</option>
-                        <option value="zain">Zain Cash</option>
-                        <option value="mtn">MTN Mobile Money</option>
-                        <option value="sudani">Sudani Mobile Money</option>
-                    </select>
+                <div style="text-align: center; color: #718096; font-size: 0.9rem; margin-top: 1rem;">
+                    <p>You'll receive an M-Pesa prompt on your phone</p>
                 </div>
             `;
             break;
             
-        case 'bank':
+        case 'airtel':
             detailsHTML = `
                 <div class="payment-field">
-                    <label>Account Holder Name</label>
-                    <input type="text" id="accountName" required placeholder="Full name as on account" />
+                    <label>Airtel Money Phone Number</label>
+                    <input type="tel" id="airtelPhone" required placeholder="254730123456" maxlength="12" />
+                    <small style="color: #718096; font-size: 0.8rem;">Format: 254XXXXXXXXX</small>
                 </div>
-                <div class="payment-field">
-                    <label>Bank Name</label>
-                    <select id="bankName" required>
-                        <option value="">Select bank</option>
-                        <option value="bob">Bank of Khartoum</option>
-                        <option value="bnb">Blue Nile Bank</option>
-                        <option value="faisal">Faisal Islamic Bank</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="payment-field">
-                    <label>Account Number</label>
-                    <input type="text" id="accountNumber" required placeholder="Your account number" />
+                <div style="text-align: center; color: #718096; font-size: 0.9rem; margin-top: 1rem;">
+                    <p>You'll receive an Airtel Money prompt on your phone</p>
                 </div>
             `;
             break;
@@ -383,62 +372,94 @@ function updatePaymentDetails() {
         case 'card':
             detailsHTML = `
                 <div class="payment-field">
-                    <label>Card Number</label>
-                    <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19" />
-                </div>
-                <div class="field-row">
-                    <div class="payment-field">
-                        <label>Expiry Date</label>
-                        <input type="text" id="expiryDate" required placeholder="MM/YY" maxlength="5" />
-                    </div>
-                    <div class="payment-field">
-                        <label>CVV</label>
-                        <input type="text" id="cvv" required placeholder="123" maxlength="4" />
-                    </div>
+                    <label>Email Address</label>
+                    <input type="email" id="cardEmail" required placeholder="your@email.com" 
+                           value="${currentUser?.email || ''}" />
                 </div>
                 <div class="payment-field">
-                    <label>Cardholder Name</label>
-                    <input type="text" id="cardholderName" required placeholder="Name on card" />
+                    <label>Full Name</label>
+                    <input type="text" id="cardName" required placeholder="John Doe" 
+                           value="${currentUser?.fullName || ''}" />
+                </div>
+                <div style="text-align: center; color: #718096; font-size: 0.9rem; margin-top: 1rem;">
+                    <p>You'll be redirected to secure card payment</p>
                 </div>
             `;
             break;
+            
+        case 'bank':
+            detailsHTML = `
+                <div class="payment-field">
+                    <label>Email Address</label>
+                    <input type="email" id="bankEmail" required placeholder="your@email.com" 
+                           value="${currentUser?.email || ''}" />
+                </div>
+                <div class="payment-field">
+                    <label>Full Name</label>
+                    <input type="text" id="bankName" required placeholder="John Doe" 
+                           value="${currentUser?.fullName || ''}" />
+                </div>
+                <div style="text-align: center; color: #718096; font-size: 0.9rem; margin-top: 1rem;">
+                    <p>You'll receive bank transfer instructions</p>
+                </div>
+            `;
+            break;
+            
+        default:
+            detailsHTML = '<p style="text-align: center; color: #666;">Please select a payment method</p>';
     }
     
     paymentDetails.innerHTML = detailsHTML;
     
-    // Add input formatting for card number and expiry
-    if (selectedMethod === 'card') {
-        setupCardFormatting();
+    // Setup phone formatting
+    if (selectedMethod === 'mpesa' || selectedMethod === 'airtel') {
+        setupPhoneInput(selectedMethod);
     }
 }
 
-function setupCardFormatting() {
-    const cardNumber = document.getElementById('cardNumber');
-    const expiryDate = document.getElementById('expiryDate');
+function setupPhoneInput(method) {
+    const phoneInput = document.getElementById(method + 'Phone');
     
-    // Format card number
-    cardNumber?.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-        e.target.value = value;
-    });
-    
-    // Format expiry date
-    expiryDate?.addEventListener('input', (e) => {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2, 4);
-        }
-        e.target.value = value;
-    });
+    if (phoneInput) {
+        phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.startsWith('0')) {
+                value = '254' + value.substring(1);
+            } else if (value.startsWith('7') || value.startsWith('1')) {
+                value = '254' + value;
+            }
+            
+            if (value.length > 12) {
+                value = value.substring(0, 12);
+            }
+            
+            e.target.value = value;
+        });
+    }
 }
 
-// Payment processing
-async function handlePayment(e) {
+// SIMPLIFIED: Main payment processor
+async function processPayment(e) {
     e.preventDefault();
     
-    if (!selectedPlan || !currentUser) {
-        showNotification('Please select a plan and ensure you are logged in.', 'error');
+    console.log('Payment process started');
+    console.log('Current state:', {
+        selectedPlan,
+        currentPlanPrice,
+        currentPlanName,
+        isAnnualBilling,
+        currentUser: !!currentUser
+    });
+    
+    // Basic validation
+    if (!currentUser) {
+        showNotification('Please log in to continue.', 'error');
+        return;
+    }
+    
+    if (!selectedPlan || currentPlanPrice <= 0) {
+        showNotification('Please select a valid plan.', 'error');
         return;
     }
     
@@ -448,105 +469,161 @@ async function handlePayment(e) {
         return;
     }
     
-    // Validate payment details based on method
-    const isValid = validatePaymentDetails(selectedMethod);
-    if (!isValid) {
+    // Validate payment method specific fields
+    if (!validatePaymentInputs(selectedMethod)) {
         return;
     }
     
-    // Show loading state
-    const paymentBtn = document.getElementById('completePayment');
-    const paymentBtnText = document.getElementById('paymentBtnText');
-    const paymentSpinner = document.querySelector('.payment-spinner');
-    
-    paymentBtn.disabled = true;
-    paymentBtnText.style.display = 'none';
-    paymentSpinner.style.display = 'inline-block';
+    // Set loading state
+    setButtonLoading(true);
     
     try {
-        // Simulate payment processing
-        await processPayment(selectedMethod);
-        
-        // Update user account
-        const newAccountType = selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1);
-        currentUser.accountType = newAccountType;
-        currentUser.upgradeDate = new Date().toISOString();
-        currentUser.billingCycle = isAnnualBilling ? 'annual' : 'monthly';
-        
-        // Save updated user data
-        localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
-        
-        // Close payment modal and show success
-        closePaymentModal();
-        showSuccessModal();
-        
-        // Update profile display
-        updateProfileDisplay();
-        
+        console.log('Creating payment request...');
+        await createIntasendPayment(selectedMethod);
     } catch (error) {
-        console.error('Payment error:', error);
-        showNotification('Payment failed. Please try again or contact support.', 'error');
-    } finally {
-        // Reset button state
-        paymentBtn.disabled = false;
-        paymentBtnText.style.display = 'inline';
-        paymentSpinner.style.display = 'none';
+        console.error('Payment processing error:', error);
+        showNotification('Payment failed: ' + error.message, 'error');
+        setButtonLoading(false);
     }
 }
 
-function validatePaymentDetails(method) {
+// Simplified payment creation
+async function createIntasendPayment(method) {
+    try {
+        // Create payment reference
+        const paymentRef = 'SR_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        
+        // Prepare payment data
+        const paymentData = {
+            public_key: INTASEND_CONFIG.publicKey,
+            amount: currentPlanPrice,
+            currency: INTASEND_CONFIG.currency,
+            api_ref: paymentRef,
+            email: currentUser.email,
+            first_name: currentUser.fullName ? currentUser.fullName.split(' ')[0] : 'User',
+            last_name: currentUser.fullName ? currentUser.fullName.split(' ').slice(1).join(' ') : 'Name',
+            redirect_url: window.location.href.split('?')[0] + '?payment=success&ref=' + paymentRef,
+            narrative: `SmartRecipes ${currentPlanName} Plan`
+        };
+        
+        // Add method-specific data
+        if (method === 'mpesa') {
+            const phone = document.getElementById('mpesaPhone').value;
+            paymentData.phone_number = phone;
+            paymentData.method = 'M-PESA';
+        } else if (method === 'airtel') {
+            const phone = document.getElementById('airtelPhone').value;
+            paymentData.phone_number = phone;
+            paymentData.method = 'AIRTEL-MONEY';
+        } else if (method === 'card') {
+            const email = document.getElementById('cardEmail').value;
+            const name = document.getElementById('cardName').value;
+            paymentData.email = email;
+            paymentData.first_name = name.split(' ')[0];
+            paymentData.last_name = name.split(' ').slice(1).join(' ') || 'Name';
+            paymentData.method = 'CARD';
+        } else if (method === 'bank') {
+            const email = document.getElementById('bankEmail').value;
+            const name = document.getElementById('bankName').value;
+            paymentData.email = email;
+            paymentData.first_name = name.split(' ')[0];
+            paymentData.last_name = name.split(' ').slice(1).join(' ') || 'Name';
+            paymentData.method = 'BANK';
+        }
+        
+        console.log('Sending payment data to IntaSend:', paymentData);
+        
+        // Store payment context
+        const paymentContext = {
+            ref: paymentRef,
+            plan: selectedPlan,
+            planName: currentPlanName,
+            price: currentPlanPrice,
+            billing: isAnnualBilling ? 'annual' : 'monthly',
+            method: method,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('payment_context', JSON.stringify(paymentContext));
+        
+        // Create checkout
+        const response = await fetch(`${INTASEND_CONFIG.baseUrl}/api/v1/checkout/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-IntaSend-Public-Key-Id': INTASEND_CONFIG.publicKey
+            },
+            body: JSON.stringify(paymentData)
+        });
+        
+        const result = await response.json();
+        console.log('IntaSend response:', result);
+        
+        if (!response.ok) {
+            throw new Error(result.error || result.detail || `Payment service error (${response.status})`);
+        }
+        
+        if (result.url) {
+            closePaymentModal();
+            showLoadingModal('Redirecting to payment page...');
+            
+            setTimeout(() => {
+                window.location.href = result.url;
+            }, 1000);
+        } else {
+            throw new Error('No payment URL received from IntaSend');
+        }
+        
+    } catch (error) {
+        console.error('IntaSend payment creation error:', error);
+        throw error;
+    }
+}
+
+// Input validation
+function validatePaymentInputs(method) {
     switch (method) {
-        case 'mobile':
-            const mobileNumber = document.getElementById('mobileNumber')?.value;
-            const provider = document.getElementById('provider')?.value;
-            
-            if (!mobileNumber || !provider) {
-                showNotification('Please fill in all mobile payment details.', 'error');
-                return false;
-            }
-            
-            if (!mobileNumber.match(/^\+249\d{9}$/)) {
-                showNotification('Please enter a valid Sudanese mobile number (+249XXXXXXXXX).', 'error');
+        case 'mpesa':
+            const mpesaPhone = document.getElementById('mpesaPhone')?.value;
+            if (!mpesaPhone || !mpesaPhone.match(/^254[0-9]{9}$/)) {
+                showNotification('Please enter a valid M-Pesa number (254XXXXXXXXX)', 'error');
                 return false;
             }
             break;
             
-        case 'bank':
-            const accountName = document.getElementById('accountName')?.value;
-            const bankName = document.getElementById('bankName')?.value;
-            const accountNumber = document.getElementById('accountNumber')?.value;
-            
-            if (!accountName || !bankName || !accountNumber) {
-                showNotification('Please fill in all bank details.', 'error');
+        case 'airtel':
+            const airtelPhone = document.getElementById('airtelPhone')?.value;
+            if (!airtelPhone || !airtelPhone.match(/^254[0-9]{9}$/)) {
+                showNotification('Please enter a valid Airtel number (254XXXXXXXXX)', 'error');
                 return false;
             }
             break;
             
         case 'card':
-            const cardNumber = document.getElementById('cardNumber')?.value;
-            const expiryDate = document.getElementById('expiryDate')?.value;
-            const cvv = document.getElementById('cvv')?.value;
-            const cardholderName = document.getElementById('cardholderName')?.value;
+            const cardEmail = document.getElementById('cardEmail')?.value;
+            const cardName = document.getElementById('cardName')?.value;
             
-            if (!cardNumber || !expiryDate || !cvv || !cardholderName) {
-                showNotification('Please fill in all card details.', 'error');
+            if (!cardEmail || !cardName) {
+                showNotification('Please fill in all card payment fields.', 'error');
                 return false;
             }
             
-            // Basic card validation
-            const cleanCardNumber = cardNumber.replace(/\s/g, '');
-            if (cleanCardNumber.length < 13 || cleanCardNumber.length > 19) {
-                showNotification('Please enter a valid card number.', 'error');
+            if (!cardEmail.includes('@')) {
+                showNotification('Please enter a valid email address.', 'error');
+                return false;
+            }
+            break;
+            
+        case 'bank':
+            const bankEmail = document.getElementById('bankEmail')?.value;
+            const bankName = document.getElementById('bankName')?.value;
+            
+            if (!bankEmail || !bankName) {
+                showNotification('Please fill in all bank transfer fields.', 'error');
                 return false;
             }
             
-            if (!expiryDate.match(/^\d{2}\/\d{2}$/)) {
-                showNotification('Please enter expiry date in MM/YY format.', 'error');
-                return false;
-            }
-            
-            if (cvv.length < 3 || cvv.length > 4) {
-                showNotification('Please enter a valid CVV.', 'error');
+            if (!bankEmail.includes('@')) {
+                showNotification('Please enter a valid email address.', 'error');
                 return false;
             }
             break;
@@ -555,32 +632,174 @@ function validatePaymentDetails(method) {
     return true;
 }
 
-async function processPayment(method) {
-    return new Promise((resolve, reject) => {
-        // Simulate payment processing delay
-        setTimeout(() => {
-            // In real implementation, this would integrate with IntaSend API
-            if (Math.random() > 0.1) { // 90% success rate
-                resolve({
-                    transactionId: generateTransactionId(),
-                    method: method,
-                    status: 'success'
-                });
+// Check for payment return
+function checkForPaymentReturn() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+        const paymentRef = urlParams.get('ref');
+        
+        if (paymentStatus === 'success') {
+            const paymentContext = localStorage.getItem('payment_context');
+            
+            if (paymentContext) {
+                const context = JSON.parse(paymentContext);
+                
+                if (!paymentRef || context.ref === paymentRef) {
+                    // Restore context
+                    selectedPlan = context.plan;
+                    currentPlanName = context.planName;
+                    currentPlanPrice = context.price;
+                    isAnnualBilling = context.billing === 'annual';
+                    
+                    // Complete upgrade
+                    upgradeUserAccount();
+                    showSuccessModal();
+                    
+                    // Cleanup
+                    localStorage.removeItem('payment_context');
+                    
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             } else {
-                reject(new Error('Payment processing failed'));
+                showNotification('Payment completed! Please contact support if your account was not upgraded.', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
             }
-        }, 3000);
+        }
+    } catch (error) {
+        console.error('Error checking payment return:', error);
+    }
+}
+
+function upgradeUserAccount() {
+    try {
+        if (!currentUser || !selectedPlan) {
+            console.error('Cannot upgrade - missing user or plan data');
+            return;
+        }
+        
+        currentUser.accountType = currentPlanName;
+        currentUser.upgradeDate = new Date().toISOString();
+        currentUser.billingCycle = isAnnualBilling ? 'annual' : 'monthly';
+        currentUser.lastPaymentAmount = currentPlanPrice;
+        
+        localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+        updateProfileDisplay();
+        
+        console.log('Account upgraded successfully to:', currentPlanName);
+        
+        // Track the upgrade
+        console.log('Upgrade completed:', {
+            plan: selectedPlan,
+            planName: currentPlanName,
+            price: currentPlanPrice,
+            billing: isAnnualBilling ? 'annual' : 'monthly',
+            user: currentUser.username,
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Error upgrading account:', error);
+        showNotification('Account upgrade error. Please contact support.', 'error');
+    }
+}
+
+function setButtonLoading(loading) {
+    const paymentBtn = document.getElementById('completePayment');
+    const paymentBtnText = document.getElementById('paymentBtnText');
+    const paymentSpinner = document.querySelector('.payment-spinner');
+    
+    if (paymentBtn) paymentBtn.disabled = loading;
+    if (paymentBtnText) paymentBtnText.style.display = loading ? 'none' : 'inline';
+    if (paymentSpinner) paymentSpinner.style.display = loading ? 'inline-block' : 'none';
+}
+
+function showLoadingModal(message) {
+    const modal = document.getElementById('loadingModal');
+    const text = modal?.querySelector('p');
+    if (text) text.textContent = message;
+    if (modal) {
+        modal.style.display = 'flex';
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Profile menu setup
+function setupProfileMenu() {
+    const profileBtn = document.getElementById('profileBtn');
+    const profileMenu = document.getElementById('profileMenu');
+    
+    profileBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = profileMenu?.style.display === 'block';
+        if (profileMenu) profileMenu.style.display = isVisible ? 'none' : 'block';
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (profileMenu && !profileMenu.contains(e.target) && !profileBtn?.contains(e.target)) {
+            profileMenu.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        currentUser = null;
+        localStorage.clear();
+        showNotification('Logged out successfully.', 'success');
+        setTimeout(() => {
+            window.location.href = '../../loginpage/login.html';
+        }, 1500);
     });
 }
 
-function generateTransactionId() {
-    return 'FR_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+// Mobile menu setup
+function setupMobileMenu() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mainNav = document.getElementById('mainNav');
+
+    hamburgerBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mainNav?.classList.toggle('active');
+        hamburgerBtn?.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (mainNav?.classList.contains('active')) {
+            if (!mainNav.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+                mainNav.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            }
+        }
+    });
+
+    if (mainNav) {
+        mainNav.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mainNav.classList.remove('active');
+                hamburgerBtn.classList.remove('active');
+            });
+        });
+    }
 }
 
-function showSuccessModal() {
-    successModal.style.display = 'flex';
-    overlay.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+// Modal controls setup
+function setupModalControls() {
+    overlay?.addEventListener('click', () => {
+        closePaymentModal();
+        closeSuccessModal();
+        closeLoadingModal();
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closePaymentModal();
+            closeSuccessModal();
+            closeLoadingModal();
+            const profileMenu = document.getElementById('profileMenu');
+            if (profileMenu) profileMenu.style.display = 'none';
+        }
+    });
 }
 
 // FAQ functionality
@@ -589,15 +808,13 @@ function setupFAQs() {
     
     faqItems.forEach(item => {
         const question = item.querySelector('.faq-question');
-        question.addEventListener('click', () => {
+        question?.addEventListener('click', () => {
             const isActive = item.classList.contains('active');
             
-            // Close all other FAQs
             faqItems.forEach(otherItem => {
                 otherItem.classList.remove('active');
             });
             
-            // Toggle current FAQ
             if (!isActive) {
                 item.classList.add('active');
             }
@@ -605,42 +822,8 @@ function setupFAQs() {
     });
 }
 
-// Profile menu functions
-function toggleProfileMenu() {
-    const profileMenu = document.getElementById('profileMenu');
-    if (profileMenu) {
-        const isVisible = profileMenu.style.display === 'block';
-        profileMenu.style.display = isVisible ? 'none' : 'block';
-    }
-}
-
-function closeProfileMenu() {
-    const profileMenu = document.getElementById('profileMenu');
-    if (profileMenu) {
-        profileMenu.style.display = 'none';
-    }
-}
-
-function handleLogout() {
-    // Clear user data
-    currentUser = null;
-    localStorage.removeItem('smartrecipes_user');
-    localStorage.removeItem('ai_prompt_count');
-    
-    // Update UI
-    updateProfileDisplay();
-    closeProfileMenu();
-    showNotification('You have been logged out successfully.', 'success');
-    
-    // Redirect to login page after a brief delay
-    setTimeout(() => {
-        window.location.href = '../../loginpage/login.html';
-    }, 1500);
-}
-
 // Animations
 function setupAnimations() {
-    // Intersection Observer for fade-in animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -655,7 +838,6 @@ function setupAnimations() {
         });
     }, observerOptions);
 
-    // Observe elements that should fade in
     const fadeElements = document.querySelectorAll('.pricing-card, .faq-item');
     fadeElements.forEach((el, index) => {
         el.style.opacity = '0';
@@ -663,20 +845,10 @@ function setupAnimations() {
         el.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
         observer.observe(el);
     });
-    
-    // Add floating animation to pricing cards
-    const pricingCards = document.querySelectorAll('.pricing-card');
-    pricingCards.forEach((card, index) => {
-        setTimeout(() => {
-            card.style.animation = `float-card 6s ease-in-out infinite`;
-            card.style.animationDelay = `${index * 0.5}s`;
-        }, 1000);
-    });
 }
 
-// Utility functions
+// Notification system
 function showNotification(message, type = 'info') {
-    // Remove existing notifications
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(n => n.remove());
     
@@ -689,7 +861,6 @@ function showNotification(message, type = 'info') {
         </div>
     `;
     
-    // Add notification styles if they don't exist
     if (!document.querySelector('.notification-styles')) {
         const style = document.createElement('style');
         style.className = 'notification-styles';
@@ -737,7 +908,6 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Auto remove after 5 seconds
     setTimeout(() => {
         if (document.body.contains(notification)) {
             notification.style.animation = 'slideIn 0.3s ease reverse';
@@ -746,91 +916,19 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Add floating animation keyframes
-if (!document.querySelector('.upgrade-animations')) {
-    const style = document.createElement('style');
-    style.className = 'upgrade-animations';
-    style.textContent = `
-        @keyframes float-card {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .pricing-card.premium-plan {
-            animation: premium-glow 3s ease-in-out infinite;
-        }
-        
-        @keyframes premium-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(66, 133, 244, 0.2); }
-            50% { box-shadow: 0 0 30px rgba(66, 133, 244, 0.4); }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Real IntaSend integration (placeholder for future implementation)
-async function initializeIntaSend() {
-    try {
-        // This would be the actual IntaSend initialization
-        if (typeof IntaSend !== 'undefined') {
-            const intasend = new IntaSend({
-                publicKey: INTASEND_CONFIG.publicKey,
-                test: INTASEND_CONFIG.testMode
-            });
-            return intasend;
-        } else {
-            console.log('IntaSend SDK not loaded, using demo mode');
-            return null;
-        }
-    } catch (error) {
-        console.error('IntaSend initialization error:', error);
-        return null;
-    }
-}
-
-// Analytics and tracking (placeholder)
-function trackUpgrade(planType, billingCycle) {
-    try {
-        // Track upgrade event
-        console.log('Upgrade tracked:', {
-            plan: planType,
-            billing: billingCycle,
-            user: currentUser?.username,
-            timestamp: new Date().toISOString()
+// Smooth scrolling for anchor links
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         });
-        
-        // In real implementation, this would send data to analytics service
-        // Example: analytics.track('upgrade_completed', {...})
-    } catch (error) {
-        console.error('Analytics tracking error:', error);
-    }
-}
-
-// Helper function to format currency
-function formatCurrency(amount, currency = 'SDG') {
-    return new Intl.NumberFormat('en-SD', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 0
-    }).format(amount);
-}
-
-// Initialize smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
     });
 });
 
@@ -848,43 +946,93 @@ document.addEventListener('visibilitychange', function() {
     }
 });
 
-// Keyboard navigation for accessibility
-document.addEventListener('keydown', function(e) {
-    // Handle Enter key on pricing cards
-    if (e.key === 'Enter' && e.target.classList.contains('plan-btn')) {
-        e.target.click();
+// Enhanced debugging and testing
+window.debugPayment = function() {
+    console.log('=== PAYMENT DEBUG ===');
+    console.log('Current user:', currentUser);
+    console.log('Selected plan:', selectedPlan);
+    console.log('Current plan price:', currentPlanPrice);
+    console.log('Current plan name:', currentPlanName);
+    console.log('Is annual billing:', isAnnualBilling);
+    console.log('Config:', INTASEND_CONFIG);
+    
+    // Test price calculation
+    console.log('Premium monthly price:', getPlanPrice('premium', false));
+    console.log('Premium annual price:', getPlanPrice('premium', true));
+    console.log('Pro monthly price:', getPlanPrice('pro', false));
+    console.log('Pro annual price:', getPlanPrice('pro', true));
+    
+    // Test payment context
+    const context = localStorage.getItem('payment_context');
+    if (context) {
+        console.log('Stored payment context:', JSON.parse(context));
+    } else {
+        console.log('No payment context stored');
     }
     
-    // Handle Arrow keys for FAQ navigation
-    if (e.target.classList.contains('faq-question')) {
-        const faqItems = Array.from(document.querySelectorAll('.faq-question'));
-        const currentIndex = faqItems.indexOf(e.target);
-        
-        if (e.key === 'ArrowDown' && currentIndex < faqItems.length - 1) {
-            faqItems[currentIndex + 1].focus();
-        } else if (e.key === 'ArrowUp' && currentIndex > 0) {
-            faqItems[currentIndex - 1].focus();
+    return {
+        user: currentUser,
+        plan: selectedPlan,
+        price: currentPlanPrice,
+        prices: {
+            premiumMonthly: getPlanPrice('premium', false),
+            premiumAnnual: getPlanPrice('premium', true),
+            proMonthly: getPlanPrice('pro', false),
+            proAnnual: getPlanPrice('pro', true)
+        }
+    };
+};
+
+// Test function to simulate plan selection
+window.testPlanSelection = function(planType) {
+    console.log('Testing plan selection for:', planType);
+    
+    // Create a test user if none exists
+    if (!currentUser) {
+        currentUser = {
+            fullName: 'Test User',
+            email: 'test@example.com',
+            username: 'testuser',
+            accountType: 'Free'
+        };
+        localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+        console.log('Created test user');
+    }
+    
+    handlePlanSelection(planType);
+};
+
+// Network error handling
+window.addEventListener('online', function() {
+    showNotification('Connection restored. You can continue with your payment.', 'success');
+});
+
+window.addEventListener('offline', function() {
+    showNotification('No internet connection. Please check your network and try again.', 'warning');
+});
+
+// Global error handler
+window.addEventListener('error', function(e) {
+    console.error('JavaScript error:', e.error);
+    if (e.error && e.error.message) {
+        if (e.error.message.includes('Cannot read properties of undefined')) {
+            console.error('Undefined property access detected');
+            showNotification('A technical error occurred. Please refresh the page and try again.', 'error');
         }
     }
 });
 
-// Price calculation helpers
-function calculateAnnualSavings(planType) {
-    const plan = pricingPlans[planType];
-    const monthlyTotal = plan.monthly.amount * 12;
-    const annualTotal = plan.annual.yearlyTotal;
-    return monthlyTotal - annualTotal;
-}
-
-function getPlanDetails(planType, isAnnual = false) {
-    const plan = pricingPlans[planType];
-    const pricing = isAnnual ? plan.annual : plan.monthly;
-    
-    return {
-        name: planType.charAt(0).toUpperCase() + planType.slice(1),
-        amount: pricing.amount,
-        period: pricing.period,
-        yearlyTotal: pricing.yearlyTotal,
-        savings: isAnnual ? calculateAnnualSavings(planType) : 0
-    };
-}
+// Initialize user data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load user data first
+    try {
+        const userData = localStorage.getItem('smartrecipes_user');
+        if (userData) {
+            currentUser = JSON.parse(userData);
+            console.log('User initialized:', currentUser.username || 'unknown');
+        }
+    } catch (error) {
+        console.error('Error initializing user:', error);
+        currentUser = null;
+    }
+});
