@@ -690,15 +690,92 @@ function displayMealPlan(planData, response) {
 
     // Remove any visible code block tags (e.g. ```html or ```)
     let cleanedResponse = response.replace(/```html|```/g, '').trim();
+    // Generate shopping list from meal plan
+    const shoppingList = generateShoppingList(cleanedResponse, planData.country);
     mealPlanOutput.innerHTML = `
         <h3>${goalLabel}</h3>
         <div class="weekly-plan">${cleanedResponse}</div>
+        <div class="shopping-list-section">
+            <h4>🛒 Shopping List for the Week</h4>
+            <div class="shopping-list-categories">
+                <div class="shopping-category">
+                    <h5>Carbohydrates</h5>
+                    <ul>${shoppingList.carbohydrates.map(item => `<li>${item.name} - ${item.quantity} (${item.estimatedCost})</li>`).join('')}</ul>
+                </div>
+                <div class="shopping-category">
+                    <h5>Proteins</h5>
+                    <ul>${shoppingList.proteins.map(item => `<li>${item.name} - ${item.quantity} (${item.estimatedCost})</li>`).join('')}</ul>
+                </div>
+                <div class="shopping-category">
+                    <h5>Vitamins</h5>
+                    <ul>${shoppingList.vitamins.map(item => `<li>${item.name} - ${item.quantity} (${item.estimatedCost})</li>`).join('')}</ul>
+                </div>
+            </div>
+            <div class="shopping-total"><strong>Estimated Total Cost:</strong> ${shoppingList.totalCost}</div>
+        </div>
         <button class="btn ghost" id="closeMealPlanBtn">Close</button>
     `;
     mealPlanOutput.style.display = 'block';
     document.getElementById('closeMealPlanBtn')?.addEventListener('click', () => {
         mealPlanOutput.style.display = 'none';
     });
+// Helper: Categorize foods and estimate costs
+function generateShoppingList(mealPlanHtml, country) {
+    // Simple food categorization and cost estimation
+    // In production, use a food database/API for accuracy
+    const foodCategories = {
+        carbohydrates: ["rice", "bread", "pasta", "potato", "sweet potato", "oats", "quinoa", "crackers", "granola", "banana", "whole grain", "cereal"],
+        proteins: ["chicken", "beef", "fish", "salmon", "egg", "turkey", "beans", "lentil", "yogurt", "cheese", "milk", "nuts", "tofu", "tilapia", "meatballs", "protein powder"],
+        vitamins: ["spinach", "broccoli", "carrot", "tomato", "peas", "avocado", "berries", "apple", "banana", "mushrooms", "zucchini", "bell pepper", "asparagus", "walnuts", "seeds", "dried fruit", "flaxseed", "sweet potato", "green beans"]
+    };
+    // Simple cost table by country (USD, KES, etc.)
+    const baseCosts = {
+        rice: 2, bread: 2, pasta: 2, potato: 1.5, oats: 2, quinoa: 3, crackers: 2, granola: 3, banana: 1, cereal: 3,
+        chicken: 5, beef: 6, fish: 6, salmon: 8, egg: 2, turkey: 6, beans: 2, lentil: 2, yogurt: 2, cheese: 3, milk: 2, nuts: 3, tofu: 3, tilapia: 6, meatballs: 5, protein_powder: 10,
+        spinach: 2, broccoli: 2, carrot: 1.5, tomato: 2, peas: 2, avocado: 2, berries: 3, apple: 1.5, mushrooms: 2, zucchini: 2, bell_pepper: 2, asparagus: 3, walnuts: 3, seeds: 2, dried_fruit: 2, flaxseed: 2, sweet_potato: 2, green_beans: 2
+    };
+    const countryMultipliers = {
+        Kenya: 1, USA: 1.2, UK: 1.3, India: 0.8, Canada: 1.2, Australia: 1.3, default: 1
+    };
+    const multiplier = countryMultipliers[country] || countryMultipliers.default;
+    // Extract foods from meal plan HTML
+    const foodRegex = /([A-Za-z ]+)(?: with| over| and| on|,|\.|:|\-|\()/g;
+    const foundFoods = {};
+    let match;
+    while ((match = foodRegex.exec(mealPlanHtml)) !== null) {
+        let food = match[1].trim().toLowerCase();
+        if (food.length < 3 || food.length > 30) continue;
+        foundFoods[food] = (foundFoods[food] || 0) + 1;
+    }
+    // Categorize foods
+    const categorized = { carbohydrates: [], proteins: [], vitamins: [] };
+    let totalCost = 0;
+    Object.keys(foundFoods).forEach(food => {
+        let cat = null;
+        if (foodCategories.carbohydrates.some(f => food.includes(f))) cat = 'carbohydrates';
+        else if (foodCategories.proteins.some(f => food.includes(f))) cat = 'proteins';
+        else if (foodCategories.vitamins.some(f => food.includes(f))) cat = 'vitamins';
+        if (cat) {
+            let base = baseCosts[food.replace(/ /g, '_')] || 2;
+            let cost = Math.round(base * multiplier * foundFoods[food]);
+            categorized[cat].push({ name: food, quantity: foundFoods[food] + 'x', estimatedCost: formatCost(cost, country) });
+            totalCost += cost;
+        }
+    });
+    return {
+        carbohydrates: categorized.carbohydrates,
+        proteins: categorized.proteins,
+        vitamins: categorized.vitamins,
+        totalCost: formatCost(totalCost, country)
+    };
+}
+
+function formatCost(cost, country) {
+    // Simple currency formatting
+    const currencyMap = { Kenya: 'KES', USA: 'USD', UK: 'GBP', India: 'INR', Canada: 'CAD', Australia: 'AUD' };
+    const currency = currencyMap[country] || 'USD';
+    return `${cost} ${currency}`;
+}
 }
 
 // Notification utility
