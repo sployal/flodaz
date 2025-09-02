@@ -213,6 +213,57 @@
                     <div class="uploaded-images" id="uploadedImages"></div>
 
                     <div class="form-group">
+                        <label for="postTitle">Title</label>
+                        <input type="text" id="postTitle" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postContent">Content</label>
+                        <textarea id="postContent" name="content" rows="4" required></textarea>
+                    </div>
+
+                    <!-- Recipe Fields (Hidden by default) -->
+                    <div id="recipeFields" class="recipe-fields" style="display: none;">
+                        <h4>Recipe Details</h4>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prepTime">Prep Time</label>
+                                <input type="text" id="prepTime" name="prepTime" placeholder="e.g. 15 minutes">
+                            </div>
+                            <div class="form-group">
+                                <label for="cookTime">Cook Time</label>
+                                <input type="text" id="cookTime" name="cookTime" placeholder="e.g. 30 minutes">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="servings">Servings</label>
+                                <input type="number" id="servings" name="servings" placeholder="e.g. 4" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="difficulty">Difficulty</label>
+                                <select id="difficulty" name="difficulty">
+                                    <option value="easy">Easy</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ingredients">Ingredients (one per line)</label>
+                            <textarea id="ingredients" name="ingredients" rows="6" placeholder="3 cups long-grain rice&#10;500g chicken, cut into pieces&#10;4 large tomatoes, blended"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="instructions">Instructions (one step per line)</label>
+                            <textarea id="instructions" name="instructions" rows="6" placeholder="Season and brown the chicken pieces in a large pot&#10;Remove chicken and sauté onions until golden&#10;Add garlic, tomato blend, and spices"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="tags">Tags (comma separated)</label>
                         <input type="text" id="tags" name="tags" placeholder="african cuisine, spicy, vegetarian">
                     </div>

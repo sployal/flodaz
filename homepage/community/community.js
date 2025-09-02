@@ -1,6 +1,12 @@
-// Community Page JavaScript
+// Community Page JavaScript - Backend Integration with Image Upload
 
-// Sample post data
+// API Configuration
+//const API_BASE_URL = 'http://localhost:5000/api';
+
+const API_BASE_URL = 'https://flodaz.muigaidavie6.repl.co/api';
+
+
+// Sample post data (keep as fallback)
 const postsData = [
     {
         id: 1,
@@ -32,7 +38,7 @@ const postsData = [
             ],
             instructions: [
                 'Season and brown the chicken pieces in a large pot',
-                'Remove chicken and sauté onions until golden',
+                'Remove chicken and sautÃ© onions until golden',
                 'Add garlic, tomato blend, and spices. Cook for 10 minutes',
                 'Add rice and stock, bring to boil',
                 'Reduce heat, cover and simmer for 25 minutes',
@@ -46,131 +52,10 @@ const postsData = [
         shares: 7,
         liked: false,
         bookmarked: false
-    },
-    {
-        id: 2,
-        type: 'question',
-        author: {
-            name: 'Food Explorer',
-            username: 'foodie_wanderer',
-            avatar: 'FE'
-        },
-        timestamp: '4 hours ago',
-        title: 'Help! My ugali keeps turning out lumpy',
-        content: 'I\'ve tried making ugali several times but it always comes out with lumps. I\'m stirring constantly but something\'s not right. Any tips from the experts here?',
-        images: [],
-        tags: ['ugali', 'help', 'cooking-tips', 'east-african'],
-        likes: 34,
-        comments: 12,
-        shares: 2,
-        liked: true,
-        bookmarked: false
-    },
-    {
-        id: 3,
-        type: 'photo',
-        author: {
-            name: 'Spice Master',
-            username: 'spice_guru',
-            avatar: 'SM'
-        },
-        timestamp: '6 hours ago',
-        title: 'Homemade berbere spice blend',
-        content: 'Spent the afternoon grinding fresh berbere spice! The aroma is incredible. This batch will last me months. Nothing beats homemade spices!',
-        images: ['🌶️', '🥄', '🔥'],
-        tags: ['spices', 'berbere', 'homemade', 'ethiopian'],
-        likes: 87,
-        comments: 9,
-        shares: 15,
-        liked: false,
-        bookmarked: true
-    },
-    {
-        id: 4,
-        type: 'discussion',
-        author: {
-            name: 'Mama Khadija',
-            username: 'mama_k',
-            avatar: 'MK'
-        },
-        timestamp: '8 hours ago',
-        title: 'The evolution of African street food',
-        content: 'I\'ve been thinking about how African street food has evolved over the decades. From simple roasted corn to elaborate suya preparations. What changes have you noticed in your local street food scene?',
-        images: [],
-        tags: ['street-food', 'culture', 'discussion', 'food-history'],
-        likes: 56,
-        comments: 23,
-        shares: 8,
-        liked: false,
-        bookmarked: false
-    },
-    {
-        id: 5,
-        type: 'recipe',
-        author: {
-            name: 'Healthy Chef',
-            username: 'healthy_eats',
-            avatar: 'HC'
-        },
-        timestamp: '10 hours ago',
-        title: 'Vegan Thieboudienne (Senegalese Rice)',
-        content: 'Made this plant-based version of the classic Senegalese dish using jackfruit instead of fish. Surprisingly authentic taste!',
-        recipe: {
-            prepTime: '30 minutes',
-            cookTime: '1 hour',
-            servings: 4,
-            difficulty: 'medium',
-            ingredients: [
-                '2 cups broken rice',
-                '400g young green jackfruit',
-                '2 large tomatoes',
-                '1 onion, sliced',
-                '2 carrots, chunked',
-                '1 small cabbage, quartered',
-                '100g tomato paste',
-                '2 tsp thyme',
-                '1 bay leaf',
-                'Vegetable oil for frying'
-            ],
-            instructions: [
-                'Prepare jackfruit by removing seeds and cutting into chunks',
-                'Season jackfruit with salt and spices',
-                'Fry vegetables until lightly browned',
-                'Make tomato sauce base',
-                'Add rice and vegetable stock',
-                'Arrange vegetables on top and steam'
-            ]
-        },
-        images: ['🍚', '🥕'],
-        tags: ['vegan', 'senegalese', 'thieboudienne', 'plant-based'],
-        likes: 78,
-        comments: 14,
-        shares: 11,
-        liked: true,
-        bookmarked: false
-    },
-    {
-        id: 6,
-        type: 'photo',
-        author: {
-            name: 'Kitchen Artist',
-            username: 'kitchen_art',
-            avatar: 'KA'
-        },
-        timestamp: '12 hours ago',
-        title: 'Fresh injera straight from the mitad',
-        content: 'Nothing beats the smell of fresh injera in the morning. This batch came out perfectly spongy!',
-        images: ['🫓', '🔥'],
-        tags: ['injera', 'ethiopian', 'bread', 'traditional'],
-        likes: 92,
-        comments: 8,
-        shares: 5,
-        liked: false,
-        bookmarked: false
     }
 ];
 
-// Sample comments data
+// Sample comments data (keep as fallback)
 const commentsData = {
     1: [
         {
@@ -178,26 +63,6 @@ const commentsData = {
             author: { name: 'Rice Lover', avatar: 'RL' },
             timestamp: '1 hour ago',
             content: 'This looks amazing! What type of rice do you recommend for beginners?'
-        },
-        {
-            id: 2,
-            author: { name: 'Chef Marcus', avatar: 'CM' },
-            timestamp: '45 minutes ago',
-            content: 'The tomato base technique is spot on! I use a similar method in my restaurant.'
-        }
-    ],
-    2: [
-        {
-            id: 3,
-            author: { name: 'Ugali Expert', avatar: 'UE' },
-            timestamp: '3 hours ago',
-            content: 'Try adding the flour gradually while stirring. Also, make sure your water is at a rolling boil!'
-        },
-        {
-            id: 4,
-            author: { name: 'Kitchen Newbie', avatar: 'KN' },
-            timestamp: '2 hours ago',
-            content: 'I had the same problem! Using a wooden spoon and constant stirring helped me.'
         }
     ]
 };
@@ -207,12 +72,150 @@ let currentFilter = 'all';
 let displayedPosts = 6;
 let isLoading = false;
 let currentUser = null;
+let useBackend = true;
+let uploadedImages = []; // Store uploaded image URLs
 
 // DOM Elements
 const postsFeed = document.getElementById('postsFeed');
 const createPostModal = document.getElementById('createPostModal');
 const createPostForm = document.getElementById('createPostForm');
 const loadMoreBtn = document.getElementById('loadMorePosts');
+
+// API Functions
+async function fetchPostsFromAPI(page = 1, type = 'all', limit = 10) {
+    try {
+        const params = new URLSearchParams({
+            page: page.toString(),
+            limit: limit.toString()
+        });
+        
+        if (type !== 'all') {
+            params.append('type', type);
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/posts?${params}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching posts from API:', error);
+        useBackend = false;
+        return null;
+    }
+}
+
+async function uploadImagesAPI(files) {
+    try {
+        const formData = new FormData();
+        
+        files.forEach((file, index) => {
+            formData.append('images', file);
+        });
+
+        const response = await fetch(`${API_BASE_URL}/upload-images`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.imageUrls;
+    } catch (error) {
+        console.error('Error uploading images:', error);
+        return null;
+    }
+}
+
+async function createPostAPI(postData) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/posts`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error creating post via API:', error);
+        return null;
+    }
+}
+
+async function likePostAPI(postId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error liking post via API:', error);
+        return null;
+    }
+}
+
+async function fetchCommentsFromAPI(postId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments/${postId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.comments || [];
+    } catch (error) {
+        console.error('Error fetching comments from API:', error);
+        return [];
+    }
+}
+
+async function createCommentAPI(postId, content) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/comments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                postId: postId,
+                content: content
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error creating comment via API:', error);
+        return null;
+    }
+}
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
@@ -224,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Load user profile
 function loadUserProfile() {
-    // Try to load from localStorage first, fallback to default
     const savedUser = JSON.parse(localStorage.getItem('smartrecipes_user') || 'null');
     const aiPromptCount = parseInt(localStorage.getItem('ai_prompt_count') || '0');
     
@@ -274,7 +276,15 @@ function updateCreatePostPrompt() {
 }
 
 // Initialize feed
-function initializeFeed() {
+async function initializeFeed() {
+    if (useBackend) {
+        const data = await fetchPostsFromAPI(1, currentFilter);
+        if (data && data.posts) {
+            renderPosts(data.posts);
+            return;
+        }
+    }
+    
     renderPosts(postsData.slice(0, displayedPosts));
     updateLoadMoreButton();
 }
@@ -302,7 +312,7 @@ function createPostCard(post) {
     return `
         <article class="post-card" data-id="${post.id}">
             <div class="post-header">
-                <div class="post-avatar">${post.author.avatar}</div>
+                <div class="post-avatar">${post.author.avatar || post.author.name.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
                 <div class="post-user-info">
                     <div class="post-user-name">${post.author.name}</div>
                     <div class="post-meta">
@@ -321,9 +331,9 @@ function createPostCard(post) {
                 
                 ${post.type === 'recipe' ? createRecipeDetails(post.recipe) : ''}
                 
-                ${post.images.length > 0 ? createPostImages(post.images) : ''}
+                ${post.images && post.images.length > 0 ? createPostImages(post.images) : ''}
                 
-                ${post.tags.length > 0 ? createPostTags(post.tags) : ''}
+                ${post.tags && post.tags.length > 0 ? createPostTags(post.tags) : ''}
             </div>
             
             <div class="post-actions">
@@ -343,7 +353,7 @@ function createPostCard(post) {
                 </div>
                 <div class="post-actions-right">
                     <button class="action-item ${post.bookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark(${post.id})">
-                        <span>${post.bookmarked ? '🔖' : '📑'}</span>
+                        <span>${post.bookmarked ? '🔖' : '🔗'}</span>
                     </button>
                 </div>
             </div>
@@ -409,7 +419,7 @@ function createRecipeDetails(recipe) {
     `;
 }
 
-// Create post images
+// Create post images - Updated to handle real image URLs
 function createPostImages(images) {
     if (images.length === 0) return '';
     
@@ -419,7 +429,14 @@ function createPostImages(images) {
     
     return `
         <div class="post-images ${imageClass}">
-            ${images.map(image => `<div class="post-image">${image}</div>`).join('')}
+            ${images.map(image => {
+                // Check if it's a URL (starts with http) or emoji
+                if (image.startsWith('http')) {
+                    return `<div class="post-image"><img src="${image}" alt="Post image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;"></div>`;
+                } else {
+                    return `<div class="post-image">${image}</div>`;
+                }
+            }).join('')}
         </div>
     `;
 }
@@ -485,10 +502,7 @@ function setupEventListeners() {
             link.addEventListener('click', function() {
                 navbarLinks.classList.remove('active');
                 navbarHamburger.classList.remove('active');
-                // Set active class
-                navbarLinkEls.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
-                // Handle navigation
                 if (this.getAttribute('href').startsWith('#')) {
                     const section = this.getAttribute('href').substring(1);
                     handleNavigation(section);
@@ -509,7 +523,7 @@ function setupEventListeners() {
     const topicTags = document.querySelectorAll('.topic-tag');
     topicTags.forEach(tag => {
         tag.addEventListener('click', function() {
-            const tagText = this.textContent.substring(1); // Remove #
+            const tagText = this.textContent.substring(1);
             filterByTag(tagText);
         });
     });
@@ -574,8 +588,12 @@ function setActiveFilter(filter) {
         }
     });
     
-    renderPosts(postsData.slice(0, displayedPosts));
-    updateLoadMoreButton();
+    if (useBackend) {
+        initializeFeed();
+    } else {
+        renderPosts(postsData.slice(0, displayedPosts));
+        updateLoadMoreButton();
+    }
 }
 
 function filterByTag(tag) {
@@ -640,7 +658,6 @@ function showCreatePost(type) {
 }
 
 function setPostType(type) {
-    // Update active button
     document.querySelectorAll('.post-type-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.type === type) {
@@ -648,7 +665,6 @@ function setPostType(type) {
         }
     });
     
-    // Update modal title
     const modalTitle = document.getElementById('modalTitle');
     const titles = {
         discussion: 'Start a Discussion',
@@ -658,11 +674,11 @@ function setPostType(type) {
     };
     modalTitle.textContent = titles[type] || 'Create New Post';
     
-    // Show/hide recipe fields
     const recipeFields = document.getElementById('recipeFields');
-    recipeFields.style.display = type === 'recipe' ? 'block' : 'none';
+    if (recipeFields) {
+        recipeFields.style.display = type === 'recipe' ? 'block' : 'none';
+    }
     
-    // Update placeholder text
     const postTitle = document.getElementById('postTitle');
     const postContent = document.getElementById('postContent');
     
@@ -678,13 +694,29 @@ function setPostType(type) {
 }
 
 // Post interactions
-function toggleLike(postId) {
+async function toggleLike(postId) {
     const post = postsData.find(p => p.id === postId);
+    
+    if (useBackend && post && post.id <= 1000) {
+        const result = await likePostAPI(postId);
+        if (result) {
+            const likeBtn = document.querySelector(`[data-id="${postId}"] .action-item`);
+            likeBtn.classList.add('liked');
+            likeBtn.querySelector('span:first-child').textContent = '❤️';
+            likeBtn.querySelector('span:last-child').textContent = result.likes;
+            
+            if (result.liked) {
+                likeBtn.style.animation = 'pulse 0.6s ease';
+                setTimeout(() => likeBtn.style.animation = '', 600);
+            }
+            return;
+        }
+    }
+    
     if (post) {
         post.liked = !post.liked;
         post.likes += post.liked ? 1 : -1;
         
-        // Update UI
         const likeBtn = document.querySelector(`[data-id="${postId}"] .action-item`);
         likeBtn.classList.toggle('liked', post.liked);
         likeBtn.querySelector('span:first-child').textContent = post.liked ? '❤️' : '🤍';
@@ -702,10 +734,9 @@ function toggleBookmark(postId) {
     if (post) {
         post.bookmarked = !post.bookmarked;
         
-        // Update UI
         const bookmarkBtn = document.querySelector(`[data-id="${postId}"] .post-actions-right .action-item`);
         bookmarkBtn.classList.toggle('bookmarked', post.bookmarked);
-        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '📑';
+        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '🔗';
         
         showNotification(post.bookmarked ? 'Post saved to bookmarks' : 'Post removed from bookmarks', 'info');
     }
@@ -722,9 +753,16 @@ function toggleComments(postId) {
     }
 }
 
-function loadComments(postId) {
+// Load comments
+async function loadComments(postId) {
     const commentsList = document.getElementById(`comments-list-${postId}`);
-    const comments = commentsData[postId] || [];
+    let comments = [];
+    
+    if (useBackend) {
+        comments = await fetchCommentsFromAPI(postId);
+    } else {
+        comments = commentsData[postId] || [];
+    }
     
     if (comments.length > 0) {
         commentsList.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
@@ -736,7 +774,7 @@ function loadComments(postId) {
 function createCommentHTML(comment) {
     return `
         <div class="comment">
-            <div class="comment-avatar">${comment.author.avatar}</div>
+            <div class="comment-avatar">${comment.author.avatar || comment.author.name.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
             <div class="comment-content">
                 <div class="comment-header">
                     <span class="comment-author">${comment.author.name}</span>
@@ -759,46 +797,52 @@ function handleCommentSubmit(event, postId) {
     }
 }
 
-function submitComment(postId) {
+// Submit comment
+async function submitComment(postId) {
     const commentInput = document.querySelector(`#comments-${postId} .comment-input`);
     const commentText = commentInput.value.trim();
     
     if (commentText) {
-        const newComment = {
-            id: Date.now(),
-            author: { 
-                name: currentUser.fullName, 
-                avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() 
-            },
-            timestamp: 'Just now',
-            content: commentText
-        };
+        let result = null;
         
-        // Add to comments data
-        if (!commentsData[postId]) {
-            commentsData[postId] = [];
+        if (useBackend) {
+            result = await createCommentAPI(postId, commentText);
         }
-        commentsData[postId].unshift(newComment);
         
-        // Update post comment count
-        const post = postsData.find(p => p.id === postId);
-        if (post) {
-            post.comments++;
+        if (result || !useBackend) {
+            const newComment = {
+                id: Date.now(),
+                author: { 
+                    name: currentUser.fullName, 
+                    avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() 
+                },
+                timestamp: 'Just now',
+                content: commentText
+            };
             
-            // Update comment count in UI
-            const commentBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2) span:last-child`);
-            commentBtn.textContent = post.comments;
+            if (!useBackend) {
+                if (!commentsData[postId]) {
+                    commentsData[postId] = [];
+                }
+                commentsData[postId].unshift(newComment);
+            }
+            
+            const post = postsData.find(p => p.id === postId);
+            if (post) {
+                post.comments++;
+                
+                const commentBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2) span:last-child`);
+                commentBtn.textContent = post.comments;
+            }
+            
+            loadComments(postId);
+            
+            commentInput.value = '';
+            const submitBtn = commentInput.parentNode.querySelector('.comment-submit');
+            submitBtn.disabled = true;
+            
+            showNotification('Comment added successfully!', 'success');
         }
-        
-        // Refresh comments display
-        loadComments(postId);
-        
-        // Clear input
-        commentInput.value = '';
-        const submitBtn = commentInput.parentNode.querySelector('.comment-submit');
-        submitBtn.disabled = true;
-        
-        showNotification('Comment added successfully!', 'success');
     }
 }
 
@@ -807,11 +851,9 @@ function sharePost(postId) {
     if (post) {
         post.shares++;
         
-        // Update UI
         const shareBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(3) span:last-child`);
         shareBtn.textContent = post.shares;
         
-        // Simulate sharing
         if (navigator.share) {
             navigator.share({
                 title: post.title,
@@ -819,8 +861,7 @@ function sharePost(postId) {
                 url: window.location.href
             });
         } else {
-            // Fallback - copy to clipboard
-            const shareText = `Check out this ${post.type}: "${post.title}" by ${post.author.name} on Frodaz Recipes Community!`;
+            const shareText = `Check out this ${post.type}: "${post.title}" by ${post.author.name} on Flodaz Recipes Community!`;
             navigator.clipboard.writeText(shareText).then(() => {
                 showNotification('Post link copied to clipboard!', 'success');
             });
@@ -832,15 +873,67 @@ function showPostMenu(postId) {
     showNotification('Post menu coming soon! Report, save, and more options.', 'info');
 }
 
-// Form handling
-function handlePostSubmission(e) {
+// Form handling with image upload
+async function handlePostSubmission(e) {
     e.preventDefault();
     
-    const formData = new FormData(createPostForm);
+    const titleInput = document.getElementById('postTitle');
+    const contentInput = document.getElementById('postContent');
+    const tagsInput = document.getElementById('tags');
     const activeType = document.querySelector('.post-type-btn.active').dataset.type;
     
+    const title = titleInput ? titleInput.value.trim() : '';
+    const content = contentInput ? contentInput.value.trim() : '';
+    const tags = tagsInput ? tagsInput.value.trim() : '';
+    
+    if (!title || !content) {
+        showNotification('Please fill in both title and content fields.', 'error');
+        return;
+    }
+    
+    const postData = {
+        type: activeType,
+        title: title,
+        content: content,
+        tags: tags,
+        images: uploadedImages // Include uploaded image URLs
+    };
+    
+    // Add recipe details if it's a recipe post
+    if (activeType === 'recipe') {
+        const prepTimeInput = document.getElementById('prepTime');
+        const cookTimeInput = document.getElementById('cookTime');
+        const servingsInput = document.getElementById('servings');
+        const difficultyInput = document.getElementById('difficulty');
+        const ingredientsInput = document.getElementById('ingredients');
+        const instructionsInput = document.getElementById('instructions');
+        
+        if (prepTimeInput && cookTimeInput && servingsInput) {
+            postData.recipe = {
+                prepTime: prepTimeInput.value.trim(),
+                cookTime: cookTimeInput.value.trim(),
+                servings: servingsInput.value.trim(),
+                difficulty: difficultyInput ? difficultyInput.value : 'medium',
+                ingredients: ingredientsInput ? ingredientsInput.value.split('\n').map(ing => ing.trim()).filter(ing => ing) : [],
+                instructions: instructionsInput ? instructionsInput.value.split('\n').map(inst => inst.trim()).filter(inst => inst) : []
+            };
+        }
+    }
+    
+    const submitBtn = createPostForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    submitBtn.textContent = 'Publishing...';
+    submitBtn.disabled = true;
+    
+    let result = null;
+    
+    if (useBackend) {
+        result = await createPostAPI(postData);
+    }
+    
     const newPost = {
-        id: Date.now(),
+        id: result ? result.post.id : Date.now(),
         type: activeType,
         author: {
             name: currentUser.fullName,
@@ -848,10 +941,10 @@ function handlePostSubmission(e) {
             avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
         },
         timestamp: 'Just now',
-        title: formData.get('title'),
-        content: formData.get('content'),
-        images: [], // Would handle uploaded images here
-        tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()) : [],
+        title: postData.title,
+        content: postData.content,
+        images: uploadedImages,
+        tags: postData.tags ? postData.tags.split(',').map(tag => tag.trim()) : [],
         likes: 0,
         comments: 0,
         shares: 0,
@@ -859,40 +952,20 @@ function handlePostSubmission(e) {
         bookmarked: false
     };
     
-            // Add recipe details if it's a recipe post
-    if (activeType === 'recipe') {
-        newPost.recipe = {
-            prepTime: formData.get('prepTime'),
-            cookTime: formData.get('cookTime'),
-            servings: formData.get('servings'),
-            difficulty: formData.get('difficulty'),
-            ingredients: formData.get('ingredients') ? formData.get('ingredients').split('\n').map(ing => ing.trim()).filter(ing => ing) : [],
-            instructions: formData.get('instructions') ? formData.get('instructions').split('\n').map(inst => inst.trim()).filter(inst => inst) : []
-        };
+    if (activeType === 'recipe' && postData.recipe) {
+        newPost.recipe = postData.recipe;
     }
     
-    // Simulate post submission
-    const submitBtn = createPostForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    
-    submitBtn.textContent = 'Publishing...';
-    submitBtn.disabled = true;
-    
     setTimeout(() => {
-        // Add to posts data
         postsData.unshift(newPost);
         
-        // Refresh feed
         displayedPosts = Math.min(displayedPosts + 1, postsData.length);
         renderPosts(postsData.slice(0, displayedPosts));
         
-        // Hide modal and reset form
         hideCreateModal();
         
-        // Show success notification
         showNotification(`Your ${activeType} has been published successfully!`, 'success');
         
-        // Scroll to top to see new post
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
         submitBtn.textContent = originalText;
@@ -900,10 +973,44 @@ function handlePostSubmission(e) {
     }, 2000);
 }
 
-// File upload handling
-function handleFileUpload(e) {
+// File upload handling - Updated for real image uploads
+async function handleFileUpload(e) {
     const files = Array.from(e.target.files);
-    displayUploadedFiles(files);
+    
+    if (files.length === 0) return;
+    
+    // Show loading state
+    const uploadArea = document.getElementById('uploadArea');
+    const originalContent = uploadArea.innerHTML;
+    uploadArea.innerHTML = '<div class="upload-content"><span class="upload-icon">⏳</span><p>Uploading images...</p></div>';
+    
+    try {
+        if (useBackend) {
+            const imageUrls = await uploadImagesAPI(files);
+            if (imageUrls) {
+                uploadedImages.push(...imageUrls);
+                displayUploadedFiles(imageUrls);
+            } else {
+                throw new Error('Upload failed');
+            }
+        } else {
+            // Fallback - create placeholder URLs for demo
+            const placeholderUrls = files.map((file, index) => {
+                const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🍦', '🍟', '🥙'];
+                return foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+            });
+            uploadedImages.push(...placeholderUrls);
+            displayUploadedFiles(placeholderUrls);
+        }
+        
+        // Restore upload area
+        uploadArea.innerHTML = originalContent;
+        
+    } catch (error) {
+        console.error('File upload error:', error);
+        uploadArea.innerHTML = originalContent;
+        showNotification('Failed to upload images. Please try again.', 'error');
+    }
 }
 
 function handleFileDrop(e) {
@@ -911,8 +1018,16 @@ function handleFileDrop(e) {
     const uploadArea = document.getElementById('uploadArea');
     uploadArea.classList.remove('dragover');
     
-    const files = Array.from(e.dataTransfer.files);
-    displayUploadedFiles(files);
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+    if (files.length > 0) {
+        // Simulate file input change
+        const photoInput = document.getElementById('photoInput');
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        photoInput.files = dt.files;
+        
+        handleFileUpload({ target: { files: files } });
+    }
 }
 
 function handleDragOver(e) {
@@ -927,184 +1042,97 @@ function handleDragLeave(e) {
     uploadArea.classList.remove('dragover');
 }
 
-function displayUploadedFiles(files) {
-    const uploadedImages = document.getElementById('uploadedImages');
+function displayUploadedFiles(imageUrls) {
+    const uploadedImagesContainer = document.getElementById('uploadedImages');
     
-    files.forEach((file, index) => {
-        if (file.type.startsWith('image/')) {
-            const imageContainer = document.createElement('div');
-            imageContainer.className = 'uploaded-image';
-            
-            // In a real app, you'd upload the file and get a URL
-            // For demo purposes, we'll use emojis
-            const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🍤', '🐟', '🥙'];
-            const randomEmoji = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
-            
+    imageUrls.forEach((imageUrl, index) => {
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'uploaded-image';
+        
+        if (typeof imageUrl === 'string' && imageUrl.startsWith('http')) {
+            // Real image URL
+            imageContainer.innerHTML = `
+                <img src="${imageUrl}" alt="Uploaded image" style="width: 100%; height: 100%; object-fit: cover;">
+                <button class="remove-image" onclick="removeUploadedImage(this, '${imageUrl}')">×</button>
+            `;
+        } else {
+            // Emoji placeholder
             imageContainer.innerHTML = `
                 <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white;">
-                    ${randomEmoji}
+                    ${imageUrl}
                 </div>
-                <button class="remove-image" onclick="removeUploadedImage(this)">×</button>
+                <button class="remove-image" onclick="removeUploadedImage(this, '${imageUrl}')">×</button>
             `;
-            
-            uploadedImages.appendChild(imageContainer);
         }
+        
+        uploadedImagesContainer.appendChild(imageContainer);
     });
 }
 
-function removeUploadedImage(btn) {
+function removeUploadedImage(btn, imageUrl) {
+    // Remove from uploaded images array
+    const index = uploadedImages.indexOf(imageUrl);
+    if (index > -1) {
+        uploadedImages.splice(index, 1);
+    }
+    
+    // Remove from DOM
     btn.parentElement.remove();
 }
 
 // Reset form
 function resetForm() {
-    createPostForm.reset();
-    document.getElementById('uploadedImages').innerHTML = '';
-    document.getElementById('recipeFields').style.display = 'none';
+    if (createPostForm) {
+        createPostForm.reset();
+    }
+    
+    const uploadedImagesContainer = document.getElementById('uploadedImages');
+    if (uploadedImagesContainer) {
+        uploadedImagesContainer.innerHTML = '';
+    }
+    
+    // Clear uploaded images array
+    uploadedImages = [];
+    
+    const recipeFields = document.getElementById('recipeFields');
+    if (recipeFields) {
+        recipeFields.style.display = 'none';
+    }
     
     // Reset post type to discussion
     document.querySelectorAll('.post-type-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelector('.post-type-btn[data-type="discussion"]').classList.add('active');
+    const discussionBtn = document.querySelector('.post-type-btn[data-type="discussion"]');
+    if (discussionBtn) {
+        discussionBtn.classList.add('active');
+    }
     
     setPostType('discussion');
 }
 
 // Notification system
 function showNotification(message, type = 'info') {
-    // Notification popup removed as requested. No operation.
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (document.body.contains(notification)) {
+            document.body.removeChild(notification);
+        }
+    }, 3000);
 }
-
-// Search functionality
-function searchPosts(query) {
-    const searchResults = postsData.filter(post => 
-        post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.content.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ||
-        post.author.name.toLowerCase().includes(query.toLowerCase())
-    );
-    
-    postsFeed.innerHTML = searchResults.map(post => createPostCard(post)).join('');
-    
-    if (searchResults.length === 0) {
-        postsFeed.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🔍</div>
-                <h3>No posts found</h3>
-                <p>Try searching with different keywords or browse all posts.</p>
-            </div>
-        `;
-    }
-    
-    loadMoreBtn.style.display = 'none';
-}
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Interactive features
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-expand textareas
-    const textareas = document.querySelectorAll('textarea');
-    textareas.forEach(textarea => {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-    });
-    
-    // Add real-time character count for post content
-    const postContent = document.getElementById('postContent');
-    if (postContent) {
-        const charCounter = document.createElement('div');
-        charCounter.className = 'char-counter';
-        charCounter.style.cssText = 'text-align: right; font-size: 0.8rem; color: #718096; margin-top: 0.5rem;';
-        
-        postContent.parentNode.appendChild(charCounter);
-        
-        postContent.addEventListener('input', function() {
-            const remaining = 500 - this.value.length;
-            charCounter.textContent = `${remaining} characters remaining`;
-            charCounter.style.color = remaining < 50 ? '#e53e3e' : '#718096';
-        });
-    }
-    
-    // Auto-save draft functionality
-    let draftTimer;
-    const formInputs = document.querySelectorAll('#createPostForm input, #createPostForm textarea, #createPostForm select');
-    
-    formInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            clearTimeout(draftTimer);
-            draftTimer = setTimeout(saveDraft, 2000);
-        });
-    });
-    
-    // Load draft on modal open
-    document.getElementById('createPostBtn').addEventListener('click', function() {
-        showCreateModal();
-        loadDraft();
-    });
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Escape to close modal
-        if (e.key === 'Escape' && createPostModal.classList.contains('active')) {
-            hideCreateModal();
-        }
-        
-        // Ctrl/Cmd + Enter to submit form
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && createPostModal.classList.contains('active')) {
-            e.preventDefault();
-            createPostForm.dispatchEvent(new Event('submit'));
-        }
-    });
-    
-    // Infinite scroll
-    let isNearBottom = false;
-    window.addEventListener('scroll', function() {
-        const scrollPosition = window.innerHeight + window.scrollY;
-        const documentHeight = document.documentElement.offsetHeight;
-        
-        if (scrollPosition >= documentHeight - 1000 && !isNearBottom && !isLoading) {
-            isNearBottom = true;
-            setTimeout(() => {
-                if (loadMoreBtn && loadMoreBtn.style.display !== 'none') {
-                    loadMorePosts();
-                }
-                isNearBottom = false;
-            }, 500);
-        }
-    });
-    
-    // Live search in navigation
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            if (this.getAttribute('href').startsWith('#')) {
-                e.preventDefault();
-                
-                // Update active nav link
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter posts based on section
-                const section = this.getAttribute('href').substring(1);
-                handleNavigation(section);
-            }
-        });
-    });
-});
 
 // Navigation handling
 function handleNavigation(section) {
@@ -1128,7 +1156,6 @@ function handleNavigation(section) {
 }
 
 function showTrendingPosts() {
-    // Sort posts by engagement (likes + comments + shares)
     const trendingPosts = [...postsData].sort((a, b) => {
         const engagementA = a.likes + a.comments + a.shares;
         const engagementB = b.likes + b.comments + b.shares;
@@ -1163,216 +1190,4 @@ function showGroups() {
         </div>
     `;
     loadMoreBtn.style.display = 'none';
-}
-
-// Draft functionality
-function saveDraft() {
-    const formData = new FormData(createPostForm);
-    const draft = {
-        type: document.querySelector('.post-type-btn.active').dataset.type,
-        title: formData.get('title'),
-        content: formData.get('content'),
-        tags: formData.get('tags'),
-        prepTime: formData.get('prepTime'),
-        cookTime: formData.get('cookTime'),
-        servings: formData.get('servings'),
-        difficulty: formData.get('difficulty'),
-        ingredients: formData.get('ingredients'),
-        instructions: formData.get('instructions'),
-        timestamp: Date.now()
-    };
-    
-    localStorage.setItem('community_draft', JSON.stringify(draft));
-}
-
-function loadDraft() {
-    const draft = JSON.parse(localStorage.getItem('community_draft') || 'null');
-    
-    if (draft && Date.now() - draft.timestamp < 24 * 60 * 60 * 1000) { // 24 hours
-        // Ask user if they want to restore draft
-        if (confirm('You have an unsaved draft. Would you like to restore it?')) {
-            setPostType(draft.type);
-            document.getElementById('postTitle').value = draft.title || '';
-            document.getElementById('postContent').value = draft.content || '';
-            document.getElementById('tags').value = draft.tags || '';
-            
-            if (draft.type === 'recipe') {
-                document.getElementById('prepTime').value = draft.prepTime || '';
-                document.getElementById('cookTime').value = draft.cookTime || '';
-                document.getElementById('servings').value = draft.servings || '';
-                document.getElementById('difficulty').value = draft.difficulty || '';
-                document.getElementById('ingredients').value = draft.ingredients || '';
-                document.getElementById('instructions').value = draft.instructions || '';
-            }
-        } else {
-            localStorage.removeItem('community_draft');
-        }
-    }
-}
-
-// Advanced interactions
-function handleDoubleClick(postId) {
-    // Double click to like (Instagram-style)
-    const post = postsData.find(p => p.id === postId);
-    if (post && !post.liked) {
-        toggleLike(postId);
-        
-        // Show heart animation
-        const postCard = document.querySelector(`[data-id="${postId}"]`);
-        const heart = document.createElement('div');
-        heart.innerHTML = '❤️';
-        heart.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            font-size: 4rem;
-            pointer-events: none;
-            z-index: 1000;
-            animation: heartPop 1s ease;
-        `;
-        
-        // Add heart pop animation
-        if (!document.querySelector('.heart-animation-styles')) {
-            const style = document.createElement('style');
-            style.className = 'heart-animation-styles';
-            style.textContent = `
-                @keyframes heartPop {
-                    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-                    15% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-                    30% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        postCard.style.position = 'relative';
-        postCard.appendChild(heart);
-        
-        setTimeout(() => heart.remove(), 1000);
-    }
-}
-
-// Add double-click listeners to post cards
-function addPostInteractions() {
-    const postCards = document.querySelectorAll('.post-card');
-    postCards.forEach(card => {
-        const postId = parseInt(card.dataset.id);
-        
-        card.addEventListener('dblclick', function(e) {
-            if (!e.target.closest('.post-actions') && !e.target.closest('button') && !e.target.closest('a')) {
-                handleDoubleClick(postId);
-            }
-        });
-    });
-}
-
-// Real-time features simulation
-function simulateRealTimeUpdates() {
-    setInterval(() => {
-        // Randomly update like counts
-        const randomPost = postsData[Math.floor(Math.random() * postsData.length)];
-        if (Math.random() < 0.3) { // 30% chance
-            randomPost.likes += Math.floor(Math.random() * 3);
-            
-            // Update UI if post is visible
-            const likeBtn = document.querySelector(`[data-id="${randomPost.id}"] .action-item span:last-child`);
-            if (likeBtn) {
-                likeBtn.textContent = randomPost.likes;
-            }
-        }
-    }, 30000); // Every 30 seconds
-}
-
-// Initialize real-time features
-setTimeout(simulateRealTimeUpdates, 5000);
-
-// Tag cloud functionality
-function createTagCloud() {
-    const allTags = postsData.flatMap(post => post.tags);
-    const tagCounts = {};
-    
-    allTags.forEach(tag => {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-    });
-    
-    const sortedTags = Object.entries(tagCounts)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 10);
-    
-    return sortedTags;
-}
-
-// Utility functions
-function formatTimeAgo(timestamp) {
-    const now = new Date();
-    const postTime = new Date(timestamp);
-    const diffMinutes = Math.floor((now - postTime) / (1000 * 60));
-    
-    if (diffMinutes < 1) return 'Just now';
-    if (diffMinutes < 60) return `${diffMinutes}m ago`;
-    if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)}h ago`;
-    return `${Math.floor(diffMinutes / 1440)}d ago`;
-}
-
-function validateRecipeForm() {
-    const requiredFields = ['postTitle', 'postContent'];
-    const activeType = document.querySelector('.post-type-btn.active').dataset.type;
-    
-    if (activeType === 'recipe') {
-        requiredFields.push('prepTime', 'cookTime', 'servings', 'difficulty', 'ingredients', 'instructions');
-    }
-    
-    for (const fieldId of requiredFields) {
-        const field = document.getElementById(fieldId);
-        if (!field || !field.value.trim()) {
-            field.focus();
-            showNotification(`Please fill in the ${field.placeholder || fieldId} field`, 'error');
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-// Enhanced form submission with validation
-function enhancedPostSubmission(e) {
-    e.preventDefault();
-    
-    if (!validateRecipeForm()) {
-        return;
-    }
-    
-    handlePostSubmission(e);
-}
-
-// Add enhanced validation
-if (createPostForm) {
-    createPostForm.removeEventListener('submit', handlePostSubmission);
-    createPostForm.addEventListener('submit', enhancedPostSubmission);
-}
-
-// Initialize post interactions after DOM load
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(addPostInteractions, 500);
-});
-
-// Re-add interactions after new posts are loaded
-function reInitializeInteractions() {
-    addPostInteractions();
-}
-
-// Close mobile navigation function
-function closeMobileNav() {
-    const mainNav = document.getElementById('mainNav');
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    
-    if (mainNav) {
-        mainNav.classList.remove('active');
-    }
-    
-    if (hamburgerBtn) {
-        hamburgerBtn.classList.remove('active');
-    }
 }
