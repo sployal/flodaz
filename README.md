@@ -37,9 +37,10 @@ age-specific nutrition, or health conditions.
 Flodaz recipes leverages AI to recommend affordable, simple recipes based on available ingredients while also offering personalized meal planning (age, weight loss, dietary needs). 
 It empowers users to make healthier food choices, reduce waste, and connect with local restaurants and communities around food.  
 - **Tech Stack:**  
-  - Frontend: React (Vercel)  
-  - Backend: Node.js + Express (Render)  
-  - Database: MongoDB Atlas  
+  - Frontend: HTML, CSS, Javascript, (hosting-vercel)
+  - Backend: Node.js, (hosting-replit)
+  - cloudinary hosting of pictures
+  - Database: Rael-time database (Superbase) 
 
 ---
 
