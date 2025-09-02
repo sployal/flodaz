@@ -21,7 +21,7 @@
 ## 🌐 Live Demo
 👉 [live demo](https://flodaz.vercel.app/)
 
-📹 [Watch Demo Video](https://drive.google.com/file/d/1bpHsVbPlRUzLO-1B8hF6cm_3yQaITkEo/view?usp=drivesdk)
+📹 [Mobile demo](https://drive.google.com/file/d/1bpHsVbPlRUzLO-1B8hF6cm_3yQaITkEo/view?usp=drivesdk)
     [Laptop/desktop demo](https://drive.google.com/file/d/1C9PSHyQF8P2RohrNPEzli4CXPPkPAzMT/view?usp=drivesdk)
 
 
