@@ -1,6 +1,6 @@
 # 🚀 Flodaz recipes
 
- **Flodaz helps people in Kenya and beyond fight food insecurity by using AI to suggest affordable, nutritious recipes based on available ingredients and also generating specialized
+ **Flodaz recipes helps people in Kenya and beyond fight food insecurity by using AI to suggest affordable, nutritious recipes based on available ingredients and also generating specialized
  meal plan just for you, while connecting communities and local restaurants.**
 
  #THE TEAM
