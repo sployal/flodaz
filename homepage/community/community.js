@@ -7,10 +7,21 @@
 
 const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
 
+// Supabase Client Configuration
+const SUPABASE_URL = 'https://hrfvkblkpihdzcuodwzz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyZnZrYmxrcGloZHpjdW9kd3p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzODg1MzUsImV4cCI6MjA3MTk2NDUzNX0.n8bIKKS1UkGYyQnP-Dbis5kl5AqvYVovSeefa_sVTZE';
 
-
-
-
+// Initialize Supabase client
+let supabaseClient = null;
+try {
+    // Check if Supabase is available
+    if (typeof supabase !== 'undefined') {
+        const { createClient } = supabase;
+        supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+} catch (error) {
+    console.log('Supabase not available, using localStorage fallback');
+}
 
 // Sample post data (keep as fallback)
 const postsData = [
@@ -44,7 +55,7 @@ const postsData = [
             ],
             instructions: [
                 'Season and brown the chicken pieces in a large pot',
-                'Remove chicken and sautÃ© onions until golden',
+                'Remove chicken and sauté onions until golden',
                 'Add garlic, tomato blend, and spices. Cook for 10 minutes',
                 'Add rice and stock, bring to boil',
                 'Reduce heat, cover and simmer for 25 minutes',
@@ -78,6 +89,7 @@ let currentFilter = 'all';
 let displayedPosts = 6;
 let isLoading = false;
 let currentUser = null;
+let aiPromptCount = 0;
 let useBackend = true;
 let uploadedImages = []; // Store uploaded image URLs
 
@@ -225,29 +237,150 @@ async function createCommentAPI(postId, content) {
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    loadUserProfile();
+    console.log('Initializing community page...');
+    
+    // Initialize user account on page startup
+    initializeUserAccount();
+    
+    // Setup authentication listener
+    setupAuthListener();
+    
+    // Initialize other components
     initializeFeed();
     setupEventListeners();
     setupModalEvents();
+    
+    // Profile button - redirects to profile page (match main.js)
+    const profileBtn = document.getElementById('profileBtn');
+    profileBtn?.addEventListener('click', () => {
+        window.location.href = '../profile/profile.html';
+    });
+
+    console.log('Community page initialized successfully');
 });
 
-// Load user profile
-function loadUserProfile() {
-    const savedUser = JSON.parse(localStorage.getItem('smartrecipes_user') || 'null');
-    const aiPromptCount = parseInt(localStorage.getItem('ai_prompt_count') || '0');
-    
-    currentUser = savedUser || {
-        fullName: 'John Doe',
-        username: 'johndoe',
-        email: 'john@example.com',
-        accountType: 'Free'
-    };
-    
-    updateProfileDisplay(currentUser, aiPromptCount);
-    updateCreatePostPrompt();
+// Enhanced user account initialization (following main.js approach)
+async function initializeUserAccount() {
+    try {
+        console.log('Initializing user account...');
+        
+        // Load AI prompt count
+        aiPromptCount = parseInt(localStorage.getItem('ai_prompt_count')) || 0;
+        
+        // Check Supabase authentication first
+        if (supabaseClient) {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            
+            if (session && !error) {
+                console.log('Found active Supabase session');
+                await loadUserFromSupabase(session.user);
+                updateProfileDisplay();
+                updateCreatePostPrompt();
+                return;
+            } else {
+                console.log('No active Supabase session');
+            }
+        }
+        
+        // Fallback to localStorage
+        const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
+        if (localUser) {
+            console.log('Found user in localStorage:', localUser);
+            currentUser = localUser;
+            updateProfileDisplay();
+            updateCreatePostPrompt();
+        } else {
+            console.log('No user found, setting up guest account');
+            // Set up guest user
+            currentUser = null;
+            updateProfileDisplay();
+            updateCreatePostPrompt();
+        }
+        
+    } catch (error) {
+        console.error('Error initializing user account:', error);
+        // Fallback to guest mode
+        currentUser = null;
+        updateProfileDisplay();
+        updateCreatePostPrompt();
+    }
 }
 
-function updateProfileDisplay(user, promptCount) {
+// Load user data from Supabase (following main.js approach)
+async function loadUserFromSupabase(user) {
+    try {
+        // Try to get user profile from user_profiles table
+        const { data: profileData, error: profileError } = await supabaseClient
+            .from('user_profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+        
+        if (profileData && !profileError) {
+            // Create user object from profile data
+            currentUser = {
+                id: user.id,
+                email: user.email,
+                fullName: profileData.full_name,
+                username: profileData.username,
+                accountType: profileData.account_type || 'Free',
+                dob: profileData.dob,
+                contact: profileData.contact,
+                address: profileData.address,
+                gender: profileData.gender,
+                createdAt: profileData.created_at,
+                updatedAt: profileData.updated_at
+            };
+        } else {
+            // Fallback to auth user metadata
+            const userMetadata = user.user_metadata || {};
+            currentUser = {
+                id: user.id,
+                email: user.email,
+                fullName: userMetadata.full_name || userMetadata.name || 'User',
+                username: userMetadata.username || user.email.split('@')[0],
+                accountType: userMetadata.account_type || 'Free',
+                dob: userMetadata.dob,
+                createdAt: user.created_at
+            };
+        }
+        
+        // Store in localStorage for consistency
+        localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+        console.log('User loaded from Supabase:', currentUser);
+        
+    } catch (error) {
+        console.error('Error loading user from Supabase:', error);
+        throw error;
+    }
+}
+
+// Setup authentication state listener (following main.js approach)
+function setupAuthListener() {
+    if (supabaseClient) {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state changed:', event);
+            
+            if (event === 'SIGNED_IN' && session) {
+                await loadUserFromSupabase(session.user);
+                updateProfileDisplay();
+                updateCreatePostPrompt();
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                localStorage.removeItem('smartrecipes_user');
+                updateProfileDisplay();
+                updateCreatePostPrompt();
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+                await loadUserFromSupabase(session.user);
+                updateProfileDisplay();
+                updateCreatePostPrompt();
+            }
+        });
+    }
+}
+
+// Enhanced profile display update function
+function updateProfileDisplay() {
     const elements = {
         avatarCircle: document.getElementById('avatarCircle'),
         avatarCircleMenu: document.getElementById('avatarCircleMenu'),
@@ -259,25 +392,72 @@ function updateProfileDisplay(user, promptCount) {
         pmPrompts: document.getElementById('pmPrompts')
     };
 
-    if (elements.avatarCircle) {
-        const initials = user.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
-        elements.avatarCircle.textContent = initials;
-        elements.avatarCircleMenu.textContent = initials;
-        elements.pmName.textContent = user.fullName;
-        elements.pmUsername.textContent = `@${user.username}`;
-        elements.pmEmail.textContent = user.email;
-        elements.pmDob.textContent = user.dob || '—';
-        elements.pmAccountType.textContent = user.accountType || 'Free';
-        elements.pmAccountType.className = `badge ${user.accountType === 'Premium' ? 'premium' : 'free'}`;
-        elements.pmPrompts.textContent = user.accountType === 'Premium' ? '∞' : `${promptCount} / 3`;
+    if (currentUser && currentUser.fullName) {
+        // Get initials from full name
+        const initials = currentUser.fullName
+            .split(' ')
+            .map(name => name[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+        
+        // Update avatar circles
+        if (elements.avatarCircle) {
+            elements.avatarCircle.textContent = initials;
+        }
+        if (elements.avatarCircleMenu) {
+            elements.avatarCircleMenu.textContent = initials;
+        }
+        
+        // Update profile modal elements
+        if (elements.pmName) elements.pmName.textContent = currentUser.fullName;
+        if (elements.pmUsername) elements.pmUsername.textContent = `@${currentUser.username}`;
+        if (elements.pmEmail) elements.pmEmail.textContent = currentUser.email;
+        if (elements.pmDob) elements.pmDob.textContent = currentUser.dob || '—';
+        if (elements.pmAccountType) {
+            elements.pmAccountType.textContent = currentUser.accountType || 'Free';
+            elements.pmAccountType.className = `badge ${currentUser.accountType === 'Premium' ? 'premium' : 'free'}`;
+        }
+        if (elements.pmPrompts) {
+            elements.pmPrompts.textContent = currentUser.accountType === 'Premium' ? '∞' : `${aiPromptCount} / 3`;
+        }
+        
+        console.log('Profile display updated with user:', currentUser.fullName);
+    } else {
+        // Guest user
+        if (elements.avatarCircle) elements.avatarCircle.textContent = 'G';
+        if (elements.avatarCircleMenu) elements.avatarCircleMenu.textContent = 'G';
+        
+        // Update profile modal for guest
+        if (elements.pmName) elements.pmName.textContent = 'Guest User';
+        if (elements.pmUsername) elements.pmUsername.textContent = '@guest';
+        if (elements.pmEmail) elements.pmEmail.textContent = 'Not logged in';
+        if (elements.pmDob) elements.pmDob.textContent = '—';
+        if (elements.pmAccountType) {
+            elements.pmAccountType.textContent = 'Guest';
+            elements.pmAccountType.className = 'badge free';
+        }
+        if (elements.pmPrompts) elements.pmPrompts.textContent = '0 / 0';
+        
+        console.log('Profile display updated for guest user');
     }
 }
 
+// Enhanced create post prompt update
 function updateCreatePostPrompt() {
-    const initials = currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
     const promptAvatar = document.querySelector('.create-post-prompt .avatar');
     if (promptAvatar) {
-        promptAvatar.textContent = initials;
+        if (currentUser && currentUser.fullName) {
+            const initials = currentUser.fullName
+                .split(' ')
+                .map(name => name[0])
+                .join('')
+                .toUpperCase()
+                .substring(0, 2);
+            promptAvatar.textContent = initials;
+        } else {
+            promptAvatar.textContent = 'G'; // Guest
+        }
     }
 }
 
@@ -359,7 +539,7 @@ function createPostCard(post) {
                 </div>
                 <div class="post-actions-right">
                     <button class="action-item ${post.bookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark(${post.id})">
-                        <span>${post.bookmarked ? '🔖' : '🔗'}</span>
+                        <span>${post.bookmarked ? '📖' : '📗'}</span>
                     </button>
                 </div>
             </div>
@@ -372,7 +552,7 @@ function createPostCard(post) {
                     <!-- Comments will be loaded here -->
                 </div>
                 <div class="add-comment">
-                    <div class="comment-avatar">${currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
+                    <div class="comment-avatar">${currentUser && currentUser.fullName ? currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : 'G'}</div>
                     <textarea class="comment-input" placeholder="Add a comment..." onkeypress="handleCommentSubmit(event, ${post.id})"></textarea>
                     <button class="comment-submit" onclick="submitComment(${post.id})" disabled>
                         <span>➤</span>
@@ -508,6 +688,8 @@ function setupEventListeners() {
             link.addEventListener('click', function() {
                 navbarLinks.classList.remove('active');
                 navbarHamburger.classList.remove('active');
+                // Remove 'active' from all links first
+                navbarLinkEls.forEach(l => l.classList.remove('active'));
                 this.classList.add('active');
                 if (this.getAttribute('href').startsWith('#')) {
                     const section = this.getAttribute('href').substring(1);
@@ -742,7 +924,7 @@ function toggleBookmark(postId) {
         
         const bookmarkBtn = document.querySelector(`[data-id="${postId}"] .post-actions-right .action-item`);
         bookmarkBtn.classList.toggle('bookmarked', post.bookmarked);
-        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '🔗';
+        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '📖' : '📗';
         
         showNotification(post.bookmarked ? 'Post saved to bookmarks' : 'Post removed from bookmarks', 'info');
     }
@@ -819,8 +1001,8 @@ async function submitComment(postId) {
             const newComment = {
                 id: Date.now(),
                 author: { 
-                    name: currentUser.fullName, 
-                    avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() 
+                    name: currentUser ? currentUser.fullName : 'Guest User', 
+                    avatar: currentUser ? currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : 'G'
                 },
                 timestamp: 'Just now',
                 content: commentText
@@ -882,6 +1064,12 @@ function showPostMenu(postId) {
 // Form handling with image upload
 async function handlePostSubmission(e) {
     e.preventDefault();
+    
+    // Check if user is logged in
+    if (!currentUser) {
+        showNotification('Please log in or create an account to post.', 'warning');
+        return;
+    }
     
     const titleInput = document.getElementById('postTitle');
     const contentInput = document.getElementById('postContent');
@@ -1002,7 +1190,7 @@ async function handleFileUpload(e) {
         } else {
             // Fallback - create placeholder URLs for demo
             const placeholderUrls = files.map((file, index) => {
-                const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🍦', '🍟', '🥙'];
+                const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🦐', '🟟', '🥙'];
                 return foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
             });
             uploadedImages.push(...placeholderUrls);
@@ -1122,13 +1310,14 @@ function showNotification(message, type = 'info') {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
         color: white;
         padding: 12px 20px;
         border-radius: 8px;
         z-index: 10000;
         font-weight: 500;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        max-width: 400px;
     `;
     notification.textContent = message;
     document.body.appendChild(notification);
