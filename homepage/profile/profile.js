@@ -166,7 +166,7 @@ function closeProfileMenu() {
     }
 }
 
-// User Profile Loading
+// User Profile Loading - Updated to work with auth.users
 async function loadUserProfile() {
     showLoading(true, 'Loading your profile...');
 
@@ -176,6 +176,7 @@ async function loadUserProfile() {
             const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
             
             if (sessionError) {
+                console.error('Session error:', sessionError);
                 showMessage('Error checking authentication: ' + sessionError.message, 'error');
                 handleUnauthenticated();
                 return;
@@ -187,7 +188,7 @@ async function loadUserProfile() {
                 return;
             }
 
-            // Load user data from Supabase
+            // Load user data from Supabase auth
             await loadSupabaseUser(session);
         } else {
             // Fallback to localStorage
@@ -206,65 +207,31 @@ async function loadUserProfile() {
     }
 }
 
+// Load user data from Supabase auth.users
 async function loadSupabaseUser(session) {
     const user = session.user;
     const userMetadata = user.user_metadata || {};
 
-    // Try to get additional profile data from user_profiles table
-    try {
-        const { data: profileData, error: profileError } = await supabaseClient
-            .from('user_profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+    console.log('Loading user from auth.users:', user);
 
-        if (profileData && !profileError) {
-            currentUser = {
-                id: user.id,
-                email: user.email,
-                fullName: profileData.full_name || userMetadata.full_name || 'User',
-                username: profileData.username || userMetadata.username || user.email.split('@')[0],
-                accountType: profileData.account_type || 'Free',
-                dob: profileData.dob || userMetadata.dob || null,
-                createdAt: profileData.created_at || user.created_at,
-                dietary: profileData.dietary_restrictions || [],
-                cuisine: profileData.favorite_cuisine || '',
-                experience: profileData.cooking_experience || 'beginner'
-            };
-        } else {
-            // Use basic user data
-            currentUser = {
-                id: user.id,
-                email: user.email,
-                fullName: userMetadata.full_name || 'User',
-                username: userMetadata.username || user.email.split('@')[0],
-                accountType: userMetadata.account_type || 'Free',
-                dob: userMetadata.dob || null,
-                createdAt: user.created_at,
-                dietary: [],
-                cuisine: '',
-                experience: 'beginner'
-            };
-        }
-    } catch (error) {
-        console.error('Error loading profile data:', error);
-        // Use basic user data as fallback
-        currentUser = {
-            id: user.id,
-            email: user.email,
-            fullName: userMetadata.full_name || 'User',
-            username: userMetadata.username || user.email.split('@')[0],
-            accountType: userMetadata.account_type || 'Free',
-            dob: userMetadata.dob || null,
-            createdAt: user.created_at,
-            dietary: [],
-            cuisine: '',
-            experience: 'beginner'
-        };
-    }
+    // Build current user object from auth.users data
+    currentUser = {
+        id: user.id,
+        email: user.email,
+        fullName: userMetadata.full_name || userMetadata.fullName || 'User',
+        username: userMetadata.username || user.email.split('@')[0],
+        accountType: userMetadata.account_type || userMetadata.accountType || 'Free',
+        dob: userMetadata.dob || null,
+        createdAt: user.created_at,
+        dietary: userMetadata.dietary || userMetadata.dietary_restrictions || [],
+        cuisine: userMetadata.cuisine || userMetadata.favorite_cuisine || '',
+        experience: userMetadata.experience || userMetadata.cooking_experience || 'beginner'
+    };
 
     // Store in localStorage for consistency
     localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+    
+    console.log('Current user loaded:', currentUser);
 }
 
 async function loadLocalUser() {
@@ -448,6 +415,7 @@ function cancelPersonalEdit() {
     editPersonalBtn.textContent = 'Edit';
 }
 
+// Updated save function to work with auth.users metadata
 async function savePersonalInfo() {
     const updates = {
         fullName: editFullName.value.trim(),
@@ -455,42 +423,101 @@ async function savePersonalInfo() {
         dob: editDob.value
     };
 
-    // Validation
+    // Enhanced validation
     if (!updates.fullName || !updates.username) {
         showMessage('Name and username are required', 'error');
         return;
     }
 
+    // Username validation
+    if (updates.username.length < 3) {
+        showMessage('Username must be at least 3 characters long', 'error');
+        return;
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(updates.username)) {
+        showMessage('Username can only contain letters, numbers, and underscores', 'error');
+        return;
+    }
+
     try {
         showLoading(true, 'Saving changes...');
+        
+        let updateSuccess = false;
 
-        // Update in Supabase if available
+        // Update in Supabase auth.users metadata
         if (supabaseClient && currentUser.id) {
-            const { error } = await supabaseClient
-                .from('user_profiles')
-                .update({
-                    full_name: updates.fullName,
-                    username: updates.username,
-                    dob: updates.dob
-                })
-                .eq('id', currentUser.id);
+            console.log('Updating user metadata in auth.users...');
+            
+            // Prepare the updated metadata
+            const updatedMetadata = {
+                full_name: updates.fullName,
+                fullName: updates.fullName, // Keep both for compatibility
+                username: updates.username,
+                dob: updates.dob,
+                account_type: currentUser.accountType,
+                accountType: currentUser.accountType, // Keep both for compatibility
+                dietary: currentUser.dietary,
+                dietary_restrictions: currentUser.dietary, // Keep both for compatibility
+                cuisine: currentUser.cuisine,
+                favorite_cuisine: currentUser.cuisine, // Keep both for compatibility
+                experience: currentUser.experience,
+                cooking_experience: currentUser.experience, // Keep both for compatibility
+                updated_at: new Date().toISOString()
+            };
+
+            console.log('Metadata to update:', updatedMetadata);
+
+            // Update user metadata using Supabase auth
+            const { data, error } = await supabaseClient.auth.updateUser({
+                data: updatedMetadata
+            });
 
             if (error) {
-                console.error('Error updating profile:', error);
+                console.error('Supabase auth update error:', error);
+                throw error;
             }
+
+            if (data && data.user) {
+                console.log('User metadata updated successfully:', data.user.user_metadata);
+                updateSuccess = true;
+            } else {
+                console.warn('No data returned from update, but no error occurred');
+                updateSuccess = true; // Assume success if no error
+            }
+        } else {
+            console.log('No Supabase client available, using localStorage only');
+            updateSuccess = true;
         }
 
-        // Update local data
-        currentUser = { ...currentUser, ...updates };
-        localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
+        if (updateSuccess) {
+            // Update local data
+            currentUser = { ...currentUser, ...updates };
+            localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
 
-        updateProfileDisplay();
-        cancelPersonalEdit();
-        showMessage('Profile updated successfully!', 'success');
+            // Update the display immediately
+            updateProfileDisplay();
+            cancelPersonalEdit();
+            
+            showMessage('Profile updated successfully!', 'success');
+            console.log('Profile update completed successfully');
+        } else {
+            throw new Error('Update operation did not complete successfully');
+        }
 
     } catch (error) {
         console.error('Error saving personal info:', error);
-        showMessage('Error saving changes. Please try again.', 'error');
+        
+        // Provide more specific error messages
+        if (error.message?.includes('rate limit')) {
+            showMessage('Too many update attempts. Please wait a moment and try again.', 'error');
+        } else if (error.message?.includes('network')) {
+            showMessage('Network error. Please check your connection and try again.', 'error');
+        } else if (error.message) {
+            showMessage(`Error saving changes: ${error.message}`, 'error');
+        } else {
+            showMessage('Error saving changes. Please try again.', 'error');
+        }
     } finally {
         showLoading(false);
     }
@@ -543,6 +570,7 @@ function cancelPreferencesEdit() {
     editPreferencesBtn.textContent = 'Edit';
 }
 
+// Updated preferences save function to work with auth.users metadata
 async function savePreferences() {
     const selectedDietary = Array.from(editDietary.selectedOptions).map(option => option.value);
     const updates = {
@@ -554,20 +582,37 @@ async function savePreferences() {
     try {
         showLoading(true, 'Saving preferences...');
 
-        // Update in Supabase if available
+        // Update in Supabase auth.users metadata
         if (supabaseClient && currentUser.id) {
-            const { error } = await supabaseClient
-                .from('user_profiles')
-                .update({
-                    dietary_restrictions: updates.dietary,
-                    favorite_cuisine: updates.cuisine,
-                    cooking_experience: updates.experience
-                })
-                .eq('id', currentUser.id);
+            console.log('Updating preferences in user metadata...');
+            
+            // Prepare the updated metadata with all existing data
+            const updatedMetadata = {
+                full_name: currentUser.fullName,
+                fullName: currentUser.fullName,
+                username: currentUser.username,
+                dob: currentUser.dob,
+                account_type: currentUser.accountType,
+                accountType: currentUser.accountType,
+                dietary: updates.dietary,
+                dietary_restrictions: updates.dietary,
+                cuisine: updates.cuisine,
+                favorite_cuisine: updates.cuisine,
+                experience: updates.experience,
+                cooking_experience: updates.experience,
+                updated_at: new Date().toISOString()
+            };
+
+            const { data, error } = await supabaseClient.auth.updateUser({
+                data: updatedMetadata
+            });
 
             if (error) {
                 console.error('Error updating preferences:', error);
+                throw error;
             }
+
+            console.log('Preferences updated successfully:', data);
         }
 
         // Update local data
@@ -580,7 +625,7 @@ async function savePreferences() {
 
     } catch (error) {
         console.error('Error saving preferences:', error);
-        showMessage('Error saving preferences. Please try again.', 'error');
+        showMessage(`Error saving preferences: ${error.message || 'Please try again.'}`, 'error');
     } finally {
         showLoading(false);
     }
@@ -603,12 +648,18 @@ async function handleUpgrade() {
         currentUser.accountType = 'Premium';
         localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
 
-        // Update in Supabase if available
+        // Update in Supabase auth metadata if available
         if (supabaseClient && currentUser.id) {
-            await supabaseClient
-                .from('user_profiles')
-                .update({ account_type: 'Premium' })
-                .eq('id', currentUser.id);
+            const updatedMetadata = {
+                ...currentUser,
+                account_type: 'Premium',
+                accountType: 'Premium',
+                updated_at: new Date().toISOString()
+            };
+
+            await supabaseClient.auth.updateUser({
+                data: updatedMetadata
+            });
         }
 
         updateProfileDisplay();
@@ -723,6 +774,13 @@ if (supabaseClient) {
     supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_OUT') {
             window.location.href = '../../loginpage/login.html';
+        } else if (event === 'USER_UPDATED') {
+            console.log('User updated event received:', session?.user?.user_metadata);
+            // Reload profile data when user is updated
+            if (session && session.user) {
+                loadSupabaseUser(session);
+                updateProfileDisplay();
+            }
         }
     });
 }

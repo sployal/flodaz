@@ -2,9 +2,7 @@
 
 // API Configuration
 //const API_BASE_URL = 'http://localhost:5000/api';
-
 //const API_BASE_URL = 'https://replit.com/@muigaidavie6/flodaz/api';
-
 const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
 
 // Supabase Client Configuration
@@ -153,12 +151,22 @@ async function uploadImagesAPI(files) {
 
 async function createPostAPI(postData) {
     try {
+        // Ensure userId is included from current user
+        if (!currentUser || !currentUser.id) {
+            throw new Error('User not authenticated');
+        }
+
+        const postPayload = {
+            ...postData,
+            userId: currentUser.id // Add userId from authenticated user
+        };
+
         const response = await fetch(`${API_BASE_URL}/posts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(postData)
+            body: JSON.stringify(postPayload)
         });
         
         if (!response.ok) {
@@ -212,6 +220,11 @@ async function fetchCommentsFromAPI(postId) {
 
 async function createCommentAPI(postId, content) {
     try {
+        // Ensure userId is included from current user
+        if (!currentUser || !currentUser.id) {
+            throw new Error('User not authenticated');
+        }
+
         const response = await fetch(`${API_BASE_URL}/comments`, {
             method: 'POST',
             headers: {
@@ -219,7 +232,8 @@ async function createCommentAPI(postId, content) {
             },
             body: JSON.stringify({
                 postId: postId,
-                content: content
+                content: content,
+                userId: currentUser.id // Add userId from authenticated user
             })
         });
         
@@ -250,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupEventListeners();
     setupModalEvents();
     
-    // Profile button - redirects to profile page (match main.js)
+    // Profile button - redirects to profile page
     const profileBtn = document.getElementById('profileBtn');
     profileBtn?.addEventListener('click', () => {
         window.location.href = '../profile/profile.html';
@@ -259,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Community page initialized successfully');
 });
 
-// Enhanced user account initialization (following main.js approach)
+// Enhanced user account initialization
 async function initializeUserAccount() {
     try {
         console.log('Initializing user account...');
@@ -284,14 +298,14 @@ async function initializeUserAccount() {
         
         // Fallback to localStorage
         const localUser = JSON.parse(localStorage.getItem('smartrecipes_user'));
-        if (localUser) {
+        if (localUser && localUser.id) {
             console.log('Found user in localStorage:', localUser);
             currentUser = localUser;
             updateProfileDisplay();
             updateCreatePostPrompt();
         } else {
-            console.log('No user found, setting up guest account');
-            // Set up guest user
+            console.log('No authenticated user found');
+            // Set up guest user (but they won't be able to post)
             currentUser = null;
             updateProfileDisplay();
             updateCreatePostPrompt();
@@ -306,44 +320,40 @@ async function initializeUserAccount() {
     }
 }
 
-// Load user data from Supabase (following main.js approach)
+
 async function loadUserFromSupabase(user) {
     try {
-        // Try to get user profile from user_profiles table
-        const { data: profileData, error: profileError } = await supabaseClient
-            .from('user_profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+        // Create user object from auth user data
+        const userMetadata = user.user_metadata || {};
         
-        if (profileData && !profileError) {
-            // Create user object from profile data
-            currentUser = {
-                id: user.id,
-                email: user.email,
-                fullName: profileData.full_name,
-                username: profileData.username,
-                accountType: profileData.account_type || 'Free',
-                dob: profileData.dob,
-                contact: profileData.contact,
-                address: profileData.address,
-                gender: profileData.gender,
-                createdAt: profileData.created_at,
-                updatedAt: profileData.updated_at
-            };
+        // Get full name
+        const fullName = userMetadata.full_name || userMetadata.name || user.email.split('@')[0];
+        
+        // Extract first name for fallback
+        const firstName = fullName.split(' ')[0];
+        
+        // Priority: username > firstName > email prefix
+        let username;
+        if (userMetadata.username) {
+            username = userMetadata.username;  // Use set username if available
+        } else if (firstName && firstName !== user.email.split('@')[0]) {
+            username = firstName;  // Use first name if it's not just the email prefix
         } else {
-            // Fallback to auth user metadata
-            const userMetadata = user.user_metadata || {};
-            currentUser = {
-                id: user.id,
-                email: user.email,
-                fullName: userMetadata.full_name || userMetadata.name || 'User',
-                username: userMetadata.username || user.email.split('@')[0],
-                accountType: userMetadata.account_type || 'Free',
-                dob: userMetadata.dob,
-                createdAt: user.created_at
-            };
+            username = user.email.split('@')[0];  // Final fallback to email prefix
         }
+        
+        currentUser = {
+            id: user.id,
+            email: user.email,
+            fullName: fullName,
+            username: username,
+            accountType: userMetadata.account_type || 'Free',
+            dob: userMetadata.dob,
+            contact: userMetadata.contact,
+            address: userMetadata.address,
+            gender: userMetadata.gender,
+            createdAt: user.created_at
+        };
         
         // Store in localStorage for consistency
         localStorage.setItem('smartrecipes_user', JSON.stringify(currentUser));
@@ -355,7 +365,7 @@ async function loadUserFromSupabase(user) {
     }
 }
 
-// Setup authentication state listener (following main.js approach)
+// Setup authentication state listener
 function setupAuthListener() {
     if (supabaseClient) {
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -463,16 +473,34 @@ function updateCreatePostPrompt() {
 
 // Initialize feed
 async function initializeFeed() {
+    console.log('Initializing feed...');
+    
     if (useBackend) {
         const data = await fetchPostsFromAPI(1, currentFilter);
         if (data && data.posts) {
-            renderPosts(data.posts);
+            console.log('Posts loaded from backend:', data.posts);
+            // Backend already provides properly formatted posts with author info
+            displayPostsDirectly(data.posts);
             return;
         }
     }
     
     renderPosts(postsData.slice(0, displayedPosts));
     updateLoadMoreButton();
+}
+
+// Display posts directly from backend (already formatted)
+function displayPostsDirectly(posts) {
+    if (!postsFeed) return;
+    
+    const filteredPosts = currentFilter === 'all' ? posts : posts.filter(post => post.type === currentFilter);
+    const postsHTML = filteredPosts.map(post => createPostCard(post)).join('');
+    
+    postsFeed.innerHTML = postsHTML;
+    
+    if (filteredPosts.length === 0) {
+        postsFeed.innerHTML = createEmptyState();
+    }
 }
 
 // Render posts to feed
@@ -539,7 +567,7 @@ function createPostCard(post) {
                 </div>
                 <div class="post-actions-right">
                     <button class="action-item ${post.bookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark(${post.id})">
-                        <span>${post.bookmarked ? '📖' : '📗'}</span>
+                        <span>${post.bookmarked ? '🔖' : '🔗'}</span>
                     </button>
                 </div>
             </div>
@@ -553,7 +581,7 @@ function createPostCard(post) {
                 </div>
                 <div class="add-comment">
                     <div class="comment-avatar">${currentUser && currentUser.fullName ? currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : 'G'}</div>
-                    <textarea class="comment-input" placeholder="Add a comment..." onkeypress="handleCommentSubmit(event, ${post.id})"></textarea>
+                    <textarea class="comment-input" placeholder="Add a comment..." onkeypress="handleCommentSubmit(event, ${post.id})" ${!currentUser ? 'disabled' : ''}></textarea>
                     <button class="comment-submit" onclick="submitComment(${post.id})" disabled>
                         <span>➤</span>
                     </button>
@@ -830,6 +858,12 @@ function updateLoadMoreButton() {
 
 // Modal functions
 function showCreateModal() {
+    // Check if user is authenticated before showing modal
+    if (!currentUser) {
+        showNotification('Please log in to create a post.', 'warning');
+        return;
+    }
+    
     createPostModal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -924,7 +958,7 @@ function toggleBookmark(postId) {
         
         const bookmarkBtn = document.querySelector(`[data-id="${postId}"] .post-actions-right .action-item`);
         bookmarkBtn.classList.toggle('bookmarked', post.bookmarked);
-        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '📖' : '📗';
+        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '🔗';
         
         showNotification(post.bookmarked ? 'Post saved to bookmarks' : 'Post removed from bookmarks', 'info');
     }
@@ -987,6 +1021,11 @@ function handleCommentSubmit(event, postId) {
 
 // Submit comment
 async function submitComment(postId) {
+    if (!currentUser) {
+        showNotification('Please log in to comment.', 'warning');
+        return;
+    }
+
     const commentInput = document.querySelector(`#comments-${postId} .comment-input`);
     const commentText = commentInput.value.trim();
     
@@ -1001,8 +1040,8 @@ async function submitComment(postId) {
             const newComment = {
                 id: Date.now(),
                 author: { 
-                    name: currentUser ? currentUser.fullName : 'Guest User', 
-                    avatar: currentUser ? currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase() : 'G'
+                    name: currentUser.fullName, 
+                    avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
                 },
                 timestamp: 'Just now',
                 content: commentText
@@ -1067,7 +1106,7 @@ async function handlePostSubmission(e) {
     
     // Check if user is logged in
     if (!currentUser) {
-        showNotification('Please log in or create an account to post.', 'warning');
+        showNotification('Please log in to create a post.', 'warning');
         return;
     }
     
@@ -1190,7 +1229,7 @@ async function handleFileUpload(e) {
         } else {
             // Fallback - create placeholder URLs for demo
             const placeholderUrls = files.map((file, index) => {
-                const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🦐', '🟟', '🥙'];
+                const foodEmojis = ['🍖', '🥗', '🍲', '🥘', '🍛', '🍦', '🍟', '🥙'];
                 return foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
             });
             uploadedImages.push(...placeholderUrls);
