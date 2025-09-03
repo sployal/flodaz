@@ -21,7 +21,9 @@
                 </ul>
                 <div class="navbar-actions">
                   
-                    <a href="../profile/profile.html" class="navbar-avatar">JD</a>
+                    <button class="profile-btn" id="profileBtn" aria-label="Open profile">
+                        <div class="avatar" id="avatarCircle">?</div>
+                    </button>
                     <button class="navbar-hamburger" id="navbarHamburger" aria-label="Menu">
                         <span></span><span></span><span></span>
                     </button>
@@ -150,7 +152,7 @@
                     <!-- DM/Share/Discussion/Filter section only below Weekly Challenge -->
                     <div style="height: 24px;"></div>
                     <div class="create-post-prompt" id="createPostPrompt">
-                        <div class="avatar">JD</div>
+                        <div class="avatar" id="avatarCircleMenu">?</div>
                         <input type="text" placeholder="Share a recipe, ask a question, or start a discussion..." readonly onclick="showCreateModal()">
                         <button class="media-btn" onclick="showCreateModal()">📸</button>
                     </div>
