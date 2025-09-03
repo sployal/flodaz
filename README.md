@@ -51,7 +51,7 @@ It empowers users to make healthier food choices, reduce waste, and connect with
 
 ✅ Community & Restaurants – Share recipes, connect with others, and discover local restaurants promoting healthy food choices.
 
-✅ Freemium Model – 3 free AI prompts, with premium subscription unlocking unlimited meal planning & downloads.
+✅ Freemium Model – 20 free AI prompts, with premium subscription unlocking unlimited meal planning & downloads.
 
 ✅ Sustainable Impact – Helps reduce food waste and supports the fight against hunger.
 
