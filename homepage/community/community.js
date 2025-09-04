@@ -1,9 +1,9 @@
 // Community Page JavaScript - Backend Integration with Image Upload
 
 // API Configuration
-//const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 //const API_BASE_URL = 'https://replit.com/@muigaidavie6/flodaz/api';
-const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
+//const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
 
 // Supabase Client Configuration
 const SUPABASE_URL = 'https://hrfvkblkpihdzcuodwzz.supabase.co';
@@ -124,6 +124,84 @@ async function fetchPostsFromAPI(page = 1, type = 'all', limit = 10) {
     }
 }
 
+// NEW: Function to fetch user details by ID
+async function fetchUserByIdAPI(userId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/users/${userId}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.user;
+    } catch (error) {
+        console.error('Error fetching user by ID:', error);
+        return null;
+    }
+}
+
+// NEW: Function to process posts and populate author information
+async function processPostsWithAuthors(posts) {
+    const processedPosts = [];
+    
+    for (const post of posts) {
+        let processedPost = { ...post };
+        
+        // If post has userId but no author info, fetch user details
+        if (post.userId && (!post.author || typeof post.author === 'string')) {
+            const userDetails = await fetchUserByIdAPI(post.userId);
+            
+            if (userDetails) {
+                // Apply the same naming logic as in loadUserFromSupabase
+                const fullName = userDetails.fullName || userDetails.name || userDetails.email?.split('@')[0] || 'Anonymous User';
+                const firstName = fullName.split(' ')[0];
+                
+                let displayName, username;
+                
+                // Priority: username > firstName > email prefix
+                if (userDetails.username && userDetails.username !== userDetails.email?.split('@')[0]) {
+                    username = userDetails.username;
+                    displayName = fullName; // Use full name for display
+                } else if (firstName && firstName !== userDetails.email?.split('@')[0]) {
+                    username = firstName;
+                    displayName = fullName; // Use full name for display
+                } else {
+                    username = userDetails.email?.split('@')[0] || 'anonymous';
+                    displayName = fullName; // Use full name for display
+                }
+                
+                processedPost.author = {
+                    name: displayName,
+                    username: username,
+                    avatar: fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'AN'
+                };
+            } else {
+                // Fallback if user fetch fails
+                processedPost.author = {
+                    name: 'Unknown User',
+                    username: 'unknown',
+                    avatar: 'UN'
+                };
+            }
+        } else if (post.author && typeof post.author === 'object') {
+            // Author info is already properly formatted
+            processedPost.author = post.author;
+        } else {
+            // Fallback for any other cases
+            processedPost.author = {
+                name: 'Anonymous User',
+                username: 'anonymous',
+                avatar: 'AN'
+            };
+        }
+        
+        processedPosts.push(processedPost);
+    }
+    
+    return processedPosts;
+}
+
 async function uploadImagesAPI(files) {
     try {
         const formData = new FormData();
@@ -211,7 +289,34 @@ async function fetchCommentsFromAPI(postId) {
         }
         
         const data = await response.json();
-        return data.comments || [];
+        
+        // Process comments to include author information
+        const processedComments = [];
+        for (const comment of data.comments || []) {
+            let processedComment = { ...comment };
+            
+            if (comment.userId && (!comment.author || typeof comment.author === 'string')) {
+                const userDetails = await fetchUserByIdAPI(comment.userId);
+                
+                if (userDetails) {
+                    const fullName = userDetails.fullName || userDetails.name || userDetails.email?.split('@')[0] || 'Anonymous User';
+                    
+                    processedComment.author = {
+                        name: fullName,
+                        avatar: fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'AN'
+                    };
+                } else {
+                    processedComment.author = {
+                        name: 'Unknown User',
+                        avatar: 'UN'
+                    };
+                }
+            }
+            
+            processedComments.push(processedComment);
+        }
+        
+        return processedComments;
     } catch (error) {
         console.error('Error fetching comments from API:', error);
         return [];
@@ -471,7 +576,7 @@ function updateCreatePostPrompt() {
     }
 }
 
-// Initialize feed
+// UPDATED: Initialize feed 
 async function initializeFeed() {
     console.log('Initializing feed...');
     
@@ -480,7 +585,7 @@ async function initializeFeed() {
         if (data && data.posts) {
             console.log('Posts loaded from backend:', data.posts);
             // Backend already provides properly formatted posts with author info
-            displayPostsDirectly(data.posts);
+            displayPostsDirectly(data.posts); // Remove the processPostsWithAuthors call
             return;
         }
     }
