@@ -357,24 +357,23 @@ async function createCommentAPI(postId, content) {
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing community page...');
-    
     // Initialize user account on page startup
     initializeUserAccount();
-    
     // Setup authentication listener
     setupAuthListener();
-    
     // Initialize other components
-    initializeFeed();
+    initializeFeed(); // This loads posts as soon as the page is opened
     setupEventListeners();
     setupModalEvents();
-    
     // Profile button - redirects to profile page
     const profileBtn = document.getElementById('profileBtn');
     profileBtn?.addEventListener('click', () => {
         window.location.href = '../profile/profile.html';
     });
-
+    // Autoload posts when page is opened
+    if (typeof initializeFeed === 'function') {
+        initializeFeed();
+    }
     console.log('Community page initialized successfully');
 });
 

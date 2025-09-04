@@ -126,21 +126,22 @@ const recipeSearchBtn = document.getElementById('recipeSearchBtn');
 // Initialize app
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('Initializing application...');
-    
-    // Initialize user account on page startup
+    // --- Autoload main content (recipes) when page is opened ---
+    // This ensures recipes are loaded and ready for the user immediately
     await initializeUserAccount();
-    
-    // Setup authentication listener
     setupAuthListener();
-    
-    // Initialize UI components - ensure this runs after DOM is ready
     setTimeout(() => {
         renderRecipeGallery();
         setupAnimations();
     }, 100);
-    
     setupEventListeners();
-
+    // --- Autoload community posts when main page is opened ---
+    // This will initialize posts from the community page JS if available
+    if (typeof initializeFeed === 'function') {
+        // Call the community posts loader from community.js
+        initializeFeed(); // <-- Community posts autoload here
+    }
+    // --- End autoload block ---
     console.log('Application initialized successfully');
 });
 
