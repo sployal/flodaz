@@ -1,9 +1,9 @@
 // Community Page JavaScript - Backend Integration with Image Upload
 
 // API Configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+//const API_BASE_URL = 'http://localhost:5000/api';
 //const API_BASE_URL = 'https://replit.com/@muigaidavie6/flodaz/api';
-//const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
+const API_BASE_URL = 'https://api-node-web-nqq1.onrender.com/api';
 
 // Supabase Client Configuration
 const SUPABASE_URL = 'https://hrfvkblkpihdzcuodwzz.supabase.co';
