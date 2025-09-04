@@ -898,9 +898,16 @@ function setupModalEvents() {
 
 // Filter functions
 function setActiveFilter(filter) {
-    currentFilter = filter;
+    // Map filter button values to post type values
+    const filterMap = {
+        all: 'all',
+        recipes: 'recipe',
+        questions: 'question',
+        photos: 'photo',
+        discussions: 'discussion'
+    };
+    currentFilter = filterMap[filter] || filter;
     displayedPosts = 6;
-    
     // Update active button
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -908,7 +915,6 @@ function setActiveFilter(filter) {
             btn.classList.add('active');
         }
     });
-    
     if (useBackend) {
         initializeFeed();
     } else {
