@@ -1257,7 +1257,6 @@ function createCommentHTML(comment) {
     `;
 }
 
-
 // Enhanced setupEventListeners to include comment input handling
 function setupCommentEventListeners() {
     // Add this to your existing setupEventListeners function
@@ -1283,9 +1282,6 @@ function setupCommentEventListeners() {
         }
     });
 }
-
-
-
 
 
 // Fixed handleCommentSubmit function
@@ -1332,9 +1328,14 @@ async function submitComment(postId) {
     
     try {
         let result = null;
+        let newCommentCount = 0;
         
         if (useBackend) {
             result = await createCommentAPI(postId, commentText);
+            // If backend returns the updated comment count, use that
+            if (result && result.commentCount !== undefined) {
+                newCommentCount = result.commentCount;
+            }
         }
         
         if (result || !useBackend) {
@@ -1363,7 +1364,12 @@ async function submitComment(postId) {
             }
             
             if (post) {
-                post.comments = (post.comments || 0) + 1;
+                // Use backend count if available, otherwise increment locally
+                if (useBackend && newCommentCount > 0) {
+                    post.comments = newCommentCount;
+                } else {
+                    post.comments = (post.comments || 0) + 1;
+                }
                 
                 // Update comment count in UI
                 const commentCountSpan = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2) span:last-child`);
