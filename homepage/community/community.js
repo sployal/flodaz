@@ -21,6 +21,8 @@ try {
     console.log('Supabase not available, using localStorage fallback');
 }
 
+let allPosts = []; // Store all posts globally for interaction handling
+
 // Sample post data (keep as fallback)
 const postsData = [
     {
@@ -583,15 +585,19 @@ async function initializeFeed() {
         const data = await fetchPostsFromAPI(1, currentFilter);
         if (data && data.posts) {
             console.log('Posts loaded from backend:', data.posts);
-            // Backend already provides properly formatted posts with author info
-            displayPostsDirectly(data.posts); // Remove the processPostsWithAuthors call
+            // Store posts globally for interaction handling
+            allPosts = [...data.posts];
+            displayPostsDirectly(data.posts);
             return;
         }
     }
     
+    // Fallback to sample data
+    allPosts = [...postsData];
     renderPosts(postsData.slice(0, displayedPosts));
     updateLoadMoreButton();
 }
+
 
 // Display posts directly from backend (already formatted)
 function displayPostsDirectly(posts) {
@@ -849,6 +855,42 @@ function setupEventListeners() {
     });
 }
 
+
+// Fixed toggleComments function
+function toggleComments(postId) {
+    const commentsSection = document.getElementById(`comments-${postId}`);
+    const commentBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2)`);
+    
+    if (!commentsSection) {
+        console.error(`Comments section not found for post ${postId}`);
+        return;
+    }
+    
+    if (commentsSection.style.display === 'none' || !commentsSection.style.display) {
+        commentsSection.style.display = 'block';
+        // Auto-load comments when section is opened
+        loadComments(postId);
+        
+        // Update button appearance
+        if (commentBtn) {
+            commentBtn.classList.add('active');
+        }
+    } else {
+        commentsSection.style.display = 'none';
+        
+        // Update button appearance
+        if (commentBtn) {
+            commentBtn.classList.remove('active');
+        }
+    }
+}
+
+
+
+
+
+
+
 // Setup modal events
 function setupModalEvents() {
     // Modal close on overlay click
@@ -1026,110 +1068,240 @@ function setPostType(type) {
 }
 
 // Post interactions
+
+// UPDATED: Post interactions - properly handles like/unlike toggle
+
 async function toggleLike(postId) {
-    const post = postsData.find(p => p.id === postId);
+    // Find post in global array first
+    let post = allPosts.find(p => p.id === postId);
     
-    if (useBackend && post && post.id <= 1000) {
+    // If not found in global array, check sample data
+    if (!post) {
+        post = postsData.find(p => p.id === postId);
+    }
+    
+    if (useBackend && post) {
         const result = await likePostAPI(postId);
         if (result) {
-            const likeBtn = document.querySelector(`[data-id="${postId}"] .action-item`);
-            likeBtn.classList.add('liked');
-            likeBtn.querySelector('span:first-child').textContent = '❤️';
-            likeBtn.querySelector('span:last-child').textContent = result.likes;
+            // Update post in global array
+            const postIndex = allPosts.findIndex(p => p.id === postId);
+            if (postIndex !== -1) {
+                allPosts[postIndex].liked = result.liked;
+                allPosts[postIndex].likes = result.likes;
+            }
             
-            if (result.liked) {
-                likeBtn.style.animation = 'pulse 0.6s ease';
-                setTimeout(() => likeBtn.style.animation = '', 600);
+            const likeBtn = document.querySelector(`[data-id="${postId}"] .action-item`);
+            if (likeBtn) {
+                likeBtn.classList.toggle('liked', result.liked);
+                likeBtn.querySelector('span:first-child').textContent = result.liked ? '❤️' : '🤍';
+                likeBtn.querySelector('span:last-child').textContent = result.likes;
+                
+                if (result.liked) {
+                    likeBtn.style.animation = 'pulse 0.6s ease';
+                    setTimeout(() => likeBtn.style.animation = '', 600);
+                }
             }
             return;
         }
     }
     
+    // Fallback for local handling
     if (post) {
         post.liked = !post.liked;
         post.likes += post.liked ? 1 : -1;
         
         const likeBtn = document.querySelector(`[data-id="${postId}"] .action-item`);
-        likeBtn.classList.toggle('liked', post.liked);
-        likeBtn.querySelector('span:first-child').textContent = post.liked ? '❤️' : '🤍';
-        likeBtn.querySelector('span:last-child').textContent = post.likes;
-        
-        if (post.liked) {
-            likeBtn.style.animation = 'pulse 0.6s ease';
-            setTimeout(() => likeBtn.style.animation = '', 600);
+        if (likeBtn) {
+            likeBtn.classList.toggle('liked', post.liked);
+            likeBtn.querySelector('span:first-child').textContent = post.liked ? '❤️' : '🤍';
+            likeBtn.querySelector('span:last-child').textContent = post.likes;
+            
+            if (post.liked) {
+                likeBtn.style.animation = 'pulse 0.6s ease';
+                setTimeout(() => likeBtn.style.animation = '', 600);
+            }
         }
     }
 }
 
+// UPDATED: Toggle bookmark - uses allPosts array
 function toggleBookmark(postId) {
-    const post = postsData.find(p => p.id === postId);
+    let post = allPosts.find(p => p.id === postId);
+    
+    if (!post) {
+        post = postsData.find(p => p.id === postId);
+    }
+    
     if (post) {
         post.bookmarked = !post.bookmarked;
         
         const bookmarkBtn = document.querySelector(`[data-id="${postId}"] .post-actions-right .action-item`);
-        bookmarkBtn.classList.toggle('bookmarked', post.bookmarked);
-        bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '🔗';
+        if (bookmarkBtn) {
+            bookmarkBtn.classList.toggle('bookmarked', post.bookmarked);
+            bookmarkBtn.querySelector('span').textContent = post.bookmarked ? '🔖' : '🔗';
+        }
         
         showNotification(post.bookmarked ? 'Post saved to bookmarks' : 'Post removed from bookmarks', 'info');
     }
 }
 
-function toggleComments(postId) {
-    const commentsSection = document.getElementById(`comments-${postId}`);
-    const isVisible = commentsSection.style.display !== 'none';
-    
-    commentsSection.style.display = isVisible ? 'none' : 'block';
-    
-    if (!isVisible) {
-        loadComments(postId);
+
+
+
+
+// UPDATED: Like Post API function to handle toggle properly
+async function likePostAPI(postId) {
+    try {
+        // Check current like status from the post data
+        let post = allPosts.find(p => p.id === postId);
+        if (!post) {
+            post = postsData.find(p => p.id === postId);
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userId: currentUser.id,
+                action: post && post.liked ? 'unlike' : 'like' // Send the intended action
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return {
+            liked: data.liked !== undefined ? data.liked : !post.liked,
+            likes: data.likes || (post.liked ? post.likes - 1 : post.likes + 1)
+        };
+    } catch (error) {
+        console.error('Error liking post via API:', error);
+        return null;
     }
 }
 
 // Load comments
+// Fixed loadComments function with better error handling
 async function loadComments(postId) {
     const commentsList = document.getElementById(`comments-list-${postId}`);
-    let comments = [];
+    const commentsToggle = document.querySelector(`#comments-${postId} .comments-toggle`);
     
-    if (useBackend) {
-        comments = await fetchCommentsFromAPI(postId);
-    } else {
-        comments = commentsData[postId] || [];
+    if (!commentsList) {
+        console.error(`Comments list not found for post ${postId}`);
+        return;
     }
     
-    if (comments.length > 0) {
-        commentsList.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
-    } else {
-        commentsList.innerHTML = '<p style="text-align: center; color: #718096; font-size: 0.9rem; padding: 1rem;">No comments yet. Be the first to comment!</p>';
+    // Show loading state
+    commentsList.innerHTML = '<div style="text-align: center; padding: 1rem; color: #718096;">Loading comments...</div>';
+    
+    let comments = [];
+    
+    try {
+        if (useBackend) {
+            comments = await fetchCommentsFromAPI(postId);
+        } else {
+            comments = commentsData[postId] || [];
+        }
+        
+        if (comments.length > 0) {
+            commentsList.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
+            
+            // Hide the "View all comments" toggle since comments are now loaded
+            if (commentsToggle) {
+                commentsToggle.style.display = 'none';
+            }
+        } else {
+            commentsList.innerHTML = '<p style="text-align: center; color: #718096; font-size: 0.9rem; padding: 1rem;">No comments yet. Be the first to comment!</p>';
+            
+            // Hide the toggle for empty comments
+            if (commentsToggle) {
+                commentsToggle.style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error loading comments:', error);
+        commentsList.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 0.9rem; padding: 1rem;">Error loading comments. Please try again.</p>';
     }
 }
 
+
 function createCommentHTML(comment) {
+    // Ensure avatar is properly generated
+    let avatar = comment.author.avatar;
+    if (!avatar && comment.author.name) {
+        avatar = comment.author.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    }
+    if (!avatar) {
+        avatar = 'AN'; // Anonymous fallback
+    }
+    
     return `
         <div class="comment">
-            <div class="comment-avatar">${comment.author.avatar || comment.author.name.split(' ').map(n => n[0]).join('').toUpperCase()}</div>
+            <div class="comment-avatar">${avatar}</div>
             <div class="comment-content">
                 <div class="comment-header">
-                    <span class="comment-author">${comment.author.name}</span>
-                    <span class="comment-time">${comment.timestamp}</span>
+                    <span class="comment-author">${comment.author.name || 'Anonymous'}</span>
+                    <span class="comment-time">${comment.timestamp || 'Just now'}</span>
                 </div>
                 <p class="comment-text">${comment.content}</p>
                 <div class="comment-actions">
-                    <button class="comment-action">Like</button>
-                    <button class="comment-action">Reply</button>
+                    <button class="comment-action" onclick="likeComment(${comment.id})">Like</button>
+                    <button class="comment-action" onclick="replyToComment(${comment.id})">Reply</button>
                 </div>
             </div>
         </div>
     `;
 }
 
+
+// Enhanced setupEventListeners to include comment input handling
+function setupCommentEventListeners() {
+    // Add this to your existing setupEventListeners function
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('comment-input')) {
+            const submitBtn = e.target.parentNode.querySelector('.comment-submit');
+            if (submitBtn) {
+                submitBtn.disabled = e.target.value.trim().length === 0;
+            }
+        }
+    });
+    
+    // Handle Enter key in comment inputs
+    document.addEventListener('keydown', function(e) {
+        if (e.target.classList.contains('comment-input')) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const postId = e.target.closest('[id^="comments-"]').id.split('-')[1];
+                if (e.target.value.trim()) {
+                    submitComment(parseInt(postId));
+                }
+            }
+        }
+    });
+}
+
+
+
+
+
+// Fixed handleCommentSubmit function
 function handleCommentSubmit(event, postId) {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
-        submitComment(postId);
+        const commentText = event.target.value.trim();
+        if (commentText) {
+            submitComment(postId);
+        }
     }
 }
 
 // Submit comment
+// UPDATED: Submit comment - uses allPosts array
+// Fixed submitComment function with better validation
 async function submitComment(postId) {
     if (!currentUser) {
         showNotification('Please log in to comment.', 'warning');
@@ -1137,9 +1309,28 @@ async function submitComment(postId) {
     }
 
     const commentInput = document.querySelector(`#comments-${postId} .comment-input`);
+    const submitBtn = document.querySelector(`#comments-${postId} .comment-submit`);
+    
+    if (!commentInput) {
+        console.error(`Comment input not found for post ${postId}`);
+        return;
+    }
+    
     const commentText = commentInput.value.trim();
     
-    if (commentText) {
+    if (!commentText) {
+        showNotification('Comment cannot be empty.', 'warning');
+        return;
+    }
+    
+    // Disable input and button during submission
+    commentInput.disabled = true;
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span>';
+    }
+    
+    try {
         let result = null;
         
         if (useBackend) {
@@ -1148,15 +1339,16 @@ async function submitComment(postId) {
         
         if (result || !useBackend) {
             const newComment = {
-                id: Date.now(),
+                id: result?.comment?.id || Date.now(),
                 author: { 
                     name: currentUser.fullName, 
-                    avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+                    avatar: currentUser.fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
                 },
                 timestamp: 'Just now',
                 content: commentText
             };
             
+            // Add to local data if not using backend
             if (!useBackend) {
                 if (!commentsData[postId]) {
                     commentsData[postId] = [];
@@ -1164,32 +1356,69 @@ async function submitComment(postId) {
                 commentsData[postId].unshift(newComment);
             }
             
-            const post = postsData.find(p => p.id === postId);
-            if (post) {
-                post.comments++;
-                
-                const commentBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2) span:last-child`);
-                commentBtn.textContent = post.comments;
+            // Update comment count in posts arrays
+            let post = allPosts.find(p => p.id == postId);
+            if (!post) {
+                post = postsData.find(p => p.id == postId);
             }
             
-            loadComments(postId);
+            if (post) {
+                post.comments = (post.comments || 0) + 1;
+                
+                // Update comment count in UI
+                const commentCountSpan = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(2) span:last-child`);
+                if (commentCountSpan) {
+                    commentCountSpan.textContent = post.comments;
+                }
+            }
             
+            // Reload comments to show the new one
+            await loadComments(postId);
+            
+            // Clear and reset input
             commentInput.value = '';
-            const submitBtn = commentInput.parentNode.querySelector('.comment-submit');
-            submitBtn.disabled = true;
+            commentInput.disabled = false;
+            
+            if (submitBtn) {
+                submitBtn.disabled = true; // Keep disabled until new text is entered
+                submitBtn.innerHTML = '<span>➤</span>';
+            }
             
             showNotification('Comment added successfully!', 'success');
+            
+        } else {
+            throw new Error('Failed to create comment');
+        }
+        
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+        showNotification('Failed to add comment. Please try again.', 'error');
+        
+        // Re-enable input and button
+        commentInput.disabled = false;
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>➤</span>';
         }
     }
 }
 
+
+
 function sharePost(postId) {
-    const post = postsData.find(p => p.id === postId);
+    let post = allPosts.find(p => p.id === postId);
+    
+    if (!post) {
+        post = postsData.find(p => p.id === postId);
+    }
+    
     if (post) {
         post.shares++;
         
         const shareBtn = document.querySelector(`[data-id="${postId}"] .action-item:nth-child(3) span:last-child`);
-        shareBtn.textContent = post.shares;
+        if (shareBtn) {
+            shareBtn.textContent = post.shares;
+        }
         
         if (navigator.share) {
             navigator.share({
@@ -1300,7 +1529,9 @@ async function handlePostSubmission(e) {
     }
     
     setTimeout(() => {
+        // Add to both arrays
         postsData.unshift(newPost);
+        allPosts.unshift(newPost);
         
         displayedPosts = Math.min(displayedPosts + 1, postsData.length);
         renderPosts(postsData.slice(0, displayedPosts));
